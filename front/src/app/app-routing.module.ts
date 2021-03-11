@@ -8,6 +8,7 @@ import { PrincipalComponent } from "./componentes/principal/principal.component"
 import { AuthGuard } from './servicios/auth.guard';
 
 const routes: Routes = [
+  { path: "", component: SigninComponent },
   { path: "signin", component: SigninComponent },
   { path: "signup", component: SignupComponent },
   {
