@@ -60,6 +60,7 @@ export class SignupComponent implements OnInit {
         console.log('===============Respuesta API=====================');
         console.log(a);
         console.log('===============Fin respuesta=====================');
+        this.router.navigate(['/principal']);
       })
 
 
