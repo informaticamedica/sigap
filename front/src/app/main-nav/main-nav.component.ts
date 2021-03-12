@@ -23,6 +23,10 @@ export class MainNavComponent {
     public aut:AutService
     ) {}
 
+    nombre(){
+      return this.aut.nombre()
+    }
+
     salir(){
       this.aut.logout()
     }

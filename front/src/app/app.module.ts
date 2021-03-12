@@ -21,14 +21,18 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClientModule } from "@angular/common/http";
 import { SignupComponent } from './componentes/signup/signup.component';
 import { PrincipalComponent } from './componentes/principal/principal.component';
-
+import { ScatterChartComponent } from './componentes/scatter-chart/scatter-chart.component';
+import { ChartsModule } from 'ng2-charts';
+import { ChangepassComponent } from './componentes/changepass/changepass.component';
 @NgModule({
   declarations: [
     AppComponent,
     MainNavComponent,
     SigninComponent,
     SignupComponent,
-    PrincipalComponent
+    PrincipalComponent,
+    ScatterChartComponent,
+    ChangepassComponent
   ],
   imports: [
     BrowserModule,
@@ -48,6 +52,7 @@ import { PrincipalComponent } from './componentes/principal/principal.component'
     MatInputModule,
     NgbModule,
     HttpClientModule,
+    ChartsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

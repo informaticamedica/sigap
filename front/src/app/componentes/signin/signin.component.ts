@@ -49,6 +49,7 @@ export class SigninComponent implements OnInit {
       }).subscribe((res) => {
         localStorage.clear()
         localStorage.setItem('token', res['token']);
+        localStorage.setItem('nombre', res['nombre']);
         // console.log('====================================');
         // console.log(res);
         // console.log('====================================');

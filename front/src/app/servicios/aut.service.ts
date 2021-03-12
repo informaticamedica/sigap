@@ -23,6 +23,9 @@ export class AutService {
   registrar(datos){
     return this.http.post(this.urlApi + "signup",datos)
   }
+  cambiar_contrasenia(datos){
+    return this.http.put(this.urlApi + "signup",datos)
+  }
 
   loggedIn() {
     return !!localStorage.getItem('token');
@@ -34,4 +37,9 @@ export class AutService {
     localStorage.clear()
     this.router.navigate(['/signin']);
   }
+
+  nombre(){
+    return localStorage.getItem('nombre')
+  }
+
 }

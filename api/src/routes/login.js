@@ -15,21 +15,23 @@ router.post('/signin', async (req, res) => {
 
     const { user, pass } = req.body
 
-    const rows = await pool.query('SELECT * FROM usuarios WHERE usuario = ?', [user]);
+    const usuarios = await pool.query('SELECT * FROM usuarios WHERE usuario = ?', [user]);
     console.log('================pool.query(SELECT * FROM====================');
-    console.log(rows,rows[0]);
+    // console.log(rows,rows[0]);
     console.log('===============pool.query(SELECT * FROM=====================');
-    if (rows.length > 0) {
-      const Usuario = rows[0];
+    if (usuarios.length > 0) {
+      const Usuario = usuarios[0];
       const validPassword = await helpers.matchPassword(pass, Usuario.contrasenia)
-      if (validPassword) {
+      if (validPassword && Usuario.activo) {
         
         const token = jwt.sign({id: Usuario.id},"secretkey",{
             expiresIn: 86400 // 24 hrs
         })
-        res.status(200).json({token})
-      } else {
+        res.status(200).json({token,nombre:Usuario.nombre})
+      } else if (!validPassword){
         res.status(406).json({error: "Contraseña incorrecta"})
+      } else if (!Usuario.activo){
+        res.status(406).json({error: "Usuario deshabilitado"})
       }
     } else {
         res.status(406).json({error: "Usuario incorrecto"})
@@ -39,6 +41,30 @@ router.post('/signin', async (req, res) => {
     
 });
 
+router.put('/signup', async (req, res) => {
+    const { user, pass} = req.body
+    contrasenia = await helpers.encryptPassword(pass);
+
+    // Saving in the Database
+    try {
+        //UPDATE `usuarios` SET `activo` = '1' WHERE `usuarios`.`id` = 2
+        const result = await pool.query(' UPDATE usuarios SET activo=0,contrasenia=? WHERE usuario=?', [contrasenia,user]);
+        console.log(req.body,result);
+
+        console.log({contrasenia,user});
+
+        // res.status(200).json({contrasenia,user})
+        res.status(200).json(result)
+    } catch (error) {
+        console.log('============error========================');
+        console.log(error);
+        console.log("error.code",error.code);
+        console.log('============error========================');
+
+        if (error.code=="ER_DUP_ENTRY")
+        res.status(406).json(error)
+    }
+});
 router.post('/signup', async (req, res) => {
     const { user, pass, nombre } = req.body
     contrasenia = await helpers.encryptPassword(pass);
