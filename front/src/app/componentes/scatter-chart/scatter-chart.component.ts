@@ -18,10 +18,10 @@ export class ScatterChartComponent implements OnInit {
     {
       data: [
         { x: 1, y: 1 },
-        { x: 2, y: 3 },
-        { x: 3, y: -2 },
-        { x: 4, y: 4 },
-        { x: 5, y: -3, r: 20 },
+        { x: 50, y: 50 },
+        { x: 100, y: 100 },
+        { x: 1, y: 100 },
+        { x: 100, y: 1 },
       ],
       label: 'Series A',
       pointRadius: 10,
