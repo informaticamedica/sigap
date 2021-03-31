@@ -55,7 +55,8 @@ app.use((req, res, next) => {
 
 // Routes
 app.use(require('./routes/index'));
-app.use("/api",require('./routes/login'));
+app.use("/api/login",require('./routes/login'));
+app.use("/api/datos",require('./routes/datos'));
 // app.use(require('./routes/authentication'));
 // app.use('/links', require('./routes/links'));
 

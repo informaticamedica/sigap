@@ -26,6 +26,17 @@ export class ScatterChartComponent implements OnInit {
       label: 'Series A',
       pointRadius: 10,
     },
+    {
+      data: [
+        { x: 10, y: 10 },
+        { x: 45, y: 45 },
+        { x: 90, y: 90 },
+        { x: 10, y: 100 },
+        { x: 100, y: 25 },
+      ],
+      label: 'Series B',
+      pointRadius: 10,
+    },
   ];
   public scatterChartType: ChartType = 'scatter';
 

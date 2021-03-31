@@ -7,6 +7,7 @@ import { ChangepassComponent } from "./componentes/changepass/changepass.compone
 import { PrincipalComponent } from "./componentes/principal/principal.component"
 
 import { AuthGuard } from './servicios/auth.guard';
+import { GlobalComponent } from './componentes/global/global.component';
 
 const routes: Routes = [
   { path: "", component: SigninComponent },
@@ -15,6 +16,21 @@ const routes: Routes = [
   { path: "changepass", component: ChangepassComponent },
   {
     path: "principal", 
+    component: PrincipalComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: "global", 
+    component: GlobalComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: "anual", 
+    component: PrincipalComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: "mensual", 
     component: PrincipalComponent,
     canActivate: [AuthGuard]
   },
