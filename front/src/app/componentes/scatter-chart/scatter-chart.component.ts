@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { ChartDataSets, ChartType, ChartOptions } from 'chart.js';
 import { Label } from 'ng2-charts';
 
@@ -10,6 +10,14 @@ import { Label } from 'ng2-charts';
 })
 export class ScatterChartComponent implements OnInit {
 
+  @Input() ugl: string; 
+  @Input() eval_global: string; 
+  @Input() eval_asistencial: string; 
+  @Input() eval_facturacion: string; 
+  @Input() data: string; 
+
+
+  
   // scatter
   public scatterChartOptions: ChartOptions = {
     responsive: true,
@@ -43,6 +51,15 @@ export class ScatterChartComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    console.log(this.ugl)
+    console.log(this.eval_global)
+    console.log(this.eval_asistencial)
+    console.log(this.eval_facturacion)
+  }
+  
+  ngOnChanges(){
+    console.log(this.data)
+
   }
 
 }

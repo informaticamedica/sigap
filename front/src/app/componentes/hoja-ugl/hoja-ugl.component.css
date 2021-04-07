@@ -1,0 +1,47 @@
+
+  
+  nav {
+    position: sticky;
+    position: -webkit-sticky;
+    top: 0; /* required */
+
+  }
+  
+  .nav-selections {
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    font: 18px "lato", sans-serif;
+    display: inline-block;
+    text-decoration: none;
+    color: rgb(0, 0, 0);
+    padding: 18px;
+    float: right;
+    margin-left: 50px;
+    transition: 1.5s;
+  }
+  
+  .nav-selections:hover {
+    transition: 1.5s;
+    color: black;
+  }
+  
+  ul {
+    background-color: #fafafa;
+    overflow: auto;
+  }
+  
+  li {
+    list-style-type: none;
+  }
+
+
+  .example-form {
+    min-width: 150px;
+    max-width: 500px;
+    width: 100%;
+  }
+  
+  .example-full-width {
+    width: 100%;
+  }
+  

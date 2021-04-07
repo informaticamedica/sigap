@@ -2,14 +2,31 @@ const express = require('express');
 const router = express.Router();
 
 var XLSX = require('xlsx')
-var workbook = XLSX.readFile(__dirname+'/Dashboard Final.xlsx');
+var workbook = XLSX.readFile(__dirname + '/Dashboard Final.xlsx');
 var sheet_name_list = workbook.SheetNames;
-var xlData = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list.constructor('Datos_Juan')[0]]);
+var xlData = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list.constructor('Datos (2)')[0]]);
 // console.log(sheet_name_list,sheet_name_list['datos']);
 // console.log(__dirname,xlData);
 router.get('/', async (req, res) => {
     // res.send('Api sector datos');
-res.json(xlData)
+    let Data = xlData.map(b => {
+
+        let aux = {}
+        key = Object.keys(b).map(d => d.replace("\n", "").replace("\r", " "))
+        let i = 0
+        for (clave in b) {
+
+            aux[key[i]] = b[clave]
+            i++
+
+        }
+
+
+        return aux
+
+    }
+    )
+    res.json(Data)
 });
 
 module.exports = router;

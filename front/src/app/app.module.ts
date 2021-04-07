@@ -31,6 +31,9 @@ import { LineChartComponent } from './componentes/line-chart/line-chart.componen
 import { DoughnutChartComponent } from './componentes/doughnut-chart/doughnut-chart.component';
 import { RadarChartComponent } from './componentes/radar-chart/radar-chart.component';
 import { PieChartComponent } from './componentes/pie-chart/pie-chart.component';
+import { UglComponent } from './componentes/ugl/ugl.component';
+import { HojaPrestadorComponent } from './componentes/hoja-prestador/hoja-prestador.component';
+import { HojaUglComponent } from './componentes/hoja-ugl/hoja-ugl.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -46,7 +49,10 @@ import { PieChartComponent } from './componentes/pie-chart/pie-chart.component';
     LineChartComponent,
     DoughnutChartComponent,
     RadarChartComponent,
-    PieChartComponent
+    PieChartComponent,
+    UglComponent,
+    HojaPrestadorComponent,
+    HojaUglComponent
   ],
   imports: [
     BrowserModule,
