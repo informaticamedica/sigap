@@ -1,4 +1,17 @@
+<nav>
+    <div>
 
+        <h1>Global por UGL</h1>
+        <autocompletar [placeholder]="['UGL']" [data]="Ugls" (output)="addItem($event)" (clear)="limpiar($event)"></autocompletar>
+
+    </div>
+</nav>
+<br>
+<br>
+<br>
+<br>
+<br>
+<!-- 
 <nav>
     <br>
     <br>
@@ -7,8 +20,8 @@
         <br>
         <h1>Global por UGL</h1>
         <li>
-            UGL
-            <input type="text">
+            
+
             &nbsp; Evaluacion global
             <input type="text">
             &nbsp; Asistencial
@@ -21,25 +34,22 @@
             <p class="nav-selections">Borrar</p>
         </li>
         
-        <!-- <li><a href="#/contact" class="nav-selections" style="margin-right:35px;">Contact</a></li>
+         <li><a href="#/contact" class="nav-selections" style="margin-right:35px;">Contact</a></li>
         <li><a href="#/about" class="nav-selections">About</a></li>
         <li><a href="#/products" class="nav-selections">Products</a></li>
-        <li><a href="#" class="nav-selections">Home</a></li> -->
+        <li><a href="#" class="nav-selections">Home</a></li> 
     </ul>
-</nav>
+</nav> -->
 
 
-<grafico-dispersion
-    [ugl]="['ugl']"
-    [eval_global]="['eval_global']"
-    [eval_asistencial]="['eval_asistencial']"
-    [eval_facturacion]="['eval_facturacion']"
-    [data]="Datos"
->
+<grafico-dispersion [ugl]="ugl_seleccionada" [eval_global]="['eval_global']" [eval_asistencial]="['eval_asistencial']"
+    [eval_facturacion]="['eval_facturacion']" [data]="Datos">
 
 </grafico-dispersion>
 
 
+<grafico-burbuja [ugl]="ugl_seleccionada" [eval_global]="['eval_global']" [eval_asistencial]="['eval_asistencial']"
+    [eval_facturacion]="['eval_facturacion']" [data]="Datos"></grafico-burbuja>
 
 
 

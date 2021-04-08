@@ -1,12 +1,12 @@
-
+  /* 
   
   nav {
     position: sticky;
     position: -webkit-sticky;
-    top: 0; /* required */
-
+    top: 0; 
+    
   }
-  
+
   .nav-selections {
     text-transform: uppercase;
     letter-spacing: 5px;
@@ -32,10 +32,10 @@
   
   li {
     list-style-type: none;
-  }
+  } */
 
 
-  .example-form {
+  /* .example-form {
     min-width: 150px;
     max-width: 500px;
     width: 100%;
@@ -43,5 +43,12 @@
   
   .example-full-width {
     width: 100%;
-  }
-  
+  } */
+  /* .ng-autocomplete {
+    width:100%; */
+    /* max-width: 600px;
+    display: table;
+    margin: 0 auto;
+    position: fixed; 
+    background-color: #fafafa;
+  } */

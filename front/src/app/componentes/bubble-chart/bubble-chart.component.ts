@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ChartDataSets, ChartType, ChartOptions } from 'chart.js';
 @Component({
   selector: 'grafico-burbuja',
@@ -7,6 +7,13 @@ import { ChartDataSets, ChartType, ChartOptions } from 'chart.js';
 })
 export class BubbleChartComponent implements OnInit {
 
+  
+  @Input() ugl: string; 
+  @Input() eval_global: string; 
+  @Input() eval_asistencial: string; 
+  @Input() eval_facturacion: string; 
+  @Input() data: string[]; 
+  
   public bubbleChartOptions: ChartOptions = {
     responsive: true,
   };
@@ -28,6 +35,18 @@ export class BubbleChartComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+  }
+
+  datos
+  sumaFacturacion
+  ngOnChanges(){
+    console.log("this.ugl",this.ugl)
+    
+    this.datos = this.data?.filter(a=>a['UGL']==this.ugl)
+    this.sumaFacturacion = this.datos?.reduce((acc,curr)=>{return acc +curr["Decilo Facturación"]},0)
+    let lala = this.datos?.map(a => {return {x:a["Decilo Facturación"],y:a['Decilo Asistencial']}})
+    console.log(this.datos,this.sumaFacturacion,lala)
+
   }
 
 }

@@ -16,7 +16,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
+import { MatInputModule } from '@angular/material/input';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClientModule } from "@angular/common/http";
 import { SignupComponent } from './componentes/signup/signup.component';
@@ -34,6 +34,15 @@ import { PieChartComponent } from './componentes/pie-chart/pie-chart.component';
 import { UglComponent } from './componentes/ugl/ugl.component';
 import { HojaPrestadorComponent } from './componentes/hoja-prestador/hoja-prestador.component';
 import { HojaUglComponent } from './componentes/hoja-ugl/hoja-ugl.component';
+import { AutocompletarComponent } from './componentes/autocompletar/autocompletar.component';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { AutocompleteLibModule } from 'angular-ng-autocomplete';
+
+import { JwtModule } from "@auth0/angular-jwt";
+export function tokenGetter() {
+  return localStorage.getItem("token");
+}
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -52,7 +61,8 @@ import { HojaUglComponent } from './componentes/hoja-ugl/hoja-ugl.component';
     PieChartComponent,
     UglComponent,
     HojaPrestadorComponent,
-    HojaUglComponent
+    HojaUglComponent,
+    AutocompletarComponent
   ],
   imports: [
     BrowserModule,
@@ -73,6 +83,16 @@ import { HojaUglComponent } from './componentes/hoja-ugl/hoja-ugl.component';
     NgbModule,
     HttpClientModule,
     ChartsModule,
+    MatAutocompleteModule,
+    AutocompleteLibModule,
+    JwtModule.forRoot({
+      config: {
+        tokenGetter: tokenGetter,
+        authScheme:'Bearer ',
+        allowedDomains: ["http://localhost:4000/api/datos"],
+        disallowedRoutes: ["http://example.com/examplebadroute/"],
+      },
+    }),
   ],
   providers: [],
   bootstrap: [AppComponent]

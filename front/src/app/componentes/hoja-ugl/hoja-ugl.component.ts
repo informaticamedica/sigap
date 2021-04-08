@@ -15,6 +15,7 @@ export class HojaUglComponent implements OnInit {
 
   Datos
   Ugls
+  // Prestadores
 
 
   ngOnInit(): void {
@@ -23,6 +24,8 @@ export class HojaUglComponent implements OnInit {
       res => {
         this.Datos = res
         this.Ugls = [... new Set(this.Datos.map(a => a.UGL))]
+        this.Ugls.sort()
+        // this.Prestadores = [... new Set(this.Datos.map(a => a.Prestador))]
         // console.log(this.Datos);
         // console.log(this.Ugls.sort());
         
@@ -31,4 +34,15 @@ export class HojaUglComponent implements OnInit {
 
   }
 
+  ugl_seleccionada = ''
+  addItem(e){
+    this.ugl_seleccionada = e
+    console.log("eeeee",e);
+    
+  }
+  
+  limpiar(e){
+    this.ugl_seleccionada = "Todas"
+    console.log("limpiar",e);
+  }
 }

@@ -10,6 +10,9 @@ const jwt = require("jsonwebtoken")
 router.get('/signin', async (req, res) => {
     res.send('signin');
 });
+router.get('/signin/a',verifyToken, async (req, res) => {
+    res.send('signinSecret');
+});
 
 router.post('/signin', async (req, res) => {
 

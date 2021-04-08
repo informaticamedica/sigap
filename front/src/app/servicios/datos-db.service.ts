@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient,HttpHeaders  } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 @Injectable({
@@ -11,8 +11,24 @@ export class DatosDbService {
     private http: HttpClient
   ) { }
 
+  header = new HttpHeaders().set(
+    "Authorization",
+    "Bearer "+ localStorage.getItem("token")
+  );
+
+  httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json' ,
+      'Authorization': 'Bearer '+ localStorage.getItem("token"),
+      'Accept' : 'application/json'
+    })
+  };
+
   DatosApi(){
-    return this.http.get(this.urlApi )
+    // console.log(localStorage.getItem('token'),this.http.);
+    
+    return this.http.get(this.urlApi, this.httpOptions )
+
   }
 
 }
