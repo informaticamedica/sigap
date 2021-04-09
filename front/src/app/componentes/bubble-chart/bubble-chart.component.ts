@@ -13,6 +13,7 @@ export class BubbleChartComponent implements OnInit {
   @Input() eval_asistencial: string; 
   @Input() eval_facturacion: string; 
   @Input() data: ChartDataSets[]; 
+  @Input() backgroundColor: []; 
   
   public bubbleChartOptions: ChartOptions = {
     responsive: true,

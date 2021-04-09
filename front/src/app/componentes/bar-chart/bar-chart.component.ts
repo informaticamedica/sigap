@@ -13,6 +13,7 @@ export class BarChartComponent implements OnInit {
   @Input() ugl: string
   @Input() filtro: string
   @Input() barChartData1: []
+  @Input() backgroundColor: []
 
   public barChartOptions = {
     scaleShowVerticalLines: false,
@@ -57,9 +58,16 @@ export class BarChartComponent implements OnInit {
     if (this.data != undefined) {
 
       // this.barChartData = [{data:this.data,label:this.filtro}]
+
+
+      for (let index = 0; index < this.data.length; index++) {
+
+        this.data[index]["backgroundColor"] = this.backgroundColor[index]
+        
+      }
       this.barChartData = this.data
       this.barChartLabels = this.label
-      // console.log("22222222222",this.data,this.label);
+      console.log("22222222222",this.data,this.label);
 
     }
     // console.log("this.bubbleChartData",this.bubbleChartData,this.data)

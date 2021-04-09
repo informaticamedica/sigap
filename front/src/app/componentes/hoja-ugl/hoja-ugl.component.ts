@@ -8,8 +8,14 @@ import { DatosDbService } from '../../servicios/datos-db.service'
   styleUrls: ['./hoja-ugl.component.css']
 })
 export class HojaUglComponent implements OnInit {
-
+  EvalAsis = 0;
+  EvalFact = 0;
+  EvalGlob = 0;
+  CompAsis = ""
+  CompFact = ""
+  CompGlob = ""
   DatosRankingDeciloUglTotal: any;
+  DatosDispersionUgl1: any;
 
   constructor(
     private datos: DatosDbService
@@ -35,6 +41,7 @@ export class HojaUglComponent implements OnInit {
         // console.log(this.Ugls.sort());
 
         this.CalculoDispersionUgl()
+        this.DatosDispersionUgl1 = this.DatosDispersionUgl
 
         this.DatosRankingDeciloUgl["Decilo Global"] = { Data: [], Label: [] }
         this.DatosRankingDeciloUgl["Decilo Facturación"] = { Data: [], Label: [] }
@@ -70,7 +77,7 @@ export class HojaUglComponent implements OnInit {
     // console.log("eeeee", e);
 
 
-    this.DatosDispersionUgl = this.DatosDispersionUgl.filter(a => a.label == e)
+    this.DatosDispersionUgl1 = this.DatosDispersionUgl.filter(a => a.label == e)
 
     let object = this.DatosRankingDeciloUgl
     var aux = {}
@@ -119,8 +126,8 @@ export class HojaUglComponent implements OnInit {
         if (!(aux.filter(b => b['label'] == key).length > 0)) {
           aux.push({
             data: [{
-              x: (fact / count).toFixed(2),
-              y: (asis / count).toFixed(2),
+              x: (asis / count).toFixed(2),
+              y: (fact / count).toFixed(2),
               r: count
             }], label: key
           })
@@ -149,8 +156,17 @@ export class HojaUglComponent implements OnInit {
     // );
     // console.log("DatosDispersionUgl", aux, this.Datos);
 
-    this.DatosDispersionUgl = aux.slice()
-    // console.log("this.DatosDispersionUgl",this.DatosDispersionUgl);
+    this.DatosDispersionUgl = aux.slice().sort(function (a, b) {
+      if (a.label > b.label) {
+        return 1;
+      }
+      if (a.label < b.label) {
+        return -1;
+      }
+      // a must be equal to b
+      return 0;
+    })
+    console.log("this.DatosDispersionUgl",this.DatosDispersionUgl);
 
 
 
@@ -248,10 +264,52 @@ export class HojaUglComponent implements OnInit {
 
   limpiar(e) {
     this.CalculoDispersionUgl()
+    this.DatosDispersionUgl1 = this.DatosDispersionUgl
     this.CalculoRankingDeciloUgl("Decilo Global")
     this.CalculoRankingDeciloUgl("Decilo Facturación")
     this.CalculoRankingDeciloUgl("Decilo Asistencial")
     this.CalculoRankingDeciloUglTotal()
     // console.log("limpiar", e);
+  }
+
+  ngOnChanges(){
+    
+  }
+  cambiaLado(e){
+    console.log("EvalAsis",this.EvalAsis);
+    console.log("EvalFact",this.EvalFact);
+    console.log("EvalGlob",this.EvalGlob);
+    console.log("CompAsis",this.CompAsis);
+    console.log("CompFact",this.CompFact);
+    console.log("CompGlob",this.CompGlob);
+    console.log("e",e);
+
+    // this.DatosDispersionUgl = this.DatosDispersionUgl.filter(a => a.label == e)
+
+    let comparar = (a,comp,b)=>{
+
+      switch (comp) {
+        case "=":
+          return a == b
+          break;
+        case ">":
+          return a > b
+          break;
+        case "<":
+          return a < b
+          break;
+      
+        default:
+          break;
+      }
+
+
+    }
+    
+    this.DatosDispersionUgl1 =this.DatosDispersionUgl.filter(a=>comparar (parseFloat(a.data[0].x),this.CompAsis,this.EvalAsis)).filter(a=>comparar (parseFloat(a.data[0].y),this.CompFact,this.EvalFact))
+    
+    console.log("this.DatosDispersionUgl",this.DatosDispersionUgl.filter(a=>comparar (parseFloat(a.data[0].x),this.CompAsis,this.EvalAsis)));
+    
+    console.log("222222222this.DatosDispersionUgl",this.DatosDispersionUgl.filter(a=>comparar (parseFloat(a.data[0].x),this.CompAsis,this.EvalAsis)).filter(a=>comparar (parseFloat(a.data[0].y),this.CompFact,this.EvalFact)));
   }
 }
