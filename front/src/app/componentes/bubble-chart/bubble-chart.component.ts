@@ -12,10 +12,24 @@ export class BubbleChartComponent implements OnInit {
   @Input() eval_global: string; 
   @Input() eval_asistencial: string; 
   @Input() eval_facturacion: string; 
-  @Input() data: string[]; 
+  @Input() data: ChartDataSets[]; 
   
   public bubbleChartOptions: ChartOptions = {
     responsive: true,
+    scales: {
+      xAxes: [{
+        ticks: {
+          min : 0,
+          max : 10
+        }
+      }],
+      yAxes: [{
+        ticks: {
+          min : 0,
+          max : 10
+        }
+      }]
+    }
   };
 
   public bubbleChartData: ChartDataSets[] = [
@@ -35,17 +49,26 @@ export class BubbleChartComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+
   }
 
   datos
   sumaFacturacion
   ngOnChanges(){
-    console.log("this.ugl",this.ugl)
     
-    this.datos = this.data?.filter(a=>a['UGL']==this.ugl)
-    this.sumaFacturacion = this.datos?.reduce((acc,curr)=>{return acc +curr["Decilo Facturación"]},0)
-    let lala = this.datos?.map(a => {return {x:a["Decilo Facturación"],y:a['Decilo Asistencial']}})
-    console.log(this.datos,this.sumaFacturacion,lala)
+    if (this.data != undefined) {
+      
+      this.bubbleChartData = this.data
+    }
+    // console.log("this.bubbleChartData",this.bubbleChartData,this.data)
+
+    
+    // this.datos = this.data?.filter(a=>a['UGL']==this.ugl)
+    // this.sumaFacturacion = this.datos?.reduce((acc,curr)=>{return acc +curr["Decilo Facturación"]},0)
+    // let lala = this.datos?.map(a => {return {x:a["Decilo Facturación"],y:a['Decilo Asistencial']}})
+    // console.log(this.datos,this.sumaFacturacion,lala)
+
+
 
   }
 

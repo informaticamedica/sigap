@@ -9,6 +9,8 @@ import { DatosDbService } from '../../servicios/datos-db.service'
 })
 export class HojaUglComponent implements OnInit {
 
+  DatosRankingDeciloUglTotal: any;
+
   constructor(
     private datos: DatosDbService
   ) { }
@@ -17,7 +19,8 @@ export class HojaUglComponent implements OnInit {
   Ugls
   // Prestadores
 
-
+  dataGlobal
+  labelGlobal
   ngOnInit(): void {
 
     this.datos.DatosApi().subscribe(
@@ -25,24 +28,230 @@ export class HojaUglComponent implements OnInit {
         this.Datos = res
         this.Ugls = [... new Set(this.Datos.map(a => a.UGL))]
         this.Ugls.sort()
+
+
         // this.Prestadores = [... new Set(this.Datos.map(a => a.Prestador))]
         // console.log(this.Datos);
         // console.log(this.Ugls.sort());
+
+        this.CalculoDispersionUgl()
+
+        this.DatosRankingDeciloUgl["Decilo Global"] = { Data: [], Label: [] }
+        this.DatosRankingDeciloUgl["Decilo Facturación"] = { Data: [], Label: [] }
+        this.DatosRankingDeciloUgl["Decilo Asistencial"] = { Data: [], Label: [] }
         
+        this.CalculoRankingDeciloUgl("Decilo Global")
+        this.CalculoRankingDeciloUgl("Decilo Facturación")
+        this.CalculoRankingDeciloUgl("Decilo Asistencial")
+
+        this.CalculoRankingDeciloUglTotal()
+
+
+
+        // console.log(this.DatosRankingDeciloUgl);
+
+
+        // let { Data, Label} = this.CalculoRankingDeciloUgl("Decilo Global")
+        // this.DatosRankingDeciloUgl["Decilo Global"]["Data"] = Data
+        // this.DatosRankingDeciloUgl["Decilo Global"]["Label"] = Label
+        // console.log("this.DatosRankingDeciloUgl", this.DatosRankingDeciloUgl);
+
+        // this.dataGlobal = this.DatosRankingDeciloUgl["Decilo Global"]['Data']
+        // this.labelGlobal = this.DatosRankingDeciloUgl["Decilo Global"]['Label']
       }
     )
+    // this.DatosDispersionUgl()
 
   }
 
   ugl_seleccionada = ''
-  addItem(e){
+  addItem(e) {
     this.ugl_seleccionada = e
-    console.log("eeeee",e);
-    
+    // console.log("eeeee", e);
+
+
+    this.DatosDispersionUgl = this.DatosDispersionUgl.filter(a => a.label == e)
+
+    let object = this.DatosRankingDeciloUgl
+    var aux = {}
+    for (const key in object) {
+      if (Object.prototype.hasOwnProperty.call(object, key)) {
+        const element = object[key];
+
+        let index = element.Label.indexOf(e)
+        // console.log("element", element, e, index, element.Data[0].data[index]);
+        // console.log("key", key);
+
+        aux[key] = { Data: [], Label: [] }
+        aux[key]['Data'] = [{
+          data: [element.Data[0].data[index]],
+          label: key
+        }]
+        aux[key]['Label'] = [key]
+
+
+      }
+    }
+    this.DatosRankingDeciloUgl = aux
+    this.CalculoRankingDeciloUglTotal()
+    // console.log("aux", aux);
+
+
+
+
   }
-  
-  limpiar(e){
-    this.ugl_seleccionada = "Todas"
-    console.log("limpiar",e);
+
+  DatosDispersionUgl
+  CalculoDispersionUgl() {
+
+    let aux = []
+    if (this.Datos != undefined) {
+
+      for (let index = 0; index < this.Datos.length; index++) {
+        const element = this.Datos[index];
+        const key = element['UGL']
+
+
+        const count = this.Datos?.filter(a => a.UGL == key).length
+        const fact = this.Datos?.filter(a => a.UGL == key).reduce((acc, curr) => acc + curr["Decilo Facturación"], 0)
+        const asis = this.Datos?.filter(a => a.UGL == key).reduce((acc, curr) => acc + curr["Decilo Asistencial"], 0)
+
+        if (!(aux.filter(b => b['label'] == key).length > 0)) {
+          aux.push({
+            data: [{
+              x: (fact / count).toFixed(2),
+              y: (asis / count).toFixed(2),
+              r: count
+            }], label: key
+          })
+        }
+
+
+      }
+    }
+
+
+    // console.log("DatosDispersionUgl - formato",
+    //   [
+    //     {
+    //       data: [
+    //         { x: 1, y: 1, r: 10 }
+    //       ],
+    //       label: 'UGL 1',
+    //     },
+    //     {
+    //       data: [
+    //         { x: 3, y: 5, r: 22 }
+    //       ],
+    //       label: 'UGL 2',
+    //     },
+    //   ]
+    // );
+    // console.log("DatosDispersionUgl", aux, this.Datos);
+
+    this.DatosDispersionUgl = aux.slice()
+    // console.log("this.DatosDispersionUgl",this.DatosDispersionUgl);
+
+
+
+  }
+
+  DatosRankingDeciloUgl = {}
+  CalculoRankingDeciloUgl(Decilo) {
+
+
+    let Label = []
+    let Data = []
+    if (this.Datos != undefined) {
+      for (let index = 0; index < this.Datos.length; index++) {
+        const element = this.Datos[index];
+        const key = element['UGL']
+
+
+        const count = this.Datos?.filter(a => a.UGL == key).length
+        const global = this.Datos?.filter(a => a.UGL == key).reduce((acc, curr) => acc + curr[Decilo], 0)
+
+
+        if (!(Label.filter(b => b == key).length > 0)) {
+          Label.push(key)
+          Data.push((global / count).toFixed(2))
+        }
+
+
+        // if (!(aux.filter(b => b['Label'] == key).length > 0)) {
+        //   aux.push({
+        //     Label: key,
+        //     Data: {
+        //       data: [(global / count).toFixed(2)],
+        //       label: Decilo
+        //     }
+        //   })
+        // }
+
+
+      }
+
+      // for (let index = 0; index < this.Datos.length; index++) {
+      //   const element = this.Datos[index];
+      //   const key = element['UGL']
+
+      //   const count = this.Datos?.filter(a => a.UGL == key).length
+      //   const global = this.Datos?.filter(a => a.UGL == key).reduce((acc, curr) => acc + curr[Decilo], 0)
+
+      // }
+    }
+
+
+    // console.log("DatosDispersionUgl - formato",
+    //   [
+    //     {
+    //       data: [
+    //         { x: 1, y: 1, r: 10 }
+    //       ],
+    //       label: 'UGL 1',
+    //     },
+    //     {
+    //       data: [
+    //         { x: 3, y: 5, r: 22 }
+    //       ],
+    //       label: 'UGL 2',
+    //     },
+    //   ]
+    // );
+    // console.log("DatosDispersionUgl", aux, this.Datos);
+
+    // this.DatosRankingDeciloUgl[Decilo] = { Data, Label}
+
+    // console.log("this.DatosRankingDeciloUgl[" + Decilo + "]", this.DatosRankingDeciloUgl[Decilo]);
+    // this.dataGlobal = Data
+    // this.labelGlobal = Label
+
+    // this.DatosRankingDeciloUgl[Decilo]['Data'] = Data //[{data:this.data,label:this.filtro}]
+    this.DatosRankingDeciloUgl[Decilo]['Data'] = [{ data: Data, label: Decilo }]
+    this.DatosRankingDeciloUgl[Decilo]['Label'] = Label
+
+    // return {Label , Data}
+
+  }
+
+  CalculoRankingDeciloUglTotal(){
+    this.DatosRankingDeciloUglTotal = { Data: [], Label: [] }
+    this.DatosRankingDeciloUglTotal['Label'] = this.DatosRankingDeciloUgl["Decilo Global"]['Label']
+    this.DatosRankingDeciloUglTotal['Data'].push(
+      this.DatosRankingDeciloUgl["Decilo Global"]['Data'][0])
+    this.DatosRankingDeciloUglTotal['Data'].push(
+      this.DatosRankingDeciloUgl["Decilo Facturación"]['Data'][0])
+    this.DatosRankingDeciloUglTotal['Data'].push(
+      this.DatosRankingDeciloUgl["Decilo Asistencial"]['Data'][0])
+  }
+
+
+  limpiar(e) {
+    this.CalculoDispersionUgl()
+    this.CalculoRankingDeciloUgl("Decilo Global")
+    this.CalculoRankingDeciloUgl("Decilo Facturación")
+    this.CalculoRankingDeciloUgl("Decilo Asistencial")
+    this.CalculoRankingDeciloUglTotal()
+    // console.log("limpiar", e);
   }
 }

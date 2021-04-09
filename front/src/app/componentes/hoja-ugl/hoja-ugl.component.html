@@ -2,7 +2,27 @@
     <div>
 
         <h1>Global por UGL</h1>
-        <autocompletar [placeholder]="['UGL']" [data]="Ugls" (output)="addItem($event)" (clear)="limpiar($event)"></autocompletar>
+        <autocompletar 
+        [placeholder]="['UGL']" 
+        [data]="Ugls" 
+        (output)="addItem($event)" 
+        (clear)="limpiar($event)"
+        ></autocompletar>
+
+        <mat-form-field appearance="fill">
+            <mat-label>Comparador</mat-label>
+            <mat-select >
+              <mat-option value="1">=</mat-option>
+              <mat-option value="2">></mat-option>
+              <mat-option value="3"><</mat-option>
+            </mat-select>
+          </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>
+                Evaluacion global
+            </mat-label>
+            <input matInput placeholder="Ex. Pizza" value="Sushi">
+          </mat-form-field>
 
     </div>
 </nav>
@@ -42,17 +62,45 @@
 </nav> -->
 
 
-<grafico-dispersion [ugl]="ugl_seleccionada" [eval_global]="['eval_global']" [eval_asistencial]="['eval_asistencial']"
-    [eval_facturacion]="['eval_facturacion']" [data]="Datos">
 
-</grafico-dispersion>
+<grafico-burbuja 
+[ugl]="ugl_seleccionada" 
+[data]="DatosDispersionUgl"
+></grafico-burbuja>
 
 
-<grafico-burbuja [ugl]="ugl_seleccionada" [eval_global]="['eval_global']" [eval_asistencial]="['eval_asistencial']"
+
+<grafico-barra
+[type]="'horizontalBar'"
+[data]='DatosRankingDeciloUgl["Decilo Global"]?.Data'
+[label]='DatosRankingDeciloUgl["Decilo Global"]?.Label'
+[filtro]="'Decilo Global'"
+></grafico-barra>
+
+<grafico-barra
+[type]="'horizontalBar'"
+[data]='DatosRankingDeciloUgl["Decilo Facturación"]?.Data'
+[label]='DatosRankingDeciloUgl["Decilo Facturación"]?.Label'
+[filtro]="'Decilo Facturación'"
+></grafico-barra>
+
+<grafico-barra
+[type]="'horizontalBar'"
+[data]='DatosRankingDeciloUgl["Decilo Asistencial"]?.Data'
+[label]='DatosRankingDeciloUgl["Decilo Asistencial"]?.Label'
+[filtro]="'Decilo Asistencial'"
+></grafico-barra>
+
+<grafico-barra
+[type]="'horizontalBar'"
+[data]='DatosRankingDeciloUglTotal?.Data'
+[label]='DatosRankingDeciloUglTotal?.Label'
+[filtro]="'Decilo Asistencial'"
+></grafico-barra>
+
+<!-- <grafico-burbuja [ugl]="ugl_seleccionada" [eval_global]="['eval_global']" [eval_asistencial]="['eval_asistencial']"
     [eval_facturacion]="['eval_facturacion']" [data]="Datos"></grafico-burbuja>
-
-
-
+-->
 <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis dolores accusamus facilis ad illum quidem
     tempore odio eos reprehenderit iure. Vero architecto, facere cupiditate odio iure in atque minima vel.</p>
 <p>Enim cupiditate repellendus, voluptatibus at aspernatur fugiat animi rerum numquam assumenda vero deleniti alias

@@ -68,27 +68,27 @@ export class ScatterChartComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    console.log(this.eval_global)
-    console.log(this.eval_asistencial)
-    console.log(this.eval_facturacion)
+    // console.log(this.eval_global)
+    // console.log(this.eval_asistencial)
+    // console.log(this.eval_facturacion)
     let lala = this.datos?.map(a => { return { x: a["Decilo Facturación"], y: a['Decilo Asistencial'] } })
     if (lala != undefined) {
 
-      this.scatterChartData = [{
-        data: lala?.slice(),
-        label: 'Prestadores',
-        pointRadius: 10,
+      // this.scatterChartData = [{
+      //   data: lala?.slice(),
+      //   label: 'Prestadores',
+      //   pointRadius: 10,
         
 
-      }]
+      // }]
 
 
     }
   }
   datos
   ngOnChanges() {
-    console.log("xxxxxxx this.dataxxxxxxxxx",  this.data)
-    console.log("this.ugl", this.ugl,this.ugl == '')
+    // console.log("xxxxxxx this.dataxxxxxxxxx",  this.data)
+    // console.log("this.ugl", this.ugl,this.ugl == '')
 
     if (this.ugl == "Todas" || this.ugl == '') {
       this.datos = this.data
@@ -97,22 +97,22 @@ export class ScatterChartComponent implements OnInit {
     
     this.sumaFacturacion = this.datos?.reduce((acc, curr) => { return acc + curr["Decilo Facturación"] }, 0)
     let lala = this.datos?.map(a => { return { x: a["Decilo Facturación"], y: a['Decilo Asistencial'] } })
-    console.log("alalalala",lala);
+    // console.log("alalalala",lala);
     
     if (lala != undefined) {
 
-      this.scatterChartData = [{
-        data: lala?.slice(),
-        label:  this.ugl,
-        pointRadius: 10,
+      // this.scatterChartData = [{
+      //   data: lala?.slice(),
+      //   label:  this.ugl,
+      //   pointRadius: 10,
 
-      }]
+      // }]
 
 
     }
     // this.scatterChartData.
     // this.scatterChartData[0]['data']=lala?.slice()
-    console.log("aaaaaaaaaaaaaa", lala, this.scatterChartData, this.scatterChartData[0]['data'])
+    // console.log("aaaaaaaaaaaaaa", lala, this.scatterChartData, this.scatterChartData[0]['data'])
 
   }
 

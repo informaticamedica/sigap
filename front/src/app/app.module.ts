@@ -37,7 +37,7 @@ import { HojaUglComponent } from './componentes/hoja-ugl/hoja-ugl.component';
 import { AutocompletarComponent } from './componentes/autocompletar/autocompletar.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { AutocompleteLibModule } from 'angular-ng-autocomplete';
-
+import {MatSelectModule} from '@angular/material/select';
 import { JwtModule } from "@auth0/angular-jwt";
 export function tokenGetter() {
   return localStorage.getItem("token");
@@ -93,6 +93,7 @@ export function tokenGetter() {
         disallowedRoutes: ["http://example.com/examplebadroute/"],
       },
     }),
+    MatSelectModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
