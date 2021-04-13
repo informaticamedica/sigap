@@ -9,7 +9,8 @@ import { Router } from '@angular/router';
 export class AutService {
 
 
-  private urlApi = "http://localhost:4000/api/login/"
+  private urlApi = "http://10.0.74.204:4000/api/login/"
+  // private urlApi = "http://localhost:4000/api/login/"
   // private urlApi = "http://169.254.108.115:4000/api/login/"
   // private urlApi = "http://192.168.0.150:4000/api/login/"
 

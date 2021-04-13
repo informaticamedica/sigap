@@ -6,7 +6,8 @@ import { Injectable } from '@angular/core';
 })
 export class DatosDbService {
   // private urlApi = "http://192.168.0.150:4000/api/datos/"
-  private urlApi = "http://localhost:4000/api/datos/"
+  // private urlApi = "http://localhost:4000/api/datos/"
+  private urlApi = "http://10.0.74.204:4000/api/datos/"
   constructor(
     private http: HttpClient
   ) { }

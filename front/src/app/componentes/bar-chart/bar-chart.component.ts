@@ -67,7 +67,7 @@ export class BarChartComponent implements OnInit {
       }
       this.barChartData = this.data
       this.barChartLabels = this.label
-      console.log("22222222222",this.data,this.label);
+      // console.log("22222222222",this.data,this.label);
 
     }
     // console.log("this.bubbleChartData",this.bubbleChartData,this.data)

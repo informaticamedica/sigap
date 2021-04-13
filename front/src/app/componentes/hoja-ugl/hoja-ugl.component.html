@@ -38,7 +38,7 @@
             <div class="col">
     
                 <mat-form-field appearance="fill">
-                    <mat-label>Comparador Facturacion</mat-label>
+                    <mat-label>Comparador Administrativo</mat-label>
                     <mat-select [(ngModel)]="CompFact" (ngModelChange)="cambiaLado($event)">
                         <mat-option value="=">=</mat-option>
                         <mat-option value=">">></mat-option>
@@ -48,7 +48,7 @@
                 </mat-form-field>
                 <mat-form-field appearance="fill">
                     <mat-label>
-                        Facturacion
+                        Administrativo
                     </mat-label>
                     <input matInput type="number" [(ngModel)]="EvalFact" (ngModelChange)="cambiaLado($event)">
                     <button mat-button *ngIf="EvalFact" matSuffix mat-icon-button aria-label="Clear" (click)="EvalFact=0">
@@ -124,7 +124,9 @@
 [data]="DatosDispersionUgl1"
 ></grafico-burbuja>
 
-
+<br>
+<br>
+<br>
 
 <grafico-barra
 [type]="'horizontalBar'"
@@ -138,7 +140,7 @@
 [type]="'horizontalBar'"
 [data]='DatosRankingDeciloUgl["Decilo Facturación"]?.Data'
 [label]='DatosRankingDeciloUgl["Decilo Facturación"]?.Label'
-[filtro]="'Decilo Facturación'"
+[filtro]="'Decilo Administrativo'"
 [backgroundColor]="['#b2ffff']"
 ></grafico-barra>
 

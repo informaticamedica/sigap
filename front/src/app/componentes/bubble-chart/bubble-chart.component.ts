@@ -7,27 +7,43 @@ import { ChartDataSets, ChartType, ChartOptions } from 'chart.js';
 })
 export class BubbleChartComponent implements OnInit {
 
-  
-  @Input() ugl: string; 
-  @Input() eval_global: string; 
-  @Input() eval_asistencial: string; 
-  @Input() eval_facturacion: string; 
-  @Input() data: ChartDataSets[]; 
-  @Input() backgroundColor: []; 
-  
+
+  @Input() ugl: string;
+  @Input() eval_global: string;
+  @Input() eval_asistencial: string;
+  @Input() eval_facturacion: string;
+  @Input() data: ChartDataSets[];
+  @Input() backgroundColor: [];
+
   public bubbleChartOptions: ChartOptions = {
     responsive: true,
+    legend: { display: false },
+    tooltips:{
+      callbacks:{
+        label: (t,d) => {
+          
+           let rLabel = d.datasets[t.datasetIndex].data[t.index]["r"]
+
+          return d.datasets[t.datasetIndex].label + ": (Asistencial: "+t.xLabel+", Administrativo: " + t.yLabel +", Cantidad prestadores: " +rLabel +" )" } 
+      }
+    },
     scales: {
       xAxes: [{
         ticks: {
-          min : 0,
-          max : 10
+          min: 0,
+          max: 10
+        }, scaleLabel: {
+          labelString: "Decilo Asistencial",
+          display: true
         }
       }],
       yAxes: [{
         ticks: {
-          min : 0,
-          max : 10
+          min: 0,
+          max: 10
+        }, scaleLabel: {
+          labelString: "Decilo Administrativo",
+          display: true
         }
       }]
     }
@@ -55,15 +71,15 @@ export class BubbleChartComponent implements OnInit {
 
   datos
   sumaFacturacion
-  ngOnChanges(){
-    
+  ngOnChanges() {
+
     if (this.data != undefined) {
-      
+
       this.bubbleChartData = this.data
     }
     // console.log("this.bubbleChartData",this.bubbleChartData,this.data)
 
-    
+
     // this.datos = this.data?.filter(a=>a['UGL']==this.ugl)
     // this.sumaFacturacion = this.datos?.reduce((acc,curr)=>{return acc +curr["Decilo Facturación"]},0)
     // let lala = this.datos?.map(a => {return {x:a["Decilo Facturación"],y:a['Decilo Asistencial']}})

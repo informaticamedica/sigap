@@ -48,6 +48,7 @@ export class HojaUglComponent implements OnInit {
         this.DatosRankingDeciloUgl["Decilo Asistencial"] = { Data: [], Label: [] }
         
         this.CalculoRankingDeciloUgl("Decilo Global")
+
         this.CalculoRankingDeciloUgl("Decilo Facturación")
         this.CalculoRankingDeciloUgl("Decilo Asistencial")
 
@@ -193,6 +194,28 @@ export class HojaUglComponent implements OnInit {
           Data.push((global / count).toFixed(2))
         }
 
+        
+
+        // let aux = {}
+
+        let aux2 =[]
+        
+        for (let index = 0; index < Label.length; index++) {
+          const element = Label[index];
+
+          // aux[element] = parseFloat( Data[index])
+
+          aux2.push({ugl:element,decilo:parseFloat(Data[index])})
+          
+        }
+        Label = aux2.sort( (a,b) => a.decilo - b.decilo ).map( a=> a.ugl)
+        Data = aux2.sort( (a,b) => a.decilo - b.decilo ).map( a=> a.decilo)
+
+        
+        
+        
+// console.log(aux2);
+
 
         // if (!(aux.filter(b => b['Label'] == key).length > 0)) {
         //   aux.push({
@@ -276,13 +299,13 @@ export class HojaUglComponent implements OnInit {
     
   }
   cambiaLado(e){
-    console.log("EvalAsis",this.EvalAsis);
-    console.log("EvalFact",this.EvalFact);
-    console.log("EvalGlob",this.EvalGlob);
-    console.log("CompAsis",this.CompAsis);
-    console.log("CompFact",this.CompFact);
-    console.log("CompGlob",this.CompGlob);
-    console.log("e",e);
+    // console.log("EvalAsis",this.EvalAsis);
+    // console.log("EvalFact",this.EvalFact);
+    // console.log("EvalGlob",this.EvalGlob);
+    // console.log("CompAsis",this.CompAsis);
+    // console.log("CompFact",this.CompFact);
+    // console.log("CompGlob",this.CompGlob);
+    // console.log("e",e);
 
     // this.DatosDispersionUgl = this.DatosDispersionUgl.filter(a => a.label == e)
 
@@ -308,8 +331,8 @@ export class HojaUglComponent implements OnInit {
     
     this.DatosDispersionUgl1 =this.DatosDispersionUgl.filter(a=>comparar (parseFloat(a.data[0].x),this.CompAsis,this.EvalAsis)).filter(a=>comparar (parseFloat(a.data[0].y),this.CompFact,this.EvalFact))
     
-    console.log("this.DatosDispersionUgl",this.DatosDispersionUgl.filter(a=>comparar (parseFloat(a.data[0].x),this.CompAsis,this.EvalAsis)));
+    // console.log("this.DatosDispersionUgl",this.DatosDispersionUgl.filter(a=>comparar (parseFloat(a.data[0].x),this.CompAsis,this.EvalAsis)));
     
-    console.log("222222222this.DatosDispersionUgl",this.DatosDispersionUgl.filter(a=>comparar (parseFloat(a.data[0].x),this.CompAsis,this.EvalAsis)).filter(a=>comparar (parseFloat(a.data[0].y),this.CompFact,this.EvalFact)));
+    // console.log("222222222this.DatosDispersionUgl",this.DatosDispersionUgl.filter(a=>comparar (parseFloat(a.data[0].x),this.CompAsis,this.EvalAsis)).filter(a=>comparar (parseFloat(a.data[0].y),this.CompFact,this.EvalFact)));
   }
 }
