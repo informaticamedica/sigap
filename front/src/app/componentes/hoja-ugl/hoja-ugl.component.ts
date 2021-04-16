@@ -167,7 +167,7 @@ export class HojaUglComponent implements OnInit {
       // a must be equal to b
       return 0;
     })
-    console.log("this.DatosDispersionUgl",this.DatosDispersionUgl);
+    // console.log("this.DatosDispersionUgl",this.DatosDispersionUgl);
 
 
 

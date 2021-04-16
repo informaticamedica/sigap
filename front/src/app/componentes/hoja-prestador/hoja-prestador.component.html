@@ -4,18 +4,18 @@
         <div class="container">
             
             
-            <h1>Global por UGL</h1>
+            <h1>Global por Prestador</h1>
             <autocompletar 
             [placeholder]="['UGL']" 
             [data]="Ugls" 
-            (output)="addItem($event)" 
-            (clear)="limpiar($event)"
+            (output)="addItem($event,'UGL')" 
+            (clear)="limpiar($event,'UGL')"
             ></autocompletar>
             <autocompletar 
             [placeholder]="['Prestador']" 
             [data]="Prestadores" 
-            (output)="addItem($event)" 
-            (clear)="limpiar($event)"
+            (output)="addItem($event,'Prestador')" 
+            (clear)="limpiar($event,'Prestador')"
             ></autocompletar>
         </div>
         <div class="row" style="padding-left: 5%;padding-top: 1%;">
@@ -93,14 +93,18 @@
 
 
 <grafico-burbuja 
+[ugl]="prestador_seleccionado" 
+[data]="DatosDispersionPrestador"
+></grafico-burbuja>
+<!-- <grafico-burbuja 
 [ugl]="ugl_seleccionada" 
 [data]="DatosDispersionUgl1"
-></grafico-burbuja>
+></grafico-burbuja> -->
 
 <br>
 <br>
 <br>
-
+<!-- 
 <grafico-barra
 [type]="'horizontalBar'"
 [data]='DatosRankingDeciloUgl["Decilo Global"]?.Data'
@@ -131,40 +135,39 @@
 [label]='DatosRankingDeciloUglTotal?.Label'
 [filtro]="'Decilo Total'"
 [backgroundColor]="['#ffd9b2','#b2ffff','#ffb2d9']"
-></grafico-barra>
+></grafico-barra> -->
 
 
 //// nuevos  ////
 
-<!-- 
 <grafico-barra
 [type]="'horizontalBar'"
-[data]='DatosRankingDecilo["UGL"]["Decilo Global"]?.Data'
-[label]='DatosRankingDecilo["UGL"]["Decilo Global"]?.Label'
+[data]='DatosRankingDecilo["Prestador"]["Decilo Global"]?.Data'
+[label]='DatosRankingDecilo["Prestador"]["Decilo Global"]?.Label'
 [filtro]="'Decilo Global'"
 [backgroundColor]="['#ffd9b2']"
 ></grafico-barra>
 
 <grafico-barra
 [type]="'horizontalBar'"
-[data]='DatosRankingDecilo["UGL"]["Decilo Facturación"]?.Data'
-[label]='DatosRankingDecilo["UGL"]["Decilo Facturación"]?.Label'
+[data]='DatosRankingDecilo["Prestador"]["Decilo Facturación"]?.Data'
+[label]='DatosRankingDecilo["Prestador"]["Decilo Facturación"]?.Label'
 [filtro]="'Decilo Administrativo'"
 [backgroundColor]="['#b2ffff']"
 ></grafico-barra>
 
 <grafico-barra
 [type]="'horizontalBar'"
-[data]='DatosRankingDecilo["UGL"]["Decilo Asistencial"]?.Data'
-[label]='DatosRankingDecilo["UGL"]["Decilo Asistencial"]?.Label'
+[data]='DatosRankingDecilo["Prestador"]["Decilo Asistencial"]?.Data'
+[label]='DatosRankingDecilo["Prestador"]["Decilo Asistencial"]?.Label'
 [filtro]="'Decilo Asistencial'"
 [backgroundColor]="['#ffb2d9']"
 ></grafico-barra>
 
 <grafico-barra
 [type]="'horizontalBar'"
-[data]='DatosRankingDeciloTotal["UGL"]?.Data'
-[label]='DatosRankingDeciloTotal["UGL"]?.Label'
+[data]='DatosRankingDeciloTotal["Prestador"]?.Data'
+[label]='DatosRankingDeciloTotal["Prestador"]?.Label'
 [filtro]="'Decilo Total'"
 [backgroundColor]="['#ffd9b2','#b2ffff','#ffb2d9']"
-></grafico-barra> -->
+></grafico-barra> 
