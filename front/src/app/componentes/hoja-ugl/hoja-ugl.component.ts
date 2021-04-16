@@ -295,9 +295,7 @@ export class HojaUglComponent implements OnInit {
     // console.log("limpiar", e);
   }
 
-  ngOnChanges(){
-    
-  }
+
   cambiaLado(e){
     // console.log("EvalAsis",this.EvalAsis);
     // console.log("EvalFact",this.EvalFact);

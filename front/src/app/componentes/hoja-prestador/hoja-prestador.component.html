@@ -1,1 +1,170 @@
-<p>hoja-prestador works!</p>
+<nav>
+    <div>
+
+        <div class="container">
+            
+            
+            <h1>Global por UGL</h1>
+            <autocompletar 
+            [placeholder]="['UGL']" 
+            [data]="Ugls" 
+            (output)="addItem($event)" 
+            (clear)="limpiar($event)"
+            ></autocompletar>
+            <autocompletar 
+            [placeholder]="['Prestador']" 
+            [data]="Prestadores" 
+            (output)="addItem($event)" 
+            (clear)="limpiar($event)"
+            ></autocompletar>
+        </div>
+        <div class="row" style="padding-left: 5%;padding-top: 1%;">
+            <br>
+            <div class="col">
+    
+                <mat-form-field appearance="fill">
+                    <mat-label>Comparador Asistencial</mat-label>
+                    <mat-select [(ngModel)]="CompAsis" (ngModelChange)="cambiaLado($event)">
+                        <mat-option value="=">=</mat-option>
+                        <mat-option value=">">></mat-option>
+                        <mat-option value="<">
+                            < </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                    <mat-label>
+                        Asistencial
+                    </mat-label>
+                    <input matInput type="number" [(ngModel)]="EvalAsis" (ngModelChange)="cambiaLado($event)">
+                    <button mat-button *ngIf="EvalAsis" matSuffix mat-icon-button aria-label="Clear" (click)="EvalAsis=0">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                </mat-form-field>
+            </div>
+            <div class="col">
+    
+                <mat-form-field appearance="fill">
+                    <mat-label>Comparador Administrativo</mat-label>
+                    <mat-select [(ngModel)]="CompFact" (ngModelChange)="cambiaLado($event)">
+                        <mat-option value="=">=</mat-option>
+                        <mat-option value=">">></mat-option>
+                        <mat-option value="<">
+                            < </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                    <mat-label>
+                        Administrativo
+                    </mat-label>
+                    <input matInput type="number" [(ngModel)]="EvalFact" (ngModelChange)="cambiaLado($event)">
+                    <button mat-button *ngIf="EvalFact" matSuffix mat-icon-button aria-label="Clear" (click)="EvalFact=0">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                </mat-form-field>
+            </div>
+            <div class="col">
+    
+                <mat-form-field appearance="fill">
+                    <mat-label>Comparador Global</mat-label>
+                    <mat-select [(ngModel)]="CompGlob" (ngModelChange)="cambiaLado($event)">
+                        <mat-option value="=">=</mat-option>
+                        <mat-option value=">">></mat-option>
+                        <mat-option value="<">
+                            < </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                    <mat-label>
+                        Evaluacion global
+                    </mat-label>
+                    <input matInput type="number" [(ngModel)]="EvalGlob" (ngModelChange)="cambiaLado($event)">
+                    <button mat-button *ngIf="EvalGlob" matSuffix mat-icon-button aria-label="Clear" (click)="EvalGlob=0">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                </mat-form-field>
+            </div>
+        </div>
+
+
+    </div>
+</nav>
+
+
+
+
+<grafico-burbuja 
+[ugl]="ugl_seleccionada" 
+[data]="DatosDispersionUgl1"
+></grafico-burbuja>
+
+<br>
+<br>
+<br>
+
+<grafico-barra
+[type]="'horizontalBar'"
+[data]='DatosRankingDeciloUgl["Decilo Global"]?.Data'
+[label]='DatosRankingDeciloUgl["Decilo Global"]?.Label'
+[filtro]="'Decilo Global'"
+[backgroundColor]="['#ffd9b2']"
+></grafico-barra>
+
+<grafico-barra
+[type]="'horizontalBar'"
+[data]='DatosRankingDeciloUgl["Decilo Facturación"]?.Data'
+[label]='DatosRankingDeciloUgl["Decilo Facturación"]?.Label'
+[filtro]="'Decilo Administrativo'"
+[backgroundColor]="['#b2ffff']"
+></grafico-barra>
+
+<grafico-barra
+[type]="'horizontalBar'"
+[data]='DatosRankingDeciloUgl["Decilo Asistencial"]?.Data'
+[label]='DatosRankingDeciloUgl["Decilo Asistencial"]?.Label'
+[filtro]="'Decilo Asistencial'"
+[backgroundColor]="['#ffb2d9']"
+></grafico-barra>
+
+<grafico-barra
+[type]="'horizontalBar'"
+[data]='DatosRankingDeciloUglTotal?.Data'
+[label]='DatosRankingDeciloUglTotal?.Label'
+[filtro]="'Decilo Total'"
+[backgroundColor]="['#ffd9b2','#b2ffff','#ffb2d9']"
+></grafico-barra>
+
+
+//// nuevos  ////
+
+<!-- 
+<grafico-barra
+[type]="'horizontalBar'"
+[data]='DatosRankingDecilo["UGL"]["Decilo Global"]?.Data'
+[label]='DatosRankingDecilo["UGL"]["Decilo Global"]?.Label'
+[filtro]="'Decilo Global'"
+[backgroundColor]="['#ffd9b2']"
+></grafico-barra>
+
+<grafico-barra
+[type]="'horizontalBar'"
+[data]='DatosRankingDecilo["UGL"]["Decilo Facturación"]?.Data'
+[label]='DatosRankingDecilo["UGL"]["Decilo Facturación"]?.Label'
+[filtro]="'Decilo Administrativo'"
+[backgroundColor]="['#b2ffff']"
+></grafico-barra>
+
+<grafico-barra
+[type]="'horizontalBar'"
+[data]='DatosRankingDecilo["UGL"]["Decilo Asistencial"]?.Data'
+[label]='DatosRankingDecilo["UGL"]["Decilo Asistencial"]?.Label'
+[filtro]="'Decilo Asistencial'"
+[backgroundColor]="['#ffb2d9']"
+></grafico-barra>
+
+<grafico-barra
+[type]="'horizontalBar'"
+[data]='DatosRankingDeciloTotal["UGL"]?.Data'
+[label]='DatosRankingDeciloTotal["UGL"]?.Label'
+[filtro]="'Decilo Total'"
+[backgroundColor]="['#ffd9b2','#b2ffff','#ffb2d9']"
+></grafico-barra> -->

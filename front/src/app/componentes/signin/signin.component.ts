@@ -47,9 +47,9 @@ export class SigninComponent implements OnInit {
         user: this.form.value.Username,
         pass: this.form.value.Password
       }).subscribe((res) => {
-        localStorage.clear()
-        localStorage.setItem('token', res['token']);
-        localStorage.setItem('nombre', res['nombre']);
+        sessionStorage.clear()
+        sessionStorage.setItem('token', res['token']);
+        sessionStorage.setItem('nombre', res['nombre']);
         // console.log('====================================');
         // console.log(res);
         // console.log('====================================');

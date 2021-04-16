@@ -38,9 +38,9 @@ import { AutocompletarComponent } from './componentes/autocompletar/autocompleta
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { AutocompleteLibModule } from 'angular-ng-autocomplete';
 import {MatSelectModule} from '@angular/material/select';
-import { JwtModule } from "@auth0/angular-jwt";
+// import { JwtModule } from "@auth0/angular-jwt";
 export function tokenGetter() {
-  return localStorage.getItem("token");
+  return sessionStorage.getItem("token");
 }
 
 @NgModule({
@@ -85,6 +85,15 @@ export function tokenGetter() {
     ChartsModule,
     MatAutocompleteModule,
     AutocompleteLibModule,
+
+    MatSelectModule,
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+/*
     JwtModule.forRoot({
       config: {
         tokenGetter: tokenGetter,
@@ -93,9 +102,5 @@ export function tokenGetter() {
         disallowedRoutes: ["http://example.com/examplebadroute/"],
       },
     }),
-    MatSelectModule,
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
-})
-export class AppModule { }
+
+*/

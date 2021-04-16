@@ -11,7 +11,7 @@ const bodyParser = require('body-parser');
 const cors = require("cors")
 
 const { database } = require('./keys');
-
+require('dotenv').config()
 // Intializations
 const app = express();
 // require('./lib/passport');
@@ -35,7 +35,7 @@ app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 
 app.use(session({
-  secret: 'secretkey',
+  secret: process.env.TOKEN_KEY,
   resave: false,
   saveUninitialized: false,
   store: new MySQLStore(database)
