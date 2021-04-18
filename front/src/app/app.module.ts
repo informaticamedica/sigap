@@ -38,6 +38,7 @@ import { AutocompletarComponent } from './componentes/autocompletar/autocompleta
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { AutocompleteLibModule } from 'angular-ng-autocomplete';
 import {MatSelectModule} from '@angular/material/select';
+import { NgxSliderModule } from '@angular-slider/ngx-slider';
 // import { JwtModule } from "@auth0/angular-jwt";
 export function tokenGetter() {
   return sessionStorage.getItem("token");
@@ -85,8 +86,8 @@ export function tokenGetter() {
     ChartsModule,
     MatAutocompleteModule,
     AutocompleteLibModule,
-
     MatSelectModule,
+    NgxSliderModule
   ],
   providers: [],
   bootstrap: [AppComponent]

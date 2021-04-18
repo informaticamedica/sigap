@@ -9,12 +9,12 @@
         <mat-card-content>
           <mat-form-field  class="example-full-width">
             <mat-label>Usuario</mat-label>
-            <input matInput formControlName="Username" >
+            <input matInput formControlName="Username" autocomplete="off">
           </mat-form-field>
   
           <mat-form-field  class="example-full-width">
             <mat-label>Contraseña</mat-label>
-            <input matInput type="password" formControlName="Password">
+            <input matInput type="password" formControlName="Password" autocomplete="off">
           </mat-form-field>
         </mat-card-content>
         <button mat-stroked-button color="yellow" (click)="ingresar()" class="btn-block">Ingresar</button>

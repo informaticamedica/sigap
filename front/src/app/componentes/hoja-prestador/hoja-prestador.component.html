@@ -1,48 +1,59 @@
 <nav>
-    <div>
+  <div style="padding: 4%;">
+    <div class="container">
+      <h1>Global por Prestador</h1>
+    </div>
 
-        <div class="container">
-            
-            
-            <h1>Global por Prestador</h1>
-            <autocompletar 
-            [placeholder]="['UGL']" 
-            [data]="Ugls" 
-            (output)="addItem($event,'UGL')" 
-            (clear)="limpiar($event,'UGL')"
-            ></autocompletar>
-            <autocompletar 
-            [placeholder]="['Prestador']" 
-            [data]="Prestadores" 
-            (output)="addItem($event,'Prestador')" 
-            (clear)="limpiar($event,'Prestador')"
-            ></autocompletar>
-        </div>
-        <div class="row" style="padding-left: 5%;padding-top: 1%;">
-            <br>
-            <div class="col">
-    
-                <mat-form-field appearance="fill">
-                    <mat-label>Comparador Asistencial</mat-label>
-                    <mat-select [(ngModel)]="CompAsis" (ngModelChange)="cambiaLado($event)">
-                        <mat-option value="=">=</mat-option>
-                        <mat-option value=">">></mat-option>
-                        <mat-option value="<">
-                            < </mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <mat-form-field appearance="fill">
-                    <mat-label>
-                        Asistencial
-                    </mat-label>
-                    <input matInput type="number" [(ngModel)]="EvalAsis" (ngModelChange)="cambiaLado($event)">
-                    <button mat-button *ngIf="EvalAsis" matSuffix mat-icon-button aria-label="Clear" (click)="EvalAsis=0">
-                        <mat-icon>close</mat-icon>
-                      </button>
-                </mat-form-field>
-            </div>
-            <div class="col">
-    
+    <div class="row" >
+      <br />
+      <div class="col" style="min-width: 300px;" >
+        <!-- <mat-label>Comparador decilo Asistencial</mat-label> -->
+        <ngx-slider
+          [(value)]="valAsisMin"
+          [(highValue)]="valAsisMax"
+          [(ngModel)]="evalAsis"
+          (ngModelChange)="onChange($event, 'Decilo Asistencial')"
+          [options]="opcAsis"
+        ></ngx-slider>
+
+        <br />
+        {{ evalAsis }}
+        <br />
+        <br />
+      </div>
+      <div class="col" style="min-width: 300px;">
+        <!-- <mat-label>Comparador decilo Administrativo</mat-label> -->
+        <ngx-slider
+          [(value)]="valFactMin"
+          [(highValue)]="valFactMax"
+          [(ngModel)]="evalFact"
+          (ngModelChange)="onChange($event, 'Decilo Facturación')"
+          [options]="opcFact"
+        ></ngx-slider>
+
+        <br />
+        {{ evalFact }}
+        <br />
+        <br />
+      </div>
+      <div class="col" style="min-width: 300px;">
+        <!-- <mat-label>Comparador decilo Global</mat-label> -->
+        <ngx-slider
+          [(value)]="valGlobMin"
+          [(highValue)]="valGlobMax"
+          [(ngModel)]="evalGlob"
+          (ngModelChange)="onChange($event, 'Decilo Global')"
+          [options]="opcGlob"
+        ></ngx-slider>
+
+        <br />
+        {{ evalGlob }}
+        <br />
+        <br />
+      </div>
+
+      <!-- <div class="col">
+
                 <mat-form-field appearance="fill">
                     <mat-label>Comparador Administrativo</mat-label>
                     <mat-select [(ngModel)]="CompFact" (ngModelChange)="cambiaLado($event)">
@@ -57,13 +68,14 @@
                         Administrativo
                     </mat-label>
                     <input matInput type="number" [(ngModel)]="EvalFact" (ngModelChange)="cambiaLado($event)">
-                    <button mat-button *ngIf="EvalFact" matSuffix mat-icon-button aria-label="Clear" (click)="EvalFact=0">
+                    <button mat-button *ngIf="EvalFact" matSuffix mat-icon-button aria-label="Clear"
+                        (click)="EvalFact=0">
                         <mat-icon>close</mat-icon>
-                      </button>
+                    </button>
                 </mat-form-field>
             </div>
             <div class="col">
-    
+
                 <mat-form-field appearance="fill">
                     <mat-label>Comparador Global</mat-label>
                     <mat-select [(ngModel)]="CompGlob" (ngModelChange)="cambiaLado($event)">
@@ -78,33 +90,54 @@
                         Evaluacion global
                     </mat-label>
                     <input matInput type="number" [(ngModel)]="EvalGlob" (ngModelChange)="cambiaLado($event)">
-                    <button mat-button *ngIf="EvalGlob" matSuffix mat-icon-button aria-label="Clear" (click)="EvalGlob=0">
+                    <button mat-button *ngIf="EvalGlob" matSuffix mat-icon-button aria-label="Clear"
+                        (click)="EvalGlob=0">
                         <mat-icon>close</mat-icon>
-                      </button>
+                    </button>
                 </mat-form-field>
-            </div>
-        </div>
-
-
+            </div> -->
     </div>
+
+    <div class="row">
+      <div class="col" style="min-width: 300px;">
+        <autocompletar 
+          [placeholder]="['UGL']"
+          [data]="Ugls"
+          (output)="addItem($event, 'UGL')"
+          (clear)="limpiar($event, 'UGL')"
+        ></autocompletar>
+      </div>
+      <div class="col" style="min-width: 300px;">
+        <autocompletar
+          [placeholder]="['Prestador']"
+          [data]="Prestadores"
+          (output)="addItem($event, 'Prestador')"
+          (clear)="limpiar($event, 'Prestador')"
+        ></autocompletar>
+      </div>
+      <div class="col">
+        <button mat-raised-button color="primary" (click)="calcular()">
+          Calcular
+        </button>
+      </div>
+    </div>
+  </div>
 </nav>
 
-
-
-
-<grafico-burbuja 
-[ugl]="prestador_seleccionado" 
-[data]="DatosDispersionPrestador"
-></grafico-burbuja>
-<!-- <grafico-burbuja 
+<div class="graficos">
+  <grafico-burbuja
+    [ugl]="prestador_seleccionado"
+    [data]="DatosDispersionPrestador"
+  ></grafico-burbuja>
+  <!-- <grafico-burbuja 
 [ugl]="ugl_seleccionada" 
 [data]="DatosDispersionUgl1"
 ></grafico-burbuja> -->
 
-<br>
-<br>
-<br>
-<!-- 
+  <br />
+  <br />
+  <br />
+  <!-- 
 <grafico-barra
 [type]="'horizontalBar'"
 [data]='DatosRankingDeciloUgl["Decilo Global"]?.Data'
@@ -138,36 +171,36 @@
 ></grafico-barra> -->
 
 
-//// nuevos  ////
 
-<grafico-barra
-[type]="'horizontalBar'"
-[data]='DatosRankingDecilo["Prestador"]["Decilo Global"]?.Data'
-[label]='DatosRankingDecilo["Prestador"]["Decilo Global"]?.Label'
-[filtro]="'Decilo Global'"
-[backgroundColor]="['#ffd9b2']"
-></grafico-barra>
+  <grafico-barra
+    [type]="'horizontalBar'"
+    [data]="DatosRankingDecilo['Prestador']['Decilo Global']?.Data"
+    [label]="DatosRankingDecilo['Prestador']['Decilo Global']?.Label"
+    [filtro]="'Decilo Global'"
+    [backgroundColor]="['#ffd9b2']"
+  ></grafico-barra>
 
-<grafico-barra
-[type]="'horizontalBar'"
-[data]='DatosRankingDecilo["Prestador"]["Decilo Facturación"]?.Data'
-[label]='DatosRankingDecilo["Prestador"]["Decilo Facturación"]?.Label'
-[filtro]="'Decilo Administrativo'"
-[backgroundColor]="['#b2ffff']"
-></grafico-barra>
+  <grafico-barra
+    [type]="'horizontalBar'"
+    [data]="DatosRankingDecilo['Prestador']['Decilo Facturación']?.Data"
+    [label]="DatosRankingDecilo['Prestador']['Decilo Facturación']?.Label"
+    [filtro]="'Decilo Administrativo'"
+    [backgroundColor]="['#b2ffff']"
+  ></grafico-barra>
 
-<grafico-barra
-[type]="'horizontalBar'"
-[data]='DatosRankingDecilo["Prestador"]["Decilo Asistencial"]?.Data'
-[label]='DatosRankingDecilo["Prestador"]["Decilo Asistencial"]?.Label'
-[filtro]="'Decilo Asistencial'"
-[backgroundColor]="['#ffb2d9']"
-></grafico-barra>
+  <grafico-barra
+    [type]="'horizontalBar'"
+    [data]="DatosRankingDecilo['Prestador']['Decilo Asistencial']?.Data"
+    [label]="DatosRankingDecilo['Prestador']['Decilo Asistencial']?.Label"
+    [filtro]="'Decilo Asistencial'"
+    [backgroundColor]="['#ffb2d9']"
+  ></grafico-barra>
 
-<grafico-barra
-[type]="'horizontalBar'"
-[data]='DatosRankingDeciloTotal["Prestador"]?.Data'
-[label]='DatosRankingDeciloTotal["Prestador"]?.Label'
-[filtro]="'Decilo Total'"
-[backgroundColor]="['#ffd9b2','#b2ffff','#ffb2d9']"
-></grafico-barra> 
+  <grafico-barra
+    [type]="'horizontalBar'"
+    [data]="DatosRankingDeciloTotal['Prestador']?.Data"
+    [label]="DatosRankingDeciloTotal['Prestador']?.Label"
+    [filtro]="'Decilo Total'"
+    [backgroundColor]="['#ffd9b2', '#b2ffff', '#ffb2d9']"
+  ></grafico-barra>
+</div>
