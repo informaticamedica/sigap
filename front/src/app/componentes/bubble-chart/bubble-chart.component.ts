@@ -63,6 +63,7 @@ export class BubbleChartComponent implements OnInit {
   ];
 
   public bubbleChartType: ChartType = 'bubble';
+  bubbleChartColor: any[];
   constructor() { }
 
   ngOnInit(): void {
@@ -76,8 +77,11 @@ export class BubbleChartComponent implements OnInit {
     if (this.data != undefined) {
 
       this.bubbleChartData = this.data
+      this.bubbleChartColor = this.backgroundColor
+      // console.log(this.bubbleChartColor);
+      
     }
-    // console.log("this.bubbleChartData",this.bubbleChartData,this.data)
+    
 
 
     // this.datos = this.data?.filter(a=>a['UGL']==this.ugl)

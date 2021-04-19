@@ -15,6 +15,7 @@ export class ScatterChartComponent implements OnInit {
   @Input() eval_asistencial: string;
   @Input() eval_facturacion: string;
   @Input() data: string[];
+  @Input() backgroundColor: []
 
 
 

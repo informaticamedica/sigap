@@ -80,6 +80,20 @@ export class HojaPrestadorComponent implements OnInit {
   }
 
   constructor(private datos: DatosDbService) {}
+  colorPrestadores = [];
+  // fullColorHex = function (r, g, b) {
+  //   var red = this.rgbToHex(r);
+  //   var green = this.rgbToHex(g);
+  //   var blue = this.rgbToHex(b);
+  //   return '#' + red + green + blue;
+  // };
+  // rgbToHex = function (rgb) {
+  //   var hex = Number(rgb).toString(16);
+  //   if (hex.length < 2) {
+  //     hex = '0' + hex;
+  //   }
+  //   return hex;
+  // };
 
   ngOnInit(): void {
     this.DatosRankingDecilo['UGL'] = {};
@@ -92,10 +106,19 @@ export class HojaPrestadorComponent implements OnInit {
       // this.Ugls = [...new Set(this.Datos.map((a) => a.UGL))];
       // this.Ugls.sort();
 
-      // console.log(res);
+      // this.colorPrestadores = this.Datos.map((a) => {
+      //   return {
+      //     backgroundColor:
+      //       'rgb(' +
+      //       ((10 - a['Decilo Global']) * 25.5).toFixed() +
+      //       ',' +
+      //       (a['Decilo Global'] * 25.5).toFixed() +
+      //       ',0)',
+      //   };
+      // });
 
-      // this.Prestadores = [...new Set(this.Datos.map((a) => a.Prestador))];
-      // this.Prestadores.sort();
+      // console.log(this.Datos);
+      // console.log(this.colorPrestadores);
 
       this.initDatos(this.Datos);
     });
@@ -110,6 +133,8 @@ export class HojaPrestadorComponent implements OnInit {
     this.Prestadores = [...new Set(Datos.map((a) => a.Prestador))];
     this.Prestadores.sort();
     this.DatosDispersionPrestador = this.CalculoDispersion(Datos, 'Prestador');
+    // console.log('this.DatosDispersionPrestador', this.DatosDispersionPrestador);
+
     this.DatosDispersionUgl1 = this.CalculoDispersion(Datos, 'UGL');
 
     this.DatosRankingDecilo['UGL']['Decilo Global'] = this.CalculoRankingDecilo(
@@ -265,6 +290,14 @@ export class HojaPrestadorComponent implements OnInit {
         }
       }
     }
+    aux.forEach((a) => {
+      let val = parseFloat(a.data[0].x) + parseFloat(a.data[0].y);
+      val = val / 2;
+      let r = ((10 - val) * 25.5).toFixed();
+      let g = (val * 25.5).toFixed();
+      a.backgroundColor = 'rgb(' + r + ',' + g + ',0)';
+    });
+    // console.log('aaaaaaaaaaaaaaaaaaa', aux);
 
     // this.DatosDispersionUgl =
     return aux.slice().sort(function (a, b) {
@@ -377,11 +410,7 @@ export class HojaPrestadorComponent implements OnInit {
 
     // this.DatosDispersionPrestador = this.CalculoDispersion(Datos, 'Prestador');
 
-    this.initDatos(Datos)
-
-
-
-
+    this.initDatos(Datos);
 
     // this.DatosDispersionPrestador = this.CalculoDispersion(this.Datos, 'Prestador')
     // this.DatosDispersionUgl1 = this.CalculoDispersion(this.Datos, 'UGL')

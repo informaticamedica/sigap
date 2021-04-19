@@ -262,6 +262,14 @@ export class HojaUglComponent implements OnInit {
       }
     }
 
+    aux.forEach((a) => {
+      let val = parseFloat(a.data[0].x) + parseFloat(a.data[0].y);
+      val = val / 2;
+      let r = ((10 - val) * 25.5).toFixed();
+      let g = (val * 25.5).toFixed();
+      a.backgroundColor = 'rgb(' + r + ',' + g + ',0)';
+    });
+
     // this.DatosDispersionUgl =
     return aux.slice().sort(function (a, b) {
       if (a.label > b.label) {
