@@ -5,7 +5,7 @@ import { Options, LabelType } from '@angular-slider/ngx-slider';
 @Component({
   selector: 'hoja-ugl',
   templateUrl: './hoja-ugl.component.html',
-  styleUrls: ['./hoja-ugl.component.css']
+  styleUrls: ['./hoja-ugl.component.css'],
 })
 export class HojaUglComponent implements OnInit {
   DatosDispersionUgl1: any;
@@ -213,7 +213,7 @@ export class HojaUglComponent implements OnInit {
       Datos = Datos.filter((a) => a.UGL == this.ugl_seleccionada);
     }
 
-    this.initDatos(Datos)
+    this.initDatos(Datos);
 
     // this.DatosDispersionPrestador = this.CalculoDispersion(Datos, 'Prestador');
     // if (this.prestador_seleccionado != '') {
@@ -253,7 +253,7 @@ export class HojaUglComponent implements OnInit {
               {
                 x: (asis / count).toFixed(2),
                 y: (fact / count).toFixed(2),
-                r: entidad == 'Prestador' ? count * 5 : count,
+                r: entidad == 'Prestador' ? count * 5 : count / 2,
               },
             ],
             label: key,
@@ -262,12 +262,60 @@ export class HojaUglComponent implements OnInit {
       }
     }
 
-    aux.forEach((a) => {
+    const modularizadorTrucho = (vecPosta, modulo) => {
+      let vec = vecPosta.map((a) => parseFloat(a.toFixed(1)));
+      vec.sort((a, b) => a - b);
+      // debugger;
+      const min = parseFloat(vec[0]);
+      const max = parseFloat(vec[vec.length - 1]);
+      const val = max - min;
+      const valDiv = modulo / val / 10;
+      let auxxx = [];
+      auxxx[min * 10] = 0;
+      // let auxx = [...new Set(vec)];
+
+      for (let index = min * 10 + 1; index < min * 10 + val * 10; index++) {
+        auxxx[index] = parseFloat((auxxx[index - 1] + valDiv).toFixed(1));
+      }
+      auxxx[auxxx.length] = 255;
+      // debugger;
+      return auxxx;
+    };
+    let auxvec = aux.map((a) => {
       let val = parseFloat(a.data[0].x) + parseFloat(a.data[0].y);
       val = val / 2;
-      let r = ((10 - val) * 25.5).toFixed();
-      let g = (val * 25.5).toFixed();
+      return val;
+    });
+    let modu = modularizadorTrucho(auxvec, 255);
+    aux.forEach((a) => {
+      // let val: number = parseFloat(a.data[0].x) + parseFloat(a.data[0].y);
+      const aa = parseFloat(a.data[0].x);
+      const bb = parseFloat(a.data[0].y);
+      const cc = (aa + bb) / 2;
+      const dd = modu[parseFloat(cc.toFixed(1)) * 10];
+      // cc = (aa + bb);
+      // cc = (aa + bb) / 2;
+
+      // debugger;
+      if (
+        cc == undefined ||
+        aa == undefined ||
+        bb == undefined ||
+        dd == undefined
+      ) {
+        debugger;
+        var val;
+        val = aa + bb;
+        val = val / 2;
+        val = parseFloat(val.toFixed(1));
+        val = modu[val * 10];
+        debugger;
+      }
+
+      let r = (255 - dd).toFixed();
+      let g = dd.toFixed();
       a.backgroundColor = 'rgb(' + r + ',' + g + ',0)';
+      // debugger;
     });
 
     // this.DatosDispersionUgl =
@@ -381,11 +429,7 @@ export class HojaUglComponent implements OnInit {
 
     // this.DatosDispersionPrestador = this.CalculoDispersion(Datos, 'Prestador');
 
-    this.initDatos(Datos)
-
-
-
-
+    this.initDatos(Datos);
 
     // this.DatosDispersionPrestador = this.CalculoDispersion(this.Datos, 'Prestador')
     // this.DatosDispersionUgl1 = this.CalculoDispersion(this.Datos, 'UGL')
@@ -481,7 +525,6 @@ export class HojaUglComponent implements OnInit {
 //         this.Ugls = [... new Set(this.Datos.map(a => a.UGL))]
 //         this.Ugls.sort()
 
-
 //         // this.Prestadores = [... new Set(this.Datos.map(a => a.Prestador))]
 //         // console.log(this.Datos);
 //         // console.log(this.Ugls.sort());
@@ -492,7 +535,7 @@ export class HojaUglComponent implements OnInit {
 //         this.DatosRankingDeciloUgl["Decilo Global"] = { Data: [], Label: [] }
 //         this.DatosRankingDeciloUgl["Decilo Facturación"] = { Data: [], Label: [] }
 //         this.DatosRankingDeciloUgl["Decilo Asistencial"] = { Data: [], Label: [] }
-        
+
 //         this.CalculoRankingDeciloUgl("Decilo Global")
 
 //         this.CalculoRankingDeciloUgl("Decilo Facturación")
@@ -500,10 +543,7 @@ export class HojaUglComponent implements OnInit {
 
 //         this.CalculoRankingDeciloUglTotal()
 
-
-
 //         // console.log(this.DatosRankingDeciloUgl);
-
 
 //         // let { Data, Label} = this.CalculoRankingDeciloUgl("Decilo Global")
 //         // this.DatosRankingDeciloUgl["Decilo Global"]["Data"] = Data
@@ -522,7 +562,6 @@ export class HojaUglComponent implements OnInit {
 //   addItem(e) {
 //     this.ugl_seleccionada = e
 //     // console.log("eeeee", e);
-
 
 //     this.DatosDispersionUgl1 = this.DatosDispersionUgl.filter(a => a.label == e)
 
@@ -543,15 +582,11 @@ export class HojaUglComponent implements OnInit {
 //         }]
 //         aux[key]['Label'] = [key]
 
-
 //       }
 //     }
 //     this.DatosRankingDeciloUgl = aux
 //     this.CalculoRankingDeciloUglTotal()
 //     // console.log("aux", aux);
-
-
-
 
 //   }
 
@@ -564,7 +599,6 @@ export class HojaUglComponent implements OnInit {
 //       for (let index = 0; index < this.Datos.length; index++) {
 //         const element = this.Datos[index];
 //         const key = element['UGL']
-
 
 //         const count = this.Datos?.filter(a => a.UGL == key).length
 //         const fact = this.Datos?.filter(a => a.UGL == key).reduce((acc, curr) => acc + curr["Decilo Facturación"], 0)
@@ -580,10 +614,8 @@ export class HojaUglComponent implements OnInit {
 //           })
 //         }
 
-
 //       }
 //     }
-
 
 //     // console.log("DatosDispersionUgl - formato",
 //     //   [
@@ -615,13 +647,10 @@ export class HojaUglComponent implements OnInit {
 //     })
 //     // console.log("this.DatosDispersionUgl",this.DatosDispersionUgl);
 
-
-
 //   }
 
 //   DatosRankingDeciloUgl = {}
 //   CalculoRankingDeciloUgl(Decilo) {
-
 
 //     let Label = []
 //     let Data = []
@@ -630,38 +659,30 @@ export class HojaUglComponent implements OnInit {
 //         const element = this.Datos[index];
 //         const key = element['UGL']
 
-
 //         const count = this.Datos?.filter(a => a.UGL == key).length
 //         const global = this.Datos?.filter(a => a.UGL == key).reduce((acc, curr) => acc + curr[Decilo], 0)
-
 
 //         if (!(Label.filter(b => b == key).length > 0)) {
 //           Label.push(key)
 //           Data.push((global / count).toFixed(2))
 //         }
 
-        
-
 //         // let aux = {}
 
 //         let aux2 =[]
-        
+
 //         for (let index = 0; index < Label.length; index++) {
 //           const element = Label[index];
 
 //           // aux[element] = parseFloat( Data[index])
 
 //           aux2.push({ugl:element,decilo:parseFloat(Data[index])})
-          
+
 //         }
 //         Label = aux2.sort( (a,b) => a.decilo - b.decilo ).map( a=> a.ugl)
 //         Data = aux2.sort( (a,b) => a.decilo - b.decilo ).map( a=> a.decilo)
 
-        
-        
-        
 // // console.log(aux2);
-
 
 //         // if (!(aux.filter(b => b['Label'] == key).length > 0)) {
 //         //   aux.push({
@@ -672,7 +693,6 @@ export class HojaUglComponent implements OnInit {
 //         //     }
 //         //   })
 //         // }
-
 
 //       }
 
@@ -685,7 +705,6 @@ export class HojaUglComponent implements OnInit {
 
 //       // }
 //     }
-
 
 //     // console.log("DatosDispersionUgl - formato",
 //     //   [
@@ -730,7 +749,6 @@ export class HojaUglComponent implements OnInit {
 //       this.DatosRankingDeciloUgl["Decilo Asistencial"]['Data'][0])
 //   }
 
-
 //   limpiar(e) {
 //     this.CalculoDispersionUgl()
 //     this.DatosDispersionUgl1 = this.DatosDispersionUgl
@@ -740,7 +758,6 @@ export class HojaUglComponent implements OnInit {
 //     this.CalculoRankingDeciloUglTotal()
 //     // console.log("limpiar", e);
 //   }
-
 
 //   cambiaLado(e){
 //     // console.log("EvalAsis",this.EvalAsis);
@@ -765,18 +782,16 @@ export class HojaUglComponent implements OnInit {
 //         case "<":
 //           return a < b
 //           break;
-      
+
 //         default:
 //           break;
 //       }
 
-
 //     }
-    
+
 //     this.DatosDispersionUgl1 =this.DatosDispersionUgl.filter(a=>comparar (parseFloat(a.data[0].x),this.CompAsis,this.EvalAsis)).filter(a=>comparar (parseFloat(a.data[0].y),this.CompFact,this.EvalFact))
-    
+
 //     // console.log("this.DatosDispersionUgl",this.DatosDispersionUgl.filter(a=>comparar (parseFloat(a.data[0].x),this.CompAsis,this.EvalAsis)));
-    
+
 //     // console.log("222222222this.DatosDispersionUgl",this.DatosDispersionUgl.filter(a=>comparar (parseFloat(a.data[0].x),this.CompAsis,this.EvalAsis)).filter(a=>comparar (parseFloat(a.data[0].y),this.CompFact,this.EvalFact)));
 //   }
-

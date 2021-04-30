@@ -1,12 +1,12 @@
 <nav>
-  <div style="padding: 4%;">
+  <div style="padding: 4%">
     <div class="container">
       <h1>Global por Prestador</h1>
     </div>
 
-    <div class="row" >
+    <div class="row">
       <br />
-      <div class="col" style="min-width: 300px;" >
+      <div class="col" style="min-width: 300px">
         <!-- <mat-label>Comparador decilo Asistencial</mat-label> -->
         <ngx-slider
           [(value)]="valAsisMin"
@@ -17,11 +17,11 @@
         ></ngx-slider>
 
         <br />
-        {{ evalAsis }}
+        <!-- {{ evalAsis }} -->
         <br />
         <br />
       </div>
-      <div class="col" style="min-width: 300px;">
+      <div class="col" style="min-width: 300px">
         <!-- <mat-label>Comparador decilo Administrativo</mat-label> -->
         <ngx-slider
           [(value)]="valFactMin"
@@ -32,11 +32,11 @@
         ></ngx-slider>
 
         <br />
-        {{ evalFact }}
+        <!-- {{ evalFact }} -->
         <br />
         <br />
       </div>
-      <div class="col" style="min-width: 300px;">
+      <div class="col" style="min-width: 300px">
         <!-- <mat-label>Comparador decilo Global</mat-label> -->
         <ngx-slider
           [(value)]="valGlobMin"
@@ -47,7 +47,7 @@
         ></ngx-slider>
 
         <br />
-        {{ evalGlob }}
+        <!-- {{ evalGlob }} -->
         <br />
         <br />
       </div>
@@ -99,15 +99,15 @@
     </div>
 
     <div class="row">
-      <div class="col" style="min-width: 300px;">
-        <autocompletar 
+      <div class="col" style="min-width: 300px">
+        <autocompletar
           [placeholder]="['UGL']"
           [data]="Ugls"
           (output)="addItem($event, 'UGL')"
           (clear)="limpiar($event, 'UGL')"
         ></autocompletar>
       </div>
-      <div class="col" style="min-width: 300px;">
+      <div class="col" style="min-width: 300px">
         <autocompletar
           [placeholder]="['Prestador']"
           [data]="Prestadores"
@@ -128,7 +128,7 @@
   <grafico-burbuja
     [ugl]="prestador_seleccionado"
     [data]="DatosDispersionPrestador"
-    [backgroundColor] = "colorPrestadores"
+    [backgroundColor]="colorPrestadores"
   ></grafico-burbuja>
   <!-- <grafico-burbuja 
 [ugl]="ugl_seleccionada" 
@@ -170,8 +170,6 @@
 [filtro]="'Decilo Total'"
 [backgroundColor]="['#ffd9b2','#b2ffff','#ffb2d9']"
 ></grafico-barra> -->
-
-
 
   <grafico-barra
     [type]="'horizontalBar'"

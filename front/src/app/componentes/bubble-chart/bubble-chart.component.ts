@@ -3,11 +3,9 @@ import { ChartDataSets, ChartType, ChartOptions } from 'chart.js';
 @Component({
   selector: 'grafico-burbuja',
   templateUrl: './bubble-chart.component.html',
-  styleUrls: ['./bubble-chart.component.css']
+  styleUrls: ['./bubble-chart.component.css'],
 })
 export class BubbleChartComponent implements OnInit {
-
-
   @Input() ugl: string;
   @Input() eval_global: string;
   @Input() eval_asistencial: string;
@@ -18,35 +16,50 @@ export class BubbleChartComponent implements OnInit {
   public bubbleChartOptions: ChartOptions = {
     responsive: true,
     legend: { display: false },
-    tooltips:{
-      callbacks:{
-        label: (t,d) => {
-          
-           let rLabel = d.datasets[t.datasetIndex].data[t.index]["r"]
+    tooltips: {
+      callbacks: {
+        label: (t, d) => {
+          let rLabel = d.datasets[t.datasetIndex].data[t.index]['r'];
 
-          return d.datasets[t.datasetIndex].label + ": (Asistencial: "+t.xLabel+", Administrativo: " + t.yLabel +", Cantidad prestadores: " +rLabel +" )" } 
-      }
+          return (
+            d.datasets[t.datasetIndex].label +
+            ': (Asistencial: ' +
+            t.xLabel +
+            ', Administrativo: ' +
+            t.yLabel +
+            ', Cantidad prestadores: ' +
+            rLabel * 2 +
+            ' )'
+          );
+        },
+      },
     },
     scales: {
-      xAxes: [{
-        ticks: {
-          min: 0,
-          max: 10
-        }, scaleLabel: {
-          labelString: "Decilo Asistencial",
-          display: true
-        }
-      }],
-      yAxes: [{
-        ticks: {
-          min: 0,
-          max: 10
-        }, scaleLabel: {
-          labelString: "Decilo Administrativo",
-          display: true
-        }
-      }]
-    }
+      xAxes: [
+        {
+          ticks: {
+            min: 0,
+            max: 10,
+          },
+          scaleLabel: {
+            labelString: 'Decilo Asistencial',
+            display: true,
+          },
+        },
+      ],
+      yAxes: [
+        {
+          ticks: {
+            min: 0,
+            max: 10,
+          },
+          scaleLabel: {
+            labelString: 'Decilo Administrativo',
+            display: true,
+          },
+        },
+      ],
+    },
   };
 
   public bubbleChartData: ChartDataSets[] = [
@@ -64,33 +77,22 @@ export class BubbleChartComponent implements OnInit {
 
   public bubbleChartType: ChartType = 'bubble';
   bubbleChartColor: any[];
-  constructor() { }
+  constructor() {}
 
-  ngOnInit(): void {
+  ngOnInit(): void {}
 
-  }
-
-  datos
-  sumaFacturacion
+  datos;
+  sumaFacturacion;
   ngOnChanges() {
-
     if (this.data != undefined) {
-
-      this.bubbleChartData = this.data
-      this.bubbleChartColor = this.backgroundColor
+      this.bubbleChartData = this.data;
+      this.bubbleChartColor = this.backgroundColor;
       // console.log(this.bubbleChartColor);
-      
     }
-    
-
 
     // this.datos = this.data?.filter(a=>a['UGL']==this.ugl)
     // this.sumaFacturacion = this.datos?.reduce((acc,curr)=>{return acc +curr["Decilo Facturación"]},0)
     // let lala = this.datos?.map(a => {return {x:a["Decilo Facturación"],y:a['Decilo Asistencial']}})
     // console.log(this.datos,this.sumaFacturacion,lala)
-
-
-
   }
-
 }

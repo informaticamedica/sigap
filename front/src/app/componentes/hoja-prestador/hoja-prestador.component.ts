@@ -290,13 +290,69 @@ export class HojaPrestadorComponent implements OnInit {
         }
       }
     }
-    aux.forEach((a) => {
+    // aux.forEach((a) => {
+    //   let val = parseFloat(a.data[0].x) + parseFloat(a.data[0].y);
+    //   val = val / 2;
+    //   let r = ((10 - val) * 25.5).toFixed();
+    //   let g = (val * 25.5).toFixed();
+    //   a.backgroundColor = 'rgb(' + r + ',' + g + ',0)';
+    // });
+    const modularizadorTrucho = (vecPosta, modulo) => {
+      let vec = vecPosta.map((a) => parseFloat(a.toFixed(1)));
+      vec.sort((a, b) => a - b);
+      // debugger;
+      const min = parseFloat(vec[0]);
+      const max = parseFloat(vec[vec.length - 1]);
+      const val = max - min;
+      const valDiv = modulo / val / 10;
+      let auxxx = [];
+      auxxx[min * 10] = 0;
+      // let auxx = [...new Set(vec)];
+
+      for (let index = min * 10 + 1; index < min * 10 + val * 10; index++) {
+        auxxx[index] = parseFloat((auxxx[index - 1] + valDiv).toFixed(1));
+      }
+      auxxx[auxxx.length] = 255;
+      // debugger;
+      return auxxx;
+    };
+    let auxvec = aux.map((a) => {
       let val = parseFloat(a.data[0].x) + parseFloat(a.data[0].y);
       val = val / 2;
-      let r = ((10 - val) * 25.5).toFixed();
-      let g = (val * 25.5).toFixed();
-      a.backgroundColor = 'rgb(' + r + ',' + g + ',0)';
+      return val;
     });
+    let modu = modularizadorTrucho(auxvec, 255);
+    aux.forEach((a) => {
+      // let val: number = parseFloat(a.data[0].x) + parseFloat(a.data[0].y);
+      const aa = parseFloat(a.data[0].x);
+      const bb = parseFloat(a.data[0].y);
+      const cc = (aa + bb) / 2;
+      const dd = modu[parseFloat(cc.toFixed(1)) * 10];
+      // cc = (aa + bb);
+      // cc = (aa + bb) / 2;
+
+      // debugger;
+      if (
+        cc == undefined ||
+        aa == undefined ||
+        bb == undefined ||
+        dd == undefined
+      ) {
+        debugger;
+        var val;
+        val = aa + bb;
+        val = val / 2;
+        val = parseFloat(val.toFixed(1));
+        val = modu[val * 10];
+        debugger;
+      }
+
+      let r = (255 - dd).toFixed();
+      let g = dd.toFixed();
+      a.backgroundColor = 'rgb(' + r + ',' + g + ',0)';
+      // debugger;
+    });
+
     // console.log('aaaaaaaaaaaaaaaaaaa', aux);
 
     // this.DatosDispersionUgl =
