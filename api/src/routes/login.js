@@ -1,130 +1,163 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-const helpers = require("../lib/helpers")
-const pool = require('../database');
+const helpers = require("../lib/helpers");
+const pool = require("../database");
 
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
 
-
-router.get('/signin', async (req, res) => {
-    res.send('signin');
+router.get("/signin", async (req, res) => {
+  res.send("signin");
+  console.log("estoy aca");
 });
-router.get('/signin/a',verifyToken, async (req, res) => {
-    res.send('signinSecret');
+router.get("/signin/a", verifyToken, async (req, res) => {
+  res.send("signinSecret");
 });
 
-router.post('/signin', async (req, res) => {
-
-    const { user, pass } = req.body
-
-    const usuarios = await pool.query('SELECT * FROM usuarios WHERE usuario = ?', [user]);
-    console.log('================pool.query(SELECT * FROM====================');
-    // console.log(rows,rows[0]);
-    console.log('===============pool.query(SELECT * FROM=====================');
-    if (usuarios.length > 0) {
-      const Usuario = usuarios[0];
-      const validPassword = await helpers.matchPassword(pass, Usuario.contrasenia)
-      if (validPassword && Usuario.activo) {
-        
-        const token = jwt.sign({id: Usuario.id},"secretkey",{
-            expiresIn: 86400 // 24 hrs
-        })
-        res.status(200).json({token,nombre:Usuario.nombre})
-      } else if (!validPassword){
-        res.status(406).json({error: "Contraseña incorrecta"})
-      } else if (!Usuario.activo){
-        res.status(406).json({error: "Usuario deshabilitado"})
-      }
-    } else {
-        res.status(406).json({error: "Usuario incorrecto"})
+router.post("/signin", async (req, res) => {
+  const { user, pass } = req.body;
+  //  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNjIwMTcyOTE0LCJleHAiOjE2MjAyNTkzMTR9.8UIUtQX4kHh2jcOsr6-U5fOPf1hFXgXR40ZO2Yxcoe4
+  const usuarios = await pool.query(
+    "SELECT * FROM usuarios WHERE usuario = ?",
+    [user]
+  );
+  console.log("================pool.query(SELECT * FROM====================");
+  // console.log(rows,rows[0]);
+  console.log("===============pool.query(SELECT * FROM=====================");
+  if (usuarios.length > 0) {
+    const Usuario = usuarios[0];
+    const validPassword = await helpers.matchPassword(
+      pass,
+      Usuario.contrasenia
+    );
+    if (validPassword && Usuario.activo) {
+      const token = jwt.sign({ id: Usuario.id }, process.env.TOKEN_KEY, {
+        expiresIn: 86400, // 24 hrs
+      });
+      res.status(200).json({ token, nombre: Usuario.nombre });
+    } else if (!validPassword) {
+      res.status(406).json({ error: "Contraseña incorrecta" });
+    } else if (!Usuario.activo) {
+      res.status(406).json({ error: "Usuario deshabilitado" });
     }
-
-    console.log(req.body);
-    
+  } else {
+    res.status(406).json({ error: "Usuario incorrecto" });
+  }
+});
+router.post("/signin/api", async (req, res) => {
+  const { user, pass } = req.body;
+  //  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNjIwMTcyOTE0LCJleHAiOjE2MjAyNTkzMTR9.8UIUtQX4kHh2jcOsr6-U5fOPf1hFXgXR40ZO2Yxcoe4
+  const usuarios = await pool.query(
+    "SELECT * FROM usuarios WHERE usuario = ?",
+    [user]
+  );
+  console.log("================pool.query(SELECT * FROM====================");
+  // console.log(rows,rows[0]);
+  console.log("===============pool.query(SELECT * FROM=====================");
+  if (usuarios.length > 0) {
+    const Usuario = usuarios[0];
+    const validPassword = await helpers.matchPassword(
+      pass,
+      Usuario.contrasenia
+    );
+    if (validPassword && Usuario.activo) {
+      const token = jwt.sign({ id: Usuario.id }, process.env.TOKEN_KEY, {
+        expiresIn: 86400, // 24 hrs
+      });
+      res.header("Authorization", token);
+      res.redirect("in");
+      //   res.status(200).json({ token, nombre: Usuario.nombre });
+    } else if (!validPassword) {
+      res.status(406).json({ error: "Contraseña incorrecta" });
+    } else if (!Usuario.activo) {
+      res.status(406).json({ error: "Usuario deshabilitado" });
+    }
+  } else {
+    res.status(406).json({ error: "Usuario incorrecto" });
+  }
+});
+router.get("/signin/api/in", verifyToken, async (req, res) => {
+  console.log(req.body, req.headers);
 });
 
-router.put('/signup', async (req, res) => {
-    const { user, pass} = req.body
-    contrasenia = await helpers.encryptPassword(pass);
+router.put("/signup", async (req, res) => {
+  const { user, pass } = req.body;
+  contrasenia = await helpers.encryptPassword(pass);
 
-    // Saving in the Database
-    try {
-        //UPDATE `usuarios` SET `activo` = '1' WHERE `usuarios`.`id` = 2
-        const result = await pool.query(' UPDATE usuarios SET activo=0,contrasenia=? WHERE usuario=?', [contrasenia,user]);
-        console.log(req.body,result);
+  // Saving in the Database
+  try {
+    //UPDATE `usuarios` SET `activo` = '1' WHERE `usuarios`.`id` = 2
+    const result = await pool.query(
+      " UPDATE usuarios SET activo=0,contrasenia=? WHERE usuario=?",
+      [contrasenia, user]
+    );
+    console.log(req.body, result);
 
-        console.log({contrasenia,user});
+    console.log({ contrasenia, user });
 
-        // res.status(200).json({contrasenia,user})
-        res.status(200).json(result)
-    } catch (error) {
-        console.log('============error========================');
-        console.log(error);
-        console.log("error.code",error.code);
-        console.log('============error========================');
+    // res.status(200).json({contrasenia,user})
+    res.status(200).json(result);
+  } catch (error) {
+    console.log("============error========================");
+    console.log(error);
+    console.log("error.code", error.code);
+    console.log("============error========================");
 
-        if (error.code=="ER_DUP_ENTRY")
-        res.status(406).json(error)
-    }
+    if (error.code == "ER_DUP_ENTRY") res.status(406).json(error);
+  }
 });
-router.post('/signup', async (req, res) => {
-    const { user, pass, nombre } = req.body
-    contrasenia = await helpers.encryptPassword(pass);
-    const newUser = {
-        usuario: user,
-        contrasenia,
-        nombre
-    }
-    // Saving in the Database
-    try {
-        
-        const result = await pool.query('INSERT INTO usuarios SET ? ', newUser);
-        console.log(req.body,result);
-        res.status(200).json(result)
-    } catch (error) {
-        console.log('============error========================');
-        console.log(error);
-        console.log("error.code",error.code);
-        console.log('============error========================');
+router.post("/signup", async (req, res) => {
+  const { user, pass, nombre } = req.body;
+  contrasenia = await helpers.encryptPassword(pass);
+  const newUser = {
+    usuario: user,
+    contrasenia,
+    nombre,
+  };
+  // Saving in the Database
+  try {
+    const result = await pool.query("INSERT INTO usuarios SET ? ", newUser);
+    console.log(req.body, result);
+    res.status(200).json(result);
+  } catch (error) {
+    console.log("============error========================");
+    console.log(error);
+    console.log("error.code", error.code);
+    console.log("============error========================");
 
-        if (error.code=="ER_DUP_ENTRY")
-        res.status(406).json(error)
-    }
+    if (error.code == "ER_DUP_ENTRY") res.status(406).json(error);
+  }
 });
-
-
 
 async function verifyToken(req, res, next) {
-    try {
-        if (!req.headers.authorization) {
-            return res.status(401).send('Unauhtorized Request');
-        }
-        let token = req.headers.authorization.split(' ')[1];
-        if (token === 'null') {
-            return res.status(401).send('Unauhtorized Request');
-        }
-
-        const payload = await jwt.verify(token, 'secretkey');
-        // console.log('=================payload===================');
-        // console.log(payload);
-        // console.log('==================payload==================');
-        if (!payload) {
-            return res.status(401).send('Unauhtorized Request');
-        }
-
-        if (req.userId != undefined) {
-            console.log('===================a=================');
-            console.log(req.userId);
-            console.log('===================a=================');
-        }
-        req.userId = payload._id;
-        next();
-    } catch (e) {
-        //console.log(e)
-        return res.status(401).send('Unauhtorized Request');
+  try {
+    if (!req.headers.authorization) {
+      return res.status(401).send("Unauhtorized Request");
     }
-}
+    let token = req.headers.authorization.split(" ")[1];
+    if (token === "null") {
+      return res.status(401).send("Unauhtorized Request");
+    }
 
+    const payload = await jwt.verify(token, process.env.TOKEN_KEY);
+    // console.log('=================payload===================');
+    // console.log(payload);
+    // console.log('==================payload==================');
+    if (!payload) {
+      return res.status(401).send("Unauhtorized Request");
+    }
+
+    if (req.userId != undefined) {
+      console.log("===================a=================");
+      console.log(req.userId);
+      console.log("===================a=================");
+    }
+    req.userId = payload._id;
+    next();
+  } catch (e) {
+    //console.log(e)
+    return res.status(401).send("Unauhtorized Request");
+  }
+}
 
 module.exports = router;

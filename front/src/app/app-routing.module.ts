@@ -32,21 +32,21 @@ const routes: Routes = [
     component: HojaPrestadorComponent,
     canActivate: [AuthGuard]
   },
-  {
-    path: "global", 
-    component: GlobalComponent,
-    canActivate: [AuthGuard]
-  },
-  {
-    path: "anual", 
-    component: PrincipalComponent,
-    canActivate: [AuthGuard]
-  },
-  {
-    path: "mensual", 
-    component: PrincipalComponent,
-    canActivate: [AuthGuard]
-  },
+  // {
+  //   path: "global", 
+  //   component: GlobalComponent,
+  //   canActivate: [AuthGuard]
+  // },
+  // {
+  //   path: "anual", 
+  //   component: PrincipalComponent,
+  //   canActivate: [AuthGuard]
+  // },
+  // {
+  //   path: "mensual", 
+  //   component: PrincipalComponent,
+  //   canActivate: [AuthGuard]
+  // },
 ];
 
 @NgModule({
