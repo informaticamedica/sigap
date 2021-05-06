@@ -3,6 +3,8 @@ const router = express.Router();
 const helpers = require("../lib/helpers");
 const XLSX = require("xlsx");
 
+const pool = require("../database");
+
 const extraerDatos = () => {
   const nombreArchivo = "Dashboard Final.xlsx";
   const nombreHoja = "Datos (2)";
@@ -33,8 +35,26 @@ router.get("/", helpers.verifyToken, async (req, res) => {
   res.json(datos);
   // res.render("index", { title: "lala", condition: false });
 });
-router.post("/lala", async (req, res) => {
-  console.log(req.body);
+router.get("/lala", async (req, res) => {
+  const datos = extraerDatos();
+  if (datos != undefined) {
+    try {
+      // const result = await pool.query("INSERT INTO indicadores SET ? ", newUser);
+      // console.log(req.body, result);
+      let aux = datos.filter((a, i) => i < 3);
+      console.log(aux);
+      res.status(200).json(result);
+    } catch (error) {
+      // console.log("============error========================");
+      // console.log(error);
+      // console.log("error.code", error.code);
+      // console.log("============error========================");
+
+      if (error.code == "ER_DUP_ENTRY") res.status(406).json(error);
+    }
+    res.json(datos);
+  }
+  // console.log(req.body);
   // res.render("index", { title: "lala", condition: false });
 });
 // router.get("/cargarTabla/:token", async (req, res) => {
