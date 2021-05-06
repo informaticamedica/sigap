@@ -28,6 +28,7 @@ export class HojaPrestadorComponent implements OnInit {
   ugl_seleccionada = '';
   DatosDispersion;
   DatosRankingDecilo = {};
+  datosTabla;
   // value: number = 100;
 
   evalAsis = [0, 10];
@@ -136,7 +137,7 @@ export class HojaPrestadorComponent implements OnInit {
     // console.log('this.DatosDispersionPrestador', this.DatosDispersionPrestador);
 
     this.DatosDispersionUgl1 = this.CalculoDispersion(Datos, 'UGL');
-
+    this.datosTabla = Datos;
     this.DatosRankingDecilo['UGL']['Decilo Global'] = this.CalculoRankingDecilo(
       Datos,
       'UGL',

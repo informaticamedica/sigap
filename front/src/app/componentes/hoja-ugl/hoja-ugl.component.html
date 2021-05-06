@@ -2,110 +2,92 @@
   <div style="padding: 4%">
     <div class="container">
       <h1>Global por UGL</h1>
-    </div>
 
-    <div class="row">
-      <br />
-      <div class="col" style="min-width: 300px">
-        <ngx-slider
-          [(value)]="valAsisMin"
-          [(highValue)]="valAsisMax"
-          [(ngModel)]="evalAsis"
-          (ngModelChange)="onChange($event, 'Decilo Asistencial')"
-          [options]="opcAsis"
-        ></ngx-slider>
+      <div class="row">
+        <br />
+        <div class="col" style="min-width: 300px">
+          <ngx-slider
+            [(value)]="valAsisMin"
+            [(highValue)]="valAsisMax"
+            [(ngModel)]="evalAsis"
+            (ngModelChange)="onChange($event, 'Decilo Asistencial')"
+            [options]="opcAsis"
+          ></ngx-slider>
 
-        <br />
+          <br />
 
-        <br />
-        <br />
-      </div>
-      <div class="col" style="min-width: 300px">
-        <ngx-slider
-          [(value)]="valFactMin"
-          [(highValue)]="valFactMax"
-          [(ngModel)]="evalFact"
-          (ngModelChange)="onChange($event, 'Decilo Facturación')"
-          [options]="opcFact"
-        ></ngx-slider>
+          <br />
+          <br />
+        </div>
+        <div class="col" style="min-width: 300px">
+          <ngx-slider
+            [(value)]="valFactMin"
+            [(highValue)]="valFactMax"
+            [(ngModel)]="evalFact"
+            (ngModelChange)="onChange($event, 'Decilo Facturación')"
+            [options]="opcFact"
+          ></ngx-slider>
 
-        <br />
+          <br />
 
-        <br />
-        <br />
-      </div>
-      <div class="col" style="min-width: 300px">
-        <ngx-slider
-          [(value)]="valGlobMin"
-          [(highValue)]="valGlobMax"
-          [(ngModel)]="evalGlob"
-          (ngModelChange)="onChange($event, 'Decilo Global')"
-          [options]="opcGlob"
-        ></ngx-slider>
+          <br />
+          <br />
+        </div>
+        <div class="col" style="min-width: 300px">
+          <ngx-slider
+            [(value)]="valGlobMin"
+            [(highValue)]="valGlobMax"
+            [(ngModel)]="evalGlob"
+            (ngModelChange)="onChange($event, 'Decilo Global')"
+            [options]="opcGlob"
+          ></ngx-slider>
 
-        <br />
+          <br />
 
-        <br />
-        <br />
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col" style="min-width: 300px">
-        <autocompletar
-          [placeholder]="['UGL']"
-          [data]="Ugls"
-          (output)="addItem($event, 'UGL')"
-          (clear)="limpiar($event, 'UGL')"
-        ></autocompletar>
+          <br />
+          <br />
+        </div>
       </div>
 
-      <div class="col">
-        <button mat-raised-button color="primary" (click)="calcular()">
-          Calcular
-        </button>
+      <div class="row">
+        <div class="col" style="min-width: 300px">
+          <autocompletar
+            [placeholder]="['UGL']"
+            [data]="Ugls"
+            (output)="addItem($event, 'UGL')"
+            (clear)="limpiar($event, 'UGL')"
+          ></autocompletar>
+        </div>
+
+        <div class="col">
+          <button mat-raised-button color="primary" (click)="calcular()">
+            Calcular
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </nav>
 
 <div class="graficos">
-  <grafico-burbuja
-    [ugl]="ugl_seleccionada"
-    [data]="DatosDispersionUgl1"
-  ></grafico-burbuja>
-
-  <div class="p-4">
-    <tabla-generica [data]="Datos"></tabla-generica>
+  <div class="row p-4">
+    <div class="col-5">
+      <tabla-generica [data]="datosTabla"></tabla-generica>
+    </div>
+    <div class="col-7">
+      <br />
+      <br />
+      <br />
+      <grafico-burbuja
+        [ugl]="ugl_seleccionada"
+        [data]="DatosDispersionUgl1"
+      ></grafico-burbuja>
+    </div>
   </div>
+
   <br />
   <br />
   <br />
-
-  <grafico-barra
-    [type]="'horizontalBar'"
-    [data]="DatosRankingDecilo['UGL']['Decilo Global']?.Data"
-    [label]="DatosRankingDecilo['UGL']['Decilo Global']?.Label"
-    [filtro]="'Decilo Global'"
-    [backgroundColor]="['#ffd9b2']"
-  ></grafico-barra>
-
-  <grafico-barra
-    [type]="'horizontalBar'"
-    [data]="DatosRankingDecilo['UGL']['Decilo Facturación']?.Data"
-    [label]="DatosRankingDecilo['UGL']['Decilo Facturación']?.Label"
-    [filtro]="'Decilo Administrativo'"
-    [backgroundColor]="['#b2ffff']"
-  ></grafico-barra>
-
-  <grafico-barra
-    [type]="'horizontalBar'"
-    [data]="DatosRankingDecilo['UGL']['Decilo Asistencial']?.Data"
-    [label]="DatosRankingDecilo['UGL']['Decilo Asistencial']?.Label"
-    [filtro]="'Decilo Asistencial'"
-    [backgroundColor]="['#ffb2d9']"
-  ></grafico-barra>
-
   <grafico-barra
     [type]="'horizontalBar'"
     [data]="DatosRankingDeciloTotal['UGL']?.Data"
@@ -113,4 +95,44 @@
     [filtro]="'Decilo Total'"
     [backgroundColor]="['#ffd9b2', '#b2ffff', '#ffb2d9']"
   ></grafico-barra>
+  <div class="row">
+    <div class="col-6">
+      <grafico-barra
+        [type]="'horizontalBar'"
+        [data]="DatosRankingDecilo['UGL']['Decilo Facturación']?.Data"
+        [label]="DatosRankingDecilo['UGL']['Decilo Facturación']?.Label"
+        [filtro]="'Decilo Administrativo'"
+        [backgroundColor]="['#b2ffff']"
+      ></grafico-barra>
+    </div>
+    <div class="col-6">
+      <grafico-barra
+        [type]="'horizontalBar'"
+        [data]="DatosRankingDecilo['UGL']['Decilo Asistencial']?.Data"
+        [label]="DatosRankingDecilo['UGL']['Decilo Asistencial']?.Label"
+        [filtro]="'Decilo Asistencial'"
+        [backgroundColor]="['#ffb2d9']"
+      ></grafico-barra>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-6">
+      <grafico-barra
+        [type]="'horizontalBar'"
+        [data]="DatosRankingDecilo['UGL']['Decilo Global']?.Data"
+        [label]="DatosRankingDecilo['UGL']['Decilo Global']?.Label"
+        [filtro]="'Decilo Global'"
+        [backgroundColor]="['#ffd9b2']"
+      ></grafico-barra>
+    </div>
+    <div class="col-6">
+      <grafico-barra
+        [type]="'horizontalBar'"
+        [data]="DatosRankingDeciloTotal['UGL']?.Data"
+        [label]="DatosRankingDeciloTotal['UGL']?.Label"
+        [filtro]="'Decilo Total'"
+        [backgroundColor]="['#ffd9b2', '#b2ffff', '#ffb2d9']"
+      ></grafico-barra>
+    </div>
+  </div>
 </div>

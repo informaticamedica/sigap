@@ -95,6 +95,7 @@ export class HojaUglComponent implements OnInit {
     });
   }
 
+  datosTabla;
   initDatos(Datos) {
     this.Ugls = [...new Set(Datos.map((a) => a.UGL))];
     this.Ugls.sort();
@@ -105,7 +106,8 @@ export class HojaUglComponent implements OnInit {
     this.Prestadores.sort();
     this.DatosDispersionPrestador = this.CalculoDispersion(Datos, 'Prestador');
     this.DatosDispersionUgl1 = this.CalculoDispersion(Datos, 'UGL');
-    console.log('asd', Datos);
+    console.log('asd', Datos, this.Ugls);
+    this.datosTabla = Datos;
 
     this.DatosRankingDecilo['UGL']['Decilo Global'] = this.CalculoRankingDecilo(
       Datos,
