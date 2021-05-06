@@ -1,0 +1,39 @@
+import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
+
+import { AfterViewInit, ViewChild } from '@angular/core';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+
+@Component({
+  selector: 'tabla-generica',
+  templateUrl: './tabla-generica.component.html',
+  styleUrls: ['./tabla-generica.component.css'],
+})
+export class TablaGenericaComponent implements OnInit {
+  constructor() {}
+
+  ngOnInit(): void {}
+
+  @Input() data;
+  dataSource;
+  columnas;
+  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  ngAfterViewInit() {}
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (this.data) {
+      this.dataSource = new MatTableDataSource(this.data);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+      this.columnas = Object.keys(this.dataSource.filteredData[0]);
+    }
+    console.log(changes);
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+}

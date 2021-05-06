@@ -18,7 +18,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { HttpClientModule } from "@angular/common/http";
+import { HttpClientModule } from '@angular/common/http';
 import { SignupComponent } from './componentes/signup/signup.component';
 import { PrincipalComponent } from './componentes/principal/principal.component';
 import { ScatterChartComponent } from './componentes/scatter-chart/scatter-chart.component';
@@ -37,11 +37,16 @@ import { HojaUglComponent } from './componentes/hoja-ugl/hoja-ugl.component';
 import { AutocompletarComponent } from './componentes/autocompletar/autocompletar.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { AutocompleteLibModule } from 'angular-ng-autocomplete';
-import {MatSelectModule} from '@angular/material/select';
+import { MatSelectModule } from '@angular/material/select';
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
+import { TablaGenericaComponent } from './componentes/tabla-generica/tabla-generica.component';
+import { MatTableModule } from '@angular/material/table';
+import { MatSortModule } from '@angular/material/sort';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { TablaPipe } from './pipe/tabla.pipe';
 // import { JwtModule } from "@auth0/angular-jwt";
 export function tokenGetter() {
-  return sessionStorage.getItem("token");
+  return sessionStorage.getItem('token');
 }
 
 @NgModule({
@@ -63,7 +68,9 @@ export function tokenGetter() {
     UglComponent,
     HojaPrestadorComponent,
     HojaUglComponent,
-    AutocompletarComponent
+    AutocompletarComponent,
+    TablaGenericaComponent,
+    TablaPipe,
   ],
   imports: [
     BrowserModule,
@@ -87,12 +94,15 @@ export function tokenGetter() {
     MatAutocompleteModule,
     AutocompleteLibModule,
     MatSelectModule,
-    NgxSliderModule
+    NgxSliderModule,
+    MatTableModule,
+    MatSortModule,
+    MatPaginatorModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
 
 /*
     JwtModule.forRoot({

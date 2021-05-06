@@ -10,7 +10,7 @@ router.get("/signin", async (req, res) => {
   res.send("signin");
   console.log("estoy aca");
 });
-router.get("/signin/a", verifyToken, async (req, res) => {
+router.get("/signin/a", helpers.verifyToken, async (req, res) => {
   res.send("signinSecret");
 });
 
@@ -43,41 +43,6 @@ router.post("/signin", async (req, res) => {
   } else {
     res.status(406).json({ error: "Usuario incorrecto" });
   }
-});
-router.post("/signin/api", async (req, res) => {
-  const { user, pass } = req.body;
-  //  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNjIwMTcyOTE0LCJleHAiOjE2MjAyNTkzMTR9.8UIUtQX4kHh2jcOsr6-U5fOPf1hFXgXR40ZO2Yxcoe4
-  const usuarios = await pool.query(
-    "SELECT * FROM usuarios WHERE usuario = ?",
-    [user]
-  );
-  console.log("================pool.query(SELECT * FROM====================");
-  // console.log(rows,rows[0]);
-  console.log("===============pool.query(SELECT * FROM=====================");
-  if (usuarios.length > 0) {
-    const Usuario = usuarios[0];
-    const validPassword = await helpers.matchPassword(
-      pass,
-      Usuario.contrasenia
-    );
-    if (validPassword && Usuario.activo) {
-      const token = jwt.sign({ id: Usuario.id }, process.env.TOKEN_KEY, {
-        expiresIn: 86400, // 24 hrs
-      });
-      res.header("Authorization", token);
-      res.redirect("in");
-      //   res.status(200).json({ token, nombre: Usuario.nombre });
-    } else if (!validPassword) {
-      res.status(406).json({ error: "Contraseña incorrecta" });
-    } else if (!Usuario.activo) {
-      res.status(406).json({ error: "Usuario deshabilitado" });
-    }
-  } else {
-    res.status(406).json({ error: "Usuario incorrecto" });
-  }
-});
-router.get("/signin/api/in", verifyToken, async (req, res) => {
-  console.log(req.body, req.headers);
 });
 
 router.put("/signup", async (req, res) => {
@@ -129,35 +94,58 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-async function verifyToken(req, res, next) {
-  try {
-    if (!req.headers.authorization) {
-      return res.status(401).send("Unauhtorized Request");
+router.post("/signin/api", async (req, res) => {
+  const { user, pass } = req.body;
+  //  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNjIwMTcyOTE0LCJleHAiOjE2MjAyNTkzMTR9.8UIUtQX4kHh2jcOsr6-U5fOPf1hFXgXR40ZO2Yxcoe4
+  const usuarios = await pool.query(
+    "SELECT * FROM usuarios WHERE usuario = ?",
+    [user]
+  );
+  console.log("================pool.query(SELECT * FROM====================");
+  // console.log(rows,rows[0]);
+  console.log("===============pool.query(SELECT * FROM=====================");
+  if (usuarios.length > 0) {
+    const Usuario = usuarios[0];
+    const validPassword = await helpers.matchPassword(
+      pass,
+      Usuario.contrasenia
+    );
+    if (validPassword && Usuario.activo) {
+      const token = jwt.sign({ id: Usuario.id }, process.env.TOKEN_KEY, {
+        expiresIn: 86400, // 24 hrs
+      });
+      // res.status(200);
+      res.status(200).render("cargarTabla", { title: "Cargar tabla " });
+      // res.header("authorization", "Bearer " + token);
+      // res.redirect("../datos/cargarTabla/" + token);
+      //   res.status(200).json({ token, nombre: Usuario.nombre });
+    } else if (!validPassword) {
+      res.status(406).json({ error: "Contraseña incorrecta" });
+    } else if (!Usuario.activo) {
+      res.status(406).json({ error: "Usuario deshabilitado" });
     }
-    let token = req.headers.authorization.split(" ")[1];
-    if (token === "null") {
-      return res.status(401).send("Unauhtorized Request");
-    }
-
-    const payload = await jwt.verify(token, process.env.TOKEN_KEY);
-    // console.log('=================payload===================');
-    // console.log(payload);
-    // console.log('==================payload==================');
-    if (!payload) {
-      return res.status(401).send("Unauhtorized Request");
-    }
-
-    if (req.userId != undefined) {
-      console.log("===================a=================");
-      console.log(req.userId);
-      console.log("===================a=================");
-    }
-    req.userId = payload._id;
-    next();
-  } catch (e) {
-    //console.log(e)
-    return res.status(401).send("Unauhtorized Request");
+  } else {
+    res.status(406).json({ error: "Usuario incorrecto" });
   }
-}
+});
+
+router.get("/", async (req, res) => {
+  // const datos = extraerDatos();
+  // res.json(datos)
+  // let ñaña = [];
+  res.render("index", {
+    title: "Login API",
+  });
+  // console.log(ñaña);
+});
+
+// router.get("/cargarTabla/:token", async (req, res) => {
+//   // console.log(req.body, req.headers);
+//   token = req.params.token;
+//   const TOKEN = await helpers.verifyTokenArgument(token);
+//   if (TOKEN == "OK") {
+//     res.status(200).render("cargarTabla", { title: "Cargar tabla " });
+//   } else res.status(401).send(TOKEN);
+// });
 
 module.exports = router;

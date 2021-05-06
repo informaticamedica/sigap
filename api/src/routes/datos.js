@@ -30,15 +30,20 @@ const extraerDatos = () => {
 // console.log(__dirname,xlData);
 router.get("/", helpers.verifyToken, async (req, res) => {
   const datos = extraerDatos();
-  // res.json(datos)
-  res.render("index", { title: "lala", condition: false });
+  res.json(datos);
+  // res.render("index", { title: "lala", condition: false });
 });
-router.get("/asd", async (req, res) => {
-  const datos = extraerDatos();
-  // res.json(datos)
-  let ñaña = [];
-  res.render("index", { title: "lala", condition: false, lala: ñaña, datos });
-  console.log(ñaña);
+router.post("/lala", async (req, res) => {
+  console.log(req.body);
+  // res.render("index", { title: "lala", condition: false });
 });
+// router.get("/cargarTabla/:token", async (req, res) => {
+//   // console.log(req.body, req.headers);
+//   token = req.params.token;
+//   const TOKEN = await helpers.verifyTokenArgument(token);
+//   if (TOKEN == "OK") {
+//     res.status(200).render("cargarTabla", { title: "Cargar tabla " });
+//   } else res.status(401).send(TOKEN);
+// });
 
 module.exports = router;
