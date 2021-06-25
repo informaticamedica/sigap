@@ -1,3 +1,3 @@
 # SIGAP
 
-Sistema para la visualizacion de _**I**ndicadores de la **G**erencia de **A**uditoria **P**restacional_
+_**S**istema **I**ntegral para la **G**estion de **A**uditorias **P**restacionales_
