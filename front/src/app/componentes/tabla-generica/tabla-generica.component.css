@@ -20,3 +20,18 @@ table tbody {
   display: table;
   width: 100%;
 }
+
+.mat-row:hover {
+  background-color: violet;
+  cursor: pointer;
+}
+
+.mat-row {
+  text-align: left;
+}
+
+.mat-cell,
+.mat-header-cell {
+  padding: 0 1em;
+  /* min-width: 10%; */
+}

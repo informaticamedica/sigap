@@ -44,6 +44,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { TablaPipe } from './pipe/tabla.pipe';
+import { NuevaAuditoriaComponent } from './componentes/nueva-auditoria/nueva-auditoria.component';
 // import { JwtModule } from "@auth0/angular-jwt";
 export function tokenGetter() {
   return sessionStorage.getItem('token');
@@ -71,6 +72,7 @@ export function tokenGetter() {
     AutocompletarComponent,
     TablaGenericaComponent,
     TablaPipe,
+    NuevaAuditoriaComponent,
   ],
   imports: [
     BrowserModule,

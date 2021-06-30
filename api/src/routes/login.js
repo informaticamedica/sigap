@@ -18,7 +18,7 @@ router.post("/signin", async (req, res) => {
   const { user, pass } = req.body;
   //  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNjIwMTcyOTE0LCJleHAiOjE2MjAyNTkzMTR9.8UIUtQX4kHh2jcOsr6-U5fOPf1hFXgXR40ZO2Yxcoe4
   const usuarios = await pool.query(
-    "SELECT * FROM usuarios WHERE usuario = ?",
+    "SELECT * FROM usuariosAtlas WHERE usuario = ?",
     [user]
   );
   console.log("================pool.query(SELECT * FROM====================");
@@ -53,7 +53,7 @@ router.put("/signup", async (req, res) => {
   try {
     //UPDATE `usuarios` SET `activo` = '1' WHERE `usuarios`.`id` = 2
     const result = await pool.query(
-      " UPDATE usuarios SET activo=0,contrasenia=? WHERE usuario=?",
+      " UPDATE usuariosAtlas SET activo=0,contrasenia=? WHERE usuario=?",
       [contrasenia, user]
     );
     console.log(req.body, result);
@@ -78,10 +78,14 @@ router.post("/signup", async (req, res) => {
     usuario: user,
     contrasenia,
     nombre,
+    activo: false,
   };
   // Saving in the Database
   try {
-    const result = await pool.query("INSERT INTO usuarios SET ? ", newUser);
+    const result = await pool.query(
+      "INSERT INTO usuariosAtlas SET ? ",
+      newUser
+    );
     console.log(req.body, result);
     res.status(200).json(result);
   } catch (error) {
@@ -98,7 +102,7 @@ router.post("/signin/api", async (req, res) => {
   const { user, pass } = req.body;
   //  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNjIwMTcyOTE0LCJleHAiOjE2MjAyNTkzMTR9.8UIUtQX4kHh2jcOsr6-U5fOPf1hFXgXR40ZO2Yxcoe4
   const usuarios = await pool.query(
-    "SELECT * FROM usuarios WHERE usuario = ?",
+    "SELECT * FROM usuariosAtlas WHERE usuario = ?",
     [user]
   );
   console.log("================pool.query(SELECT * FROM====================");

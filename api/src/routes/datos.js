@@ -31,8 +31,16 @@ const extraerDatos = () => {
 // console.log(sheet_name_list,sheet_name_list['datos']);
 // console.log(__dirname,xlData);
 router.get("/", helpers.verifyToken, async (req, res) => {
-  const datos = extraerDatos();
-  res.json(datos);
+  // const datos = extraerDatos();
+
+  const Auditorias = await pool.query(
+    "select A.idauditoria, P.descripcion as Prestador, DATE_FORMAT(A.fechaplan, '%d/%m/%Y') as 'Fecha de Auditoría', P.CUIT, P.SAP, U.descripcion as UGL, E.descripcion as Estado from Auditorias A, Prestadores P, UGL U, EstadosAuditoria E where A.idprestador = P.cprestador and U.idugl = P.idugl and E.idestadoauditoria = A.idestadoauditoria"
+  );
+  const Prestadores = await pool.query("select * from Prestadores");
+
+  res.json(Auditorias);
+
+  // console.log(Prestadores);
   // res.render("index", { title: "lala", condition: false });
 });
 router.get("/lala", async (req, res) => {

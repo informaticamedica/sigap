@@ -1,10 +1,10 @@
-CREATE DATABASE db_salud_ciudad;
+CREATE DATABASE db_ATLAS;
 
-USE db_salud_ciudad;
+USE db_ATLAS;
 
 -- TABLE USER
 -- all pasword wil be encrypted using SHA1
-CREATE TABLE usuarios (
+CREATE TABLE usuariosAtlas (
   id INT(11) NOT NULL PRIMARY KEY,
   usuario VARCHAR(32) NOT NULL,
   contrasenia VARCHAR(60) NOT NULL,
@@ -12,17 +12,17 @@ CREATE TABLE usuarios (
 );
 
 ALTER TABLE
-  usuarios
+  usuariosAtlas
 ADD
   PRIMARY KEY (id);
 
 ALTER TABLE
-  usuarios
+  usuariosAtlas
 MODIFY
   id INT(11) NOT NULL AUTO_INCREMENT,
   AUTO_INCREMENT = 1;
 
-DESCRIBE usuarios;
+DESCRIBE usuariosAtlas;
 
 INSERT INTO
   users (id, username, password, fullname)

@@ -26,9 +26,12 @@ export class PrincipalComponent implements OnInit {
   constructor(private datos: DatosDbService) {}
 
   ngOnInit(): void {
-    this.datos.DatosApi().subscribe((res) => {
-      this.Datos = res;
-      // console.log(res);
+    this.datos.DatosApi().subscribe((res: []) => {
+      this.Datos = res.map((a) => {
+        delete a['idauditoria'];
+        return a;
+      });
+      console.log(res);
     });
   }
 }
