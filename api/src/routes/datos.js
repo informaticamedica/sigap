@@ -34,8 +34,12 @@ router.get("/", helpers.verifyToken, async (req, res) => {
   // const datos = extraerDatos();
 
   const Auditorias = await pool.query(
-    "select A.idauditoria, P.descripcion as Prestador, DATE_FORMAT(A.fechaplan, '%d/%m/%Y') as 'Fecha de Auditoría', P.CUIT, P.SAP, U.descripcion as UGL, E.descripcion as Estado from Auditorias A, Prestadores P, UGL U, EstadosAuditoria E where A.idprestador = P.cprestador and U.idugl = P.idugl and E.idestadoauditoria = A.idestadoauditoria"
+    "select A.idauditoria, P.descripcion as Prestador, DATE_FORMAT(A.fechaplan, '%d/%m/%Y') as 'Fecha de Auditoría', P.CUIT, P.SAP, U.descripcion as UGL, E.descripcion as Estado from Auditorias A, Prestadores P, UGL U, EstadosAuditoria E where A.idprestador = P.idprestador and U.idugl = P.idugl and E.idestadoauditoria = A.idestadoauditoria"
   );
+
+  // const Auditorias = await pool.query(
+  //   "select A.idauditoria, P.descripcion as Prestador, DATE_FORMAT(A.fechaplan, '%d/%m/%Y') as 'Fecha de Auditoría', P.CUIT, P.SAP, U.descripcion as UGL, E.descripcion as Estado from Auditorias A, Prestadores P, UGL U, EstadosAuditoria E where A.idprestador = P.cprestador and U.idugl = P.idugl and E.idestadoauditoria = A.idestadoauditoria"
+  // );
   const Prestadores = await pool.query("select * from Prestadores");
 
   res.json(Auditorias);

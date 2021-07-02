@@ -1,49 +1,55 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { SigninComponent } from "./componentes/signin/signin.component"
-import { SignupComponent } from "./componentes/signup/signup.component"
-import { ChangepassComponent } from "./componentes/changepass/changepass.component"
-import { PrincipalComponent } from "./componentes/principal/principal.component"
+import { SigninComponent } from './componentes/signin/signin.component';
+import { SignupComponent } from './componentes/signup/signup.component';
+import { ChangepassComponent } from './componentes/changepass/changepass.component';
+import { PrincipalComponent } from './componentes/principal/principal.component';
+import { NuevaAuditoriaComponent } from './componentes/nueva-auditoria/nueva-auditoria.component';
 
 import { AuthGuard } from './servicios/auth.guard';
 import { GlobalComponent } from './componentes/global/global.component';
 
-import { HojaPrestadorComponent } from './componentes/hoja-prestador/hoja-prestador.component'
-import { HojaUglComponent } from './componentes/hoja-ugl/hoja-ugl.component'
+import { HojaPrestadorComponent } from './componentes/hoja-prestador/hoja-prestador.component';
+import { HojaUglComponent } from './componentes/hoja-ugl/hoja-ugl.component';
 
 const routes: Routes = [
-  { path: "", component: SigninComponent },
-  { path: "signin", component: SigninComponent },
-  { path: "signup", component: SignupComponent },
-  { path: "changepass", component: ChangepassComponent },
+  { path: '', component: SigninComponent },
+  { path: 'signin', component: SigninComponent },
+  { path: 'signup', component: SignupComponent },
+  { path: 'changepass', component: ChangepassComponent },
   {
-    path: "principal", 
+    path: 'principal',
     component: PrincipalComponent,
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
   },
   {
-    path: "ugl", 
+    path: 'planificarauditoria',
+    component: NuevaAuditoriaComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'ugl',
     component: HojaUglComponent,
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
   },
   {
-    path: "prestador", 
+    path: 'prestador',
     component: HojaPrestadorComponent,
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
   },
   // {
-  //   path: "global", 
+  //   path: "global",
   //   component: GlobalComponent,
   //   canActivate: [AuthGuard]
   // },
   // {
-  //   path: "anual", 
+  //   path: "anual",
   //   component: PrincipalComponent,
   //   canActivate: [AuthGuard]
   // },
   // {
-  //   path: "mensual", 
+  //   path: "mensual",
   //   component: PrincipalComponent,
   //   canActivate: [AuthGuard]
   // },
@@ -51,6 +57,6 @@ const routes: Routes = [
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

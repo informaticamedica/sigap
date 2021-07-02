@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container mt-3">
   <mat-toolbar style="display: flex; justify-content: space-between">
     <span>Nueva Auditoría</span>
     <div>
@@ -13,45 +13,170 @@
       </button>
     </div>
   </mat-toolbar>
-  <form [formGroup]="formGroup">
-    <mat-form-field>
-      <input
-        matInput
-        placeholder="Seleccione prestador"
-        formControlName="prestador"
-      />
-    </mat-form-field>
-    <br />
-    <mat-form-field>
-      <input
-        matInput
-        placeholder="Fecha de auditoria"
-        formControlName="fecha"
-      />
-    </mat-form-field>
-    &nbsp;
-    <mat-form-field>
-      <input
-        matInput
-        placeholder="Tipo de informe"
-        formControlName="tipoInforme"
-      />
-    </mat-form-field>
-    <br />
-    <mat-form-field>
-      <input
-        matInput
-        placeholder="Referente de equipo"
-        formControlName="referenteEquipo"
-      />
+
+  <form
+    [formGroup]="form"
+    style="
+      margin-left: auto;
+      margin-right: auto;
+      left: 0;
+      right: 0;
+      text-align: left;
+    "
+    (submit)="save()"
+  >
+    <mat-form-field style="width: 70%">
+      <mat-label>Prestador</mat-label>
+      <input matInput [matAutocomplete]="auto" formControlName="prestadores" />
+      <mat-autocomplete
+        panelWidth="fit-content"
+        #auto="matAutocomplete"
+        [displayWith]="displayFn.bind(this)"
+      >
+        <mat-option
+          *ngFor="let state of Prestadores"
+          value="{{ state._id }}"
+          (click)="guardarUGL(state)"
+        >
+          <span>{{ state.D_PRESTADOR }}</span> |
+          <small>UGL: {{ state.C_UGL }}</small> |
+          <small>Loc.: {{ state.C_LOCALIDAD_PAMI }}</small> |
+          <small>CUIT: {{ state.N_CUIT_CUIL }}</small> |
+          <small>Nro Sap: {{ state.N_SAP }}</small>
+        </mat-option>
+      </mat-autocomplete>
     </mat-form-field>
 
-    <!-- <mat-form-field class="form-element">
-      <input matInput placeholder="Password" formControlName="password" />
-      <mat-hint>Choose a password of at least eight characters, one uppercase letter and one number</mat-hint>
-      <mat-error *ngIf="!formGroup.controls['password'].valid && formGroup.controls['password'].touched">
-        {{ getErrorPassword() }}
-      </mat-error>
+    <br />
+
+    <mat-form-field>
+      <mat-label>Fecha:</mat-label>
+
+      <input matInput type="date" formControlName="fechaReal" placeholder=" " />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Tipo de informe</mat-label>
+
+      <mat-select formControlName="plantillasInformes">
+        <mat-option
+          *ngFor="let plantilla of PlantillasInformes"
+          value="{{ plantilla._id }}"
+        >
+          {{ plantilla.mostrar }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- <mat-form-field>
+      <mat-label>Modalidad</mat-label>
+
+      <mat-select formControlName="modalidad">
+        <mat-option value="A distancia"> A distancia </mat-option>
+        <mat-option value="Presencial"> Presencial </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Número de GDE</mat-label>
+
+      <input matInput formControlName="GDE" />
     </mat-form-field> -->
+
+    <mat-form-field style="width: 50rem">
+      <mat-label>Referente de equipo</mat-label>
+      <input matInput [matAutocomplete]="auto3" formControlName="usuarios" />
+      <mat-autocomplete
+        panelWidth="fit-content"
+        #auto3="matAutocomplete"
+        [displayWith]="displayFn3.bind(this)"
+      >
+        <mat-option
+          *ngFor="let usuario of AuxUsuarios1"
+          value="{{ usuario._id }}"
+          (click)="guardarUGL2(usuario.C_UGL)"
+        >
+          <span>{{ usuario.nombre }}</span> |
+          <small>Legajo: {{ usuario.legajo }}</small> |
+          <small>Profesion/es: {{ usuario.profesion }}</small>
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+    <br />
+
+    <mat-label>Integrantes</mat-label>
+    <button mat-icon-button type="button" (click)="addSubElemento()">
+      <mat-icon>add</mat-icon>
+    </button>
+    <div formArrayName="integrantes">
+      <div
+        *ngFor="let item of getSubelementos.controls; let pointIndex = index"
+        [formGroupName]="pointIndex"
+      >
+        <mat-grid-list cols="{{ 16 }}" rowHeight="55px" gutterSize="5px">
+          <mat-grid-tile [colspan]="1" [rowspan]="1">
+            <a
+              mat-icon-button
+              type="button"
+              (click)="deleteSubElemento(pointIndex)"
+            >
+              <mat-icon>remove</mat-icon>
+            </a>
+          </mat-grid-tile>
+          <mat-grid-tile [colspan]="5" [rowspan]="1">
+            <mat-form-field style="text-align: left">
+              <mat-label> Area </mat-label>
+              <mat-select formControlName="secciones">
+                <mat-option
+                  *ngFor="let SubOpc of Area"
+                  value="{{ SubOpc._id }}"
+                >
+                  {{ SubOpc.mostrar }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </mat-grid-tile>
+
+          <mat-grid-tile [colspan]="5" [rowspan]="1">
+            <mat-form-field class="example-full-width">
+              <mat-label>Usuario</mat-label>
+              <input
+                matInput
+                [matAutocomplete]="auto2"
+                formControlName="usuarios"
+              />
+              <mat-autocomplete
+                #auto2="matAutocomplete"
+                [displayWith]="displayFn2.bind(this)"
+                panelWidth="fit-content"
+              >
+                <mat-option
+                  *ngFor="let usuario of AuxUsuarios[pointIndex]"
+                  value="{{ usuario._id }}"
+                  (click)="guardarUGL2(usuario.C_UGL)"
+                >
+                  <span>{{ usuario.nombre }}</span> |
+                  <small>Legajo: {{ usuario.legajo }}</small> |
+                  <small>Profesion/es: {{ usuario.profesion }}</small>
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+          </mat-grid-tile>
+
+          <mat-grid-tile [colspan]="5" [rowspan]="1">
+            <mat-slide-toggle
+              [color]="['primary']"
+              class="container"
+              formControlName="responsable"
+            >
+              Responsable
+            </mat-slide-toggle>
+          </mat-grid-tile>
+        </mat-grid-list>
+        <hr />
+      </div>
+    </div>
+
+    <br />
   </form>
 </div>

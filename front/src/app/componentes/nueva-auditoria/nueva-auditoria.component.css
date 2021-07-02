@@ -1,0 +1,24 @@
+/* #frugalmap {
+  height: 300px;
+  background-color: #eee;
+}
+
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+.example-panel.mat-select-panel {
+  max-width: 2500px;
+}
+
+.example-full-width {
+  width: 100%;
+}
+::ng-deep .cdk-overlay-pane {
+
+  min-width: 450px;
+} */
+
+mat-form-field {
+  padding: 5px;
+}
