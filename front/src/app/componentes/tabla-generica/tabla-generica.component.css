@@ -22,7 +22,7 @@ table tbody {
 }
 
 .mat-row:hover {
-  background-color: violet;
+  background-color: #C7CCEB  ;
   cursor: pointer;
 }
 

@@ -32,20 +32,24 @@ const extraerDatos = () => {
 // console.log(__dirname,xlData);
 router.get("/", helpers.verifyToken, async (req, res) => {
   // const datos = extraerDatos();
-
+try {
+  
   const Auditorias = await pool.query(
-    "select A.idauditoria, P.descripcion as Prestador, DATE_FORMAT(A.fechaplan, '%d/%m/%Y') as 'Fecha de Auditoría', P.CUIT, P.SAP, U.descripcion as UGL, E.descripcion as Estado from Auditorias A, Prestadores P, UGL U, EstadosAuditoria E where A.idprestador = P.idprestador and U.idugl = P.idugl and E.idestadoauditoria = A.idestadoauditoria"
-  );
+    "call ListarAuditorias(0)");
+    res.json(Auditorias[0]);
+} catch (error) {
+  console.error(error);
+  res.json({});
+}
+// const Auditorias = await pool.query(
+//   "select A.idauditoria, P.descripcion as Prestador, DATE_FORMAT(A.fechaplan, '%d/%m/%Y') as 'Fecha de Auditoría', P.CUIT, P.SAP, U.descripcion as UGL, E.descripcion as Estado from Auditorias A, Prestadores P, UGL U, EstadosAuditoria E where A.idprestador = P.idprestador and U.idugl = P.idugl and E.idestadoauditoria = A.idestadoauditoria"
+//   );
+      
 
-  // const Auditorias = await pool.query(
-  //   "select A.idauditoria, P.descripcion as Prestador, DATE_FORMAT(A.fechaplan, '%d/%m/%Y') as 'Fecha de Auditoría', P.CUIT, P.SAP, U.descripcion as UGL, E.descripcion as Estado from Auditorias A, Prestadores P, UGL U, EstadosAuditoria E where A.idprestador = P.cprestador and U.idugl = P.idugl and E.idestadoauditoria = A.idestadoauditoria"
-  // );
-  const Prestadores = await pool.query("select * from Prestadores");
+  // const Prestadores = await pool.query("select * from Prestadores");
+  
 
-  res.json(Auditorias);
 
-  // console.log(Prestadores);
-  // res.render("index", { title: "lala", condition: false });
 });
 router.get("/lala", async (req, res) => {
   const datos = extraerDatos();
