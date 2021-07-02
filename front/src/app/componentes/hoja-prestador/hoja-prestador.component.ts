@@ -102,27 +102,27 @@ export class HojaPrestadorComponent implements OnInit {
     this.DatosRankingDecilo['Prestador'] = {};
     this.DatosRankingDecilo['Prestador']['Decilo Global'] = {};
 
-    this.datos.DatosApi().subscribe((res) => {
-      this.Datos = res;
-      // this.Ugls = [...new Set(this.Datos.map((a) => a.UGL))];
-      // this.Ugls.sort();
+    // this.datos.DatosApi().subscribe((res) => {
+    //   this.Datos = res;
+    //   // this.Ugls = [...new Set(this.Datos.map((a) => a.UGL))];
+    //   // this.Ugls.sort();
 
-      // this.colorPrestadores = this.Datos.map((a) => {
-      //   return {
-      //     backgroundColor:
-      //       'rgb(' +
-      //       ((10 - a['Decilo Global']) * 25.5).toFixed() +
-      //       ',' +
-      //       (a['Decilo Global'] * 25.5).toFixed() +
-      //       ',0)',
-      //   };
-      // });
+    //   // this.colorPrestadores = this.Datos.map((a) => {
+    //   //   return {
+    //   //     backgroundColor:
+    //   //       'rgb(' +
+    //   //       ((10 - a['Decilo Global']) * 25.5).toFixed() +
+    //   //       ',' +
+    //   //       (a['Decilo Global'] * 25.5).toFixed() +
+    //   //       ',0)',
+    //   //   };
+    //   // });
 
-      // console.log(this.Datos);
-      // console.log(this.colorPrestadores);
+    //   // console.log(this.Datos);
+    //   // console.log(this.colorPrestadores);
 
-      this.initDatos(this.Datos);
-    });
+    //   this.initDatos(this.Datos);
+    // });
   }
 
   initDatos(Datos) {

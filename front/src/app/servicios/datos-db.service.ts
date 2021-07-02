@@ -32,10 +32,10 @@ export class DatosDbService {
   //   })
   // };
 
-  DatosApi(){
+  DatosApi(base){
     // console.log(sessionStorage.getItem('token'),this.http.);
     
-    return this.http.get(this.urlApi, { headers: this.headers } )
+    return this.http.get(this.urlApi + base, { headers: this.headers } )
 
   }
 

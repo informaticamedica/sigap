@@ -81,18 +81,18 @@ export class HojaUglComponent implements OnInit {
     this.DatosRankingDecilo['Prestador'] = {};
     this.DatosRankingDecilo['Prestador']['Decilo Global'] = {};
 
-    this.datos.DatosApi().subscribe((res) => {
-      this.Datos = res;
-      // this.Ugls = [...new Set(this.Datos.map((a) => a.UGL))];
-      // this.Ugls.sort();
+    // this.datos.DatosApi().subscribe((res) => {
+    //   this.Datos = res;
+    //   // this.Ugls = [...new Set(this.Datos.map((a) => a.UGL))];
+    //   // this.Ugls.sort();
 
-      // console.log(res);
+    //   // console.log(res);
 
-      // this.Prestadores = [...new Set(this.Datos.map((a) => a.Prestador))];
-      // this.Prestadores.sort();
+    //   // this.Prestadores = [...new Set(this.Datos.map((a) => a.Prestador))];
+    //   // this.Prestadores.sort();
 
-      this.initDatos(this.Datos);
-    });
+    //   this.initDatos(this.Datos);
+    // });
   }
 
   datosTabla;
