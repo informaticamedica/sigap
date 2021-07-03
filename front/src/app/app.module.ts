@@ -46,7 +46,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { TablaPipe } from './pipe/tabla.pipe';
 import { NuevaAuditoriaComponent } from './componentes/nueva-auditoria/nueva-auditoria.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-
+import { MatDatepickerModule } from '@angular/material/datepicker';
 // import { JwtModule } from "@auth0/angular-jwt";
 import { MatGridListModule } from '@angular/material/grid-list';
 
@@ -106,6 +106,7 @@ export function tokenGetter() {
     MatPaginatorModule,
     MatGridListModule,
     MatSlideToggleModule,
+    MatDatepickerModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

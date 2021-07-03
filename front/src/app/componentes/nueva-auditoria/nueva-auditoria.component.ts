@@ -14,13 +14,17 @@ import {
   FormArray,
 } from '@angular/forms';
 import { Router } from '@angular/router';
+import { DatosDbService } from 'src/app/servicios/datos-db.service';
+
 @Component({
   selector: 'nueva-auditoria',
   templateUrl: './nueva-auditoria.component.html',
   styleUrls: ['./nueva-auditoria.component.css'],
 })
 export class NuevaAuditoriaComponent implements OnInit {
+  PrestadoresRes;
   constructor(
+    private datos: DatosDbService,
     private fb: FormBuilder,
     private router: Router,
     private formBuilder: FormBuilder
@@ -37,57 +41,62 @@ export class NuevaAuditoriaComponent implements OnInit {
       referente: [''],
     }),
   });
-
+  baseEditar;
   ngOnInit(): void {
     console.log(this.formGroup);
+    this.datos.DatosApi('prestadores').subscribe((res: []) => {
+      this.PrestadoresRes = res.map((a) => {
+        // delete a['idprestador'];
+        return a;
+      });
+      this.Prestadores = res.map((a) => {
+        // delete a['idprestador'];
+        return a;
+      });
+      console.log('res', res);
+
+      this.iniForm();
+    });
+
+    this.iniForm();
+    console.log('this.form', this.form);
+  }
+
+  displayFn(state) {
+    let aux = this.Prestadores.filter((a) => a.idprestador == state)[0];
+    return aux ? aux.descripcion : undefined;
+  }
+
+  iniForm() {
     this.form = this.formBuilder.group({
       plantillasInformes: [
-        this.baseEditar ? this.baseEditar.plantillasInformes._id : '',
+        '',
+        // this.baseEditar ? this.baseEditar.plantillasInformes._id : '',
         [Validators.required],
       ],
       modalidad: ['', []],
       prestadores: [
-        this.baseEditar ? this.baseEditar.prestadores._id : '',
+        '',
+        // this.baseEditar ? this.baseEditar.prestadores.idprestador : '',
         [Validators.required],
       ],
       fechaReal: ['', [Validators.required]],
       usuarios: [
-        this.baseEditar ? this.baseEditar.usuarios._id : '',
+        '',
+        // this.baseEditar ? this.baseEditar.usuarios._id : '',
         [Validators.required],
       ],
-      // usuarios: [this.baseEditar ? this.baseEditar.usuarios._id : '', []],
-      estado: [this.baseEditar ? this.baseEditar.estado : '', []],
-      GDE: [this.baseEditar ? this.baseEditar.GDE : '', []],
-      UGL: [this.baseEditar ? this.baseEditar.UGL : '', []],
-      N_SAP: [
-        this.baseEditar
-          ? this.baseEditar.hasOwnProperty('N_SAP')
-            ? this.baseEditar?.N_SAP
-            : ''
-          : '',
-        [],
-      ],
-      N_CUIT_CUIL: [
-        this.baseEditar
-          ? this.baseEditar.hasOwnProperty('N_CUIT_CUIL')
-            ? this.baseEditar.N_SAP
-            : ''
-          : '',
-        [],
-      ],
-      // N_CUIT_CUIL: [this.baseEditar ? this.baseEditar.N_CUIT_CUIL : '', []],
-      cumplimiento: [this.baseEditar ? this.baseEditar.cumplimiento : '', []],
-      // integrantes: this.formBuilder.group(
-      //   {
-      //     tabla: this.formBuilder.array([])
-      //   }
-      // ),
+      estado: ['', []],
+      GDE: ['', []],
+      UGL: ['', []],
+      N_SAP: ['', []],
+      N_CUIT_CUIL: ['', []],
+      cumplimiento: ['', []],
 
       integrantes: this.baseEditar
         ? this.formBuilder.array(
             this.baseEditar.integrantes.map((a) =>
               this.formBuilder.group({
-                // secciones: [{_id: a.secciones._id, mostrar: a.secciones.mostrar}, ''],
                 secciones: [a.secciones._id, ''],
                 usuarios: [a.usuarios._id, ''],
                 responsable: [a.responsable, ''],
@@ -98,17 +107,20 @@ export class NuevaAuditoriaComponent implements OnInit {
             this.formBuilder.group({
               secciones: ['', [Validators.required]],
               usuarios: ['', [Validators.required]],
-              // legajo: ['', []],
-              // profesion: ['', []],
               responsable: [false, []],
             }),
           ]),
-      // name: ['',  [Validators.required]],
-      // date: ['', [Validators.required]],
-      // email: ['', [Validators.required, Validators.email]],
-      // text: ['', [Validators.required, Validators.maxLength(200)]],
-      // category: ['', [Validators.required]],
-      // gender: ['', [Validators.required]],
+    });
+
+    this.form.get('prestadores').valueChanges.subscribe((value) => {
+      console.log('value', value);
+      this.Prestadores = this.PrestadoresRes.filter(
+        (a) =>
+          a.descripcion.includes(value) ||
+          a.SAP.toString().includes(value) ||
+          a.CUIT.includes(value)
+      );
+      // log
     });
   }
 
@@ -122,8 +134,8 @@ export class NuevaAuditoriaComponent implements OnInit {
 
   save() {}
   guardarUGL(state) {}
-  Prestadores;
-  displayFn() {}
+  Prestadores = [];
+
   PlantillasInformes;
   AuxUsuarios1;
   guardarUGL2(usuario) {}
@@ -134,5 +146,4 @@ export class NuevaAuditoriaComponent implements OnInit {
   Area;
   displayFn2;
   AuxUsuarios;
-  baseEditar;
 }

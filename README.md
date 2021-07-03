@@ -20,4 +20,5 @@
 >
 > - `$ cd front/`
 > - `$ npm i`
+> - `$ npm install -g @angular/cli`
 > - `$ ng serve`

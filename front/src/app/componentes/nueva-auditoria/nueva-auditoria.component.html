@@ -35,14 +35,14 @@
       >
         <mat-option
           *ngFor="let state of Prestadores"
-          value="{{ state._id }}"
+          value="{{ state.idprestador }}"
           (click)="guardarUGL(state)"
         >
-          <span>{{ state.D_PRESTADOR }}</span> |
-          <small>UGL: {{ state.C_UGL }}</small> |
-          <small>Loc.: {{ state.C_LOCALIDAD_PAMI }}</small> |
-          <small>CUIT: {{ state.N_CUIT_CUIL }}</small> |
-          <small>Nro Sap: {{ state.N_SAP }}</small>
+          <span>{{ state.descripcion }}</span> |
+          <small>UGL: {{ state.idugl }}</small> |
+          <small>Loc.: {{ state.localidad }}</small> |
+          <small>CUIT: {{ state.CUIT }}</small> |
+          <small>Nro Sap: {{ state.SAP }}</small>
         </mat-option>
       </mat-autocomplete>
     </mat-form-field>
