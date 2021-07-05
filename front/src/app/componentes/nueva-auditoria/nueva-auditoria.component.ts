@@ -43,20 +43,20 @@ export class NuevaAuditoriaComponent implements OnInit {
   });
   baseEditar;
   ngOnInit(): void {
-    console.log(this.formGroup);
-    this.datos.DatosApi('prestadores').subscribe((res: []) => {
-      this.PrestadoresRes = res.map((a) => {
-        // delete a['idprestador'];
-        return a;
+    this.datos
+      .DatosApi('planificarauditoria')
+      .subscribe((res: { Prestadores: [] }) => {
+        console.log('res', res);
+        this.PrestadoresRes = res.Prestadores.map((a) => {
+          // delete a['idprestador'];
+          return a;
+        });
+        this.Prestadores = res.Prestadores.map((a) => {
+          // delete a['idprestador'];
+          return a;
+        });
+        this.iniForm();
       });
-      this.Prestadores = res.map((a) => {
-        // delete a['idprestador'];
-        return a;
-      });
-      console.log('res', res);
-
-      this.iniForm();
-    });
 
     this.iniForm();
     console.log('this.form', this.form);

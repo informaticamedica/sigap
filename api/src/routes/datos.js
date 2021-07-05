@@ -33,10 +33,10 @@ const extraerDatos = () => {
 router.get("/auditorias", helpers.verifyToken, async (req, res) => {
   try {
     const Auditorias = await pool.query("call ListarAuditorias(0)");
-    res.json(Auditorias[0]);
+    res.status(200).json(Auditorias[0]);
   } catch (error) {
     console.error(error);
-    res.json({});
+    res.status(400).json(error);
   }
 });
 router.get("/prestadores", helpers.verifyToken, async (req, res) => {
@@ -46,6 +46,25 @@ router.get("/prestadores", helpers.verifyToken, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.json({});
+  }
+});
+router.get("/planificarauditoria", helpers.verifyToken, async (req, res) => {
+  try {
+    const Prestadores = await pool.query("select * from Prestadores");
+    const TipoInforme = await pool.query(
+      "Select idguia, descripcion, versionactual from Guias where activo=1"
+    );
+    const Usuarios = await pool.query(
+      "select U.legajo, U.apellido, U.nombre,  P.descripcion as Profesion     from Usuarios U INNER JOIN UsuarioProfesion UP ON U.idusuario = UP.idusuario     INNER JOIN Profesiones P ON P.idprofesion = UP.idprofesion    where U.activo=1 and UP.activo=1 and P.activo = 1    order by U.apellido,U.nombre"
+    );
+    const Areas = await pool.query(
+      "select idareaauditoria, descripcion from AreasAuditoria where activo=1 order by descripcion"
+    );
+
+    res.status(200).json({ Prestadores, TipoInforme, Usuarios, Areas });
+  } catch (error) {
+    console.error(error);
+    res.status(400).json(error);
   }
 });
 router.get("/lala", async (req, res) => {
