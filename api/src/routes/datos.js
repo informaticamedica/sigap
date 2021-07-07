@@ -50,12 +50,15 @@ router.get("/prestadores", helpers.verifyToken, async (req, res) => {
 });
 router.get("/planificarauditoria", helpers.verifyToken, async (req, res) => {
   try {
-    const Prestadores = await pool.query("select * from Prestadores");
+    const Prestadores =
+      await pool.query(`SELECT P.idprestador, P.descripcion as Prestador, P.SAP, P.CUIT, CONCAT(RIGHT(CONCAT('00', P.idugl),2), ' - ', U.descripcion) as UGL
+    FROM Prestadores P INNER JOIN UGL U ON P.idugl = U.idugl
+    where P.activo=1`);
     const TipoInforme = await pool.query(
       "Select idguia, descripcion, versionactual from Guias where activo=1"
     );
     const Usuarios = await pool.query(
-      "select U.legajo, U.apellido, U.nombre,  P.descripcion as Profesion     from Usuarios U INNER JOIN UsuarioProfesion UP ON U.idusuario = UP.idusuario     INNER JOIN Profesiones P ON P.idprofesion = UP.idprofesion    where U.activo=1 and UP.activo=1 and P.activo = 1    order by U.apellido,U.nombre"
+      "select U.legajo, U.apellido, U.nombre , U.idusuario,  P.descripcion as Profesion     from Usuarios U INNER JOIN UsuarioProfesion UP ON U.idusuario = UP.idusuario     INNER JOIN Profesiones P ON P.idprofesion = UP.idprofesion    where U.activo=1 and UP.activo=1 and P.activo = 1    order by U.apellido,U.nombre"
     );
     const Areas = await pool.query(
       "select idareaauditoria, descripcion from AreasAuditoria where activo=1 order by descripcion"

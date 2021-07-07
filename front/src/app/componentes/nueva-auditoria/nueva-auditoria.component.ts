@@ -5,6 +5,7 @@ import {
   Output,
   EventEmitter,
   ViewEncapsulation,
+  HostListener,
 } from '@angular/core';
 import {
   FormControl,
@@ -22,14 +23,23 @@ import { DatosDbService } from 'src/app/servicios/datos-db.service';
   styleUrls: ['./nueva-auditoria.component.css'],
 })
 export class NuevaAuditoriaComponent implements OnInit {
+  form: FormGroup;
   PrestadoresRes;
+
+  Prestadores = [];
+
+  TipoInforme;
+  Usuarios = [];
+  maxLenghtPrest: number;
+  maxLenghtUsuar: number;
+  UsuariosRes: any;
   constructor(
     private datos: DatosDbService,
     private fb: FormBuilder,
     private router: Router,
     private formBuilder: FormBuilder
   ) {}
-  form: FormGroup;
+
   formGroup = this.fb.group({
     prestador: ['', [Validators.required]],
     fecha: ['', [Validators.required]],
@@ -42,10 +52,21 @@ export class NuevaAuditoriaComponent implements OnInit {
     }),
   });
   baseEditar;
+  isMobileLayout = false;
+  // @HostListener('window:resize', [])
+  // onResize() {
+  //   var width = window.innerWidth;
+  //   this.isMobileLayout = width < 500;
+  // }
+  maxNumberArray = (array: number[]) =>
+    array.reduce((accumulator, currentValue) => {
+      return accumulator > currentValue ? accumulator : currentValue;
+    });
   ngOnInit(): void {
+    // window.onresize = () => (this.isMobileLayout = window.innerWidth <= 500);
     this.datos
       .DatosApi('planificarauditoria')
-      .subscribe((res: { Prestadores: [] }) => {
+      .subscribe((res: { Prestadores: []; TipoInforme: []; Usuarios: [] }) => {
         console.log('res', res);
         this.PrestadoresRes = res.Prestadores.map((a) => {
           // delete a['idprestador'];
@@ -55,6 +76,19 @@ export class NuevaAuditoriaComponent implements OnInit {
           // delete a['idprestador'];
           return a;
         });
+        const LenghtDescripPrestadores = res.Prestadores.map(
+          (a: { Prestador: string }) => a['Prestador'].length
+        );
+        this.maxLenghtPrest = this.maxNumberArray(LenghtDescripPrestadores);
+
+        this.TipoInforme = res.TipoInforme;
+        this.Usuarios = res.Usuarios;
+        this.UsuariosRes = res.Usuarios;
+        const LenghtDescripUsuarios = res.Usuarios.map(
+          (a: { Prestador: string }) =>
+            (a['apellido'] + ' , ' + a['nombre']).length
+        );
+        this.maxLenghtUsuar = this.maxNumberArray(LenghtDescripUsuarios);
         this.iniForm();
       });
 
@@ -63,15 +97,19 @@ export class NuevaAuditoriaComponent implements OnInit {
   }
 
   displayFn(state) {
-    let aux = this.Prestadores.filter((a) => a.idprestador == state)[0];
-    return aux ? aux.descripcion : undefined;
+    const aux = this.Prestadores.filter((a) => a.idprestador == state)[0];
+    return aux ? aux.Prestador : undefined;
+  }
+  displayFn3(state) {
+    const aux = this.Usuarios.filter((a) => a.idusuario == state)[0];
+    return aux ? aux.apellido + ' , ' + aux.nombre : undefined;
   }
 
   iniForm() {
     this.form = this.formBuilder.group({
-      plantillasInformes: [
+      TipoInforme: [
         '',
-        // this.baseEditar ? this.baseEditar.plantillasInformes._id : '',
+        // this.baseEditar ? this.baseEditar.TipoInforme._id : '',
         [Validators.required],
       ],
       modalidad: ['', []],
@@ -81,7 +119,7 @@ export class NuevaAuditoriaComponent implements OnInit {
         [Validators.required],
       ],
       fechaReal: ['', [Validators.required]],
-      usuarios: [
+      referente: [
         '',
         // this.baseEditar ? this.baseEditar.usuarios._id : '',
         [Validators.required],
@@ -113,12 +151,24 @@ export class NuevaAuditoriaComponent implements OnInit {
     });
 
     this.form.get('prestadores').valueChanges.subscribe((value) => {
-      console.log('value', value);
+      // console.log('value', value);
+      value = value.toLocaleLowerCase();
       this.Prestadores = this.PrestadoresRes.filter(
         (a) =>
-          a.descripcion.includes(value) ||
-          a.SAP.toString().includes(value) ||
-          a.CUIT.includes(value)
+          a.Prestador.toLocaleLowerCase().includes(value) ||
+          a.SAP.toString().toLocaleLowerCase().includes(value) ||
+          a.CUIT.toLocaleLowerCase().includes(value)
+      );
+    });
+    this.form.get('referente').valueChanges.subscribe((value: string) => {
+      // console.log(' this.UsuariosRes', this.UsuariosRes);
+      value = value.toLocaleLowerCase();
+      this.Usuarios = this.UsuariosRes.filter(
+        (a) =>
+          a.apellido?.toLocaleLowerCase().includes(value) ||
+          a.nombre?.toLocaleLowerCase().includes(value) ||
+          a.legajo?.toLocaleLowerCase().includes(value) ||
+          a.Profesion?.toLocaleLowerCase().includes(value)
       );
       // log
     });
@@ -134,16 +184,38 @@ export class NuevaAuditoriaComponent implements OnInit {
 
   save() {}
   guardarUGL(state) {}
-  Prestadores = [];
 
-  PlantillasInformes;
-  AuxUsuarios1;
   guardarUGL2(usuario) {}
-  displayFn3() {}
-  addSubElemento() {}
-  getSubelementos = { controls: [] };
-  deleteSubElemento(pointIndex) {}
+
+  // addSubElemento() {}
+  Subelementos = '';
+  get getSubelementos() {
+    return this.form.get('integrantes') as FormArray;
+  }
+  iniSubelementos = {
+    secciones: '',
+    usuarios: '',
+    // legajo: '',
+    // profesion: '',
+    responsable: false,
+  };
+  Typeof(a) {
+    return typeof a;
+  }
+  deleteSubElemento(index) {
+    const control = <FormArray>this.form.controls['integrantes'];
+    if (control != undefined) control.removeAt(index);
+  }
+  length(o) {
+    return o.length;
+  }
+  addSubElemento() {
+    const control = <FormArray>this.form.controls['integrantes'];
+
+    control.push(this.formBuilder.group(this.iniSubelementos));
+  }
+  // deleteSubElemento(pointIndex) {}
   Area;
-  displayFn2;
-  AuxUsuarios;
+  displayFn2() {}
+  AuxUsuarios = [];
 }
