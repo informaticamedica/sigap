@@ -3,13 +3,8 @@
     <span>Nueva Auditoría</span>
     <div>
       <button mat-button color="warn" (click)="onCancel()">Cancelar</button>
-      <button
-        mat-button
-        type="submit"
-
-        (click)="onSubmit()"
-      >
-      <!-- [disabled]="!formGroup.valid" -->
+      <button mat-button type="submit" (click)="onSubmit()">
+        <!-- [disabled]="!formGroup.valid" -->
         Guardar
       </button>
     </div>
@@ -35,7 +30,7 @@
         [displayWith]="displayFn.bind(this)"
       >
         <mat-option
-          *ngFor="let state of Prestadores"
+          *ngFor="let state of Prestadores.slice(0, 5)"
           value="{{ state.idprestador }}"
           (click)="guardarUGL(state)"
         >
