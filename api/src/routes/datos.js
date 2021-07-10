@@ -29,7 +29,6 @@ const extraerDatos = () => {
   return Data;
 };
 
-
 router.get("/auditorias", helpers.verifyToken, async (req, res) => {
   try {
     const Auditorias = await pool.query("call ListarAuditorias(0)");
@@ -93,7 +92,6 @@ router.get("/planificarauditoria", helpers.verifyToken, async (req, res) => {
     `);
 
     res.status(200).json({ Prestadores, TipoInforme, Usuarios, Areas });
-
   } catch (error) {
     console.error(error);
     res.status(400).json(error);
@@ -101,21 +99,26 @@ router.get("/planificarauditoria", helpers.verifyToken, async (req, res) => {
 });
 function formatDate(date) {
   var d = new Date(date),
-      month = '' + (d.getMonth() + 1),
-      day = '' + (d.getDate() +1),
-      year = d.getFullYear();
+    month = "" + (d.getMonth() + 1),
+    day = "" + (d.getDate() + 1),
+    year = d.getFullYear();
 
-  if (month.length < 2) 
-      month = '0' + month;
-  if (day.length < 2) 
-      day = '0' + day;
+  if (month.length < 2) month = "0" + month;
+  if (day.length < 2) day = "0" + day;
 
-  return [year, month, day].join('-');
+  return [year, month, day].join("-");
 }
 router.post("/planificarauditoria", helpers.verifyToken, async (req, res) => {
-  const { prestadores ,fechaReal, TipoInforme ,VERSIONGUIA,referente ,integrantes  } = req.body
+  const {
+    prestadores,
+    fechaReal,
+    TipoInforme,
+    VERSIONGUIA,
+    referente,
+    integrantes,
+  } = req.body;
   console.log(req.body);
-  
+
   try {
     const auditoria = await pool.query(`
       INSERT INTO Auditorias (
@@ -130,38 +133,39 @@ router.post("/planificarauditoria", helpers.verifyToken, async (req, res) => {
         idusuarioreferente) 
         VALUES (
           ${prestadores}, 
-          ${fechaReal !== '' ? "'"+ formatDate(fechaReal) +"'" : 'NULL'},
+          ${fechaReal !== "" ? "'" + formatDate(fechaReal) + "'" : "NULL"},
           NULL, 
           1, 
           NULL,
           NULL, 
           ${TipoInforme}, 
           ${VERSIONGUIA}, 
-          ${referente != '' ? referente: 'NULL' }
+          ${referente != "" ? referente : "NULL"}
         )
-    `)
+    `);
     const Integrantes = `
     INSERT INTO EquipoAuditoria (idusuario, idauditoria, idareaauditoria, referente)
     VALUES 
-    ${integrantes.map( i => 
-      "(" +
-      i.usuarios +
-      "," +
-      auditoria.insertId +
-      "," +
-      i.secciones +
-      "," +
-      (i.responsable ? 1 : 0) +
-      ")"
-      )}
-    `
+    ${integrantes.map(
+      (i) =>
+        "(" +
+        i.usuarios +
+        "," +
+        auditoria.insertId +
+        "," +
+        i.secciones +
+        "," +
+        (i.responsable ? 1 : 0) +
+        ")"
+    )}
+    `;
     console.log(Integrantes);
-    
+
     console.log(auditoria);
-    res.status(200).json({})
+    res.status(200).json({});
   } catch (error) {
     console.error(error);
-    res.status(400).json(error)
+    res.status(400).json(error);
   }
 });
 
