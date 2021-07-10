@@ -175,7 +175,8 @@ export class NuevaAuditoriaComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log(this.formGroup.value);
+    console.log(this.form.value);
+    this.datos.guardarDatosApi('planificarauditoria',{...this.form.value,VERSIONGUIA:this.TipoInforme[0].versionactual}).subscribe((res=> console.log(res)))
   }
   onCancel() {
     console.log(this.formGroup);

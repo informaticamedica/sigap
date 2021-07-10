@@ -12,7 +12,7 @@ export class DatosDbService {
   // private urlApi = "http://192.168.0.150:4000/api/datos/"
   // private urlApi = "http://localhost:4000/api/datos/"
   // private urlApi = "http://10.0.74.204:4000/api/datos/"
-  
+
   headers = new HttpHeaders({ 'Authorization': 'Bearer ' + sessionStorage.getItem("token") });
 
   constructor(
@@ -34,9 +34,11 @@ export class DatosDbService {
 
   DatosApi(base){
     // console.log(sessionStorage.getItem('token'),this.http.);
-    
     return this.http.get(this.urlApi + base, { headers: this.headers } )
+  }
 
+  guardarDatosApi(base,datos){
+    return this.http.post(this.urlApi + base,datos, { headers: this.headers } )
   }
 
 }
