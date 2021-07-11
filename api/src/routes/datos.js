@@ -198,10 +198,16 @@ router.get("/informe/:idauditoria", helpers.verifyToken, async (req, res) => {
       P.email,
       P.idugl,
       P.CUIT,
-      EA.descripcion as EstadoAuditoria
+      EA.descripcion as EstadoAuditoria,
+      Prov.descripcion as ProvinciaPrestador,
+      CONCAT(RIGHT(CONCAT('00', P.idugl),2), ' - ', U.descripcion) as UGL,
+      CONCAT(Us.nombre,' ',Us.apellido) as Referente
     from Auditorias A
       INNER JOIN Prestadores P ON  P.idprestador = A.idprestador
       INNER JOIN EstadosAuditoria EA ON  EA.idestadoauditoria = A.idestadoauditoria 
+      INNER JOIN Provincias Prov ON  Prov.idprovincia = P.idprovincia 
+      INNER JOIN UGL U ON U.idugl = P.idugl 
+      INNER JOIN Usuarios Us ON Us.idusuario = A.idusuarioreferente 
     where  A.idauditoria = ${idauditoria}
     `);
     const [Informe] = await pool.query(`
