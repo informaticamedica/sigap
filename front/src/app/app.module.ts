@@ -51,6 +51,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { InformeComponent } from './componentes/informe/informe.component';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
 export function tokenGetter() {
   return sessionStorage.getItem('token');
 }
@@ -110,6 +112,7 @@ export function tokenGetter() {
     MatSlideToggleModule,
     MatDatepickerModule,
     MatExpansionModule,
+    MatProgressSpinnerModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

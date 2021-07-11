@@ -1,7 +1,6 @@
-<div class="container">
+<div *ngIf="Auditoria" class="container">
   <br />
-  <br />
-  idauditoria: {{ idauditoria }}
+
   <br />
   <br />
   <mat-accordion>
@@ -67,4 +66,11 @@
     <!-- Informe:
     {{ Informe | json }} -->
   </p>
+</div>
+<!--  -->
+<!-- <mat-spinner
+  style="display: flex; justify-content: center; align-items: center"
+></mat-spinner> -->
+<div class="padre">
+  <div class="hijo"><mat-spinner *ngIf="!Auditoria"></mat-spinner></div>
 </div>
