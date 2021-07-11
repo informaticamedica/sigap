@@ -83,13 +83,23 @@ router.get("/planificarauditoria", helpers.verifyToken, async (req, res) => {
     `);
 
     const Areas = await pool.query(`
-      select 
-        idareaauditoria, 
-        descripcion 
-      from AreasAuditoria 
-      where activo=1 
-      order by descripcion
+      select GV.idguia, GV.versionguia, S.idareaauditoria, A.descripcion
+      FROM GuiaVersion GV 
+        INNER JOIN SeccionesGuia SG ON GV.idguia = SG.idguia AND GV.versionguia = SG.versionguia
+        INNER JOIN Secciones S ON SG.idseccion = S.idseccion
+        INNER JOIN AreasAuditoria A ON S.idareaauditoria = A.idareaauditoria
+      WHERE GV.activo =1 and SG.activo = 1 and S.activo = 1 and A.activo = 1
+      ORDER BY GV.idguia, GV.versionguia, A.descripcion
     `);
+
+    // const Areas = await pool.query(`
+    //   select
+    //     idareaauditoria,
+    //     descripcion
+    //   from AreasAuditoria
+    //   where activo=1
+    //   order by descripcion
+    // `);
 
     res.status(200).json({ Prestadores, TipoInforme, Usuarios, Areas });
   } catch (error) {
@@ -143,7 +153,7 @@ router.post("/planificarauditoria", helpers.verifyToken, async (req, res) => {
           ${referente != "" ? referente : "NULL"}
         )
     `);
-    const Integrantes = `
+    const Integrantes = await pool.query(`
     INSERT INTO EquipoAuditoria (idusuario, idauditoria, idareaauditoria, referente)
     VALUES 
     ${integrantes.map(
@@ -153,21 +163,268 @@ router.post("/planificarauditoria", helpers.verifyToken, async (req, res) => {
         "," +
         auditoria.insertId +
         "," +
-        i.secciones +
+        i.areas +
         "," +
         (i.responsable ? 1 : 0) +
         ")"
     )}
-    `;
+    `);
+    console.log(auditoria);
     console.log(Integrantes);
 
-    console.log(auditoria);
-    res.status(200).json({});
+    res.status(200).json({ auditoria, Integrantes });
   } catch (error) {
     console.error(error);
     res.status(400).json(error);
   }
 });
+
+router.get("/informe/:idauditoria", helpers.verifyToken, async (req, res) => {
+  const { idauditoria } = req.params;
+  try {
+    const [Auditoria] = await pool.query(`
+    select * from Auditorias A
+    where  A.idauditoria = ${idauditoria}
+    `);
+    const [Informe] = await pool.query(`
+    call VerInforme(${Auditoria.idguia},${Auditoria.versionguia})
+    `);
+    // const callback = (arr, callback) => {
+    //   console.log(arr, callback);
+    // };
+    // pool.getConnection((err, conn) => {
+    //   if (err) {
+    //     callback(err);
+    //   } else {
+    //     Informe.forEach(async (a) => {
+    //       if (a.Secciones != 0) {
+    //         conn.query(
+    //           `
+    //         call VerSecciones(${a.idseccion})
+    //         `,
+    //           (error, results, fields) => {
+    //             conn.release();
+    //             callback(error, results, fields);
+    //           }
+    //         );
+    //       }
+    //     });
+    //   }
+    // });
+
+    // let QuerySecciones = "";
+    // Informe.forEach((a) => {
+    //   if (a.Secciones != 0) {
+    //     QuerySecciones += `
+    //     call VerSecciones(${a.idseccion}) ,
+    //     `;
+    //   }
+    // });
+
+    // console.log("QuerySecciones", QuerySecciones);
+    // const secciones = await pool.query(QuerySecciones);
+    // console.log("secciones", secciones);
+
+    // let QuerySecciones = "";
+    // Informe.forEach((a) => {
+    //   if (a.Secciones != 0) {
+    //     // QuerySecciones += `
+    //     // call VerSecciones(${a.idseccion}) ,
+    //     // `;
+    //     QuerySecciones += `
+    //     select
+    //       S.idseccion,
+    //       S.descripcion,
+    //       (
+    //         select count(I.idseccion)
+    //         from Secciones I
+    //         where I.idseccionmadre = S.idseccion
+    //       ) as Secciones
+    //     from Secciones S
+    //     where S.activo = 1 AND
+    //     S.idseccionmadre= ${a.idseccion}
+    //     ORDER BY S.orden;
+    //     `;
+    //   }
+    // });
+
+    // const connection = await pool.getConnection();
+    // QuerySecciones = [];
+    // Informe.forEach((a) => {
+    //   if (a.Secciones != 0) {
+    //     QuerySecciones.push(`
+    //     call VerSecciones(${a.idseccion}) ,
+    //     `);
+    //   }
+    // });
+
+    // doStuff(QuerySecciones);
+
+    // const Secciones = await pool.query(QuerySecciones);
+
+    // QuerySecciones = [];
+    // Informe.forEach((a) => {
+    //   if (a.Secciones != 0) {
+    //     QuerySecciones.push(
+    //       pool.query(`
+    //     call VerSecciones(${a.idseccion})
+    //     `)
+    //     );
+    //   }
+    // });
+
+    // const lala = await Promise.all(QuerySecciones);
+
+    // const VerSecciones = await pool.query("call VerSecciones(15)");
+    // console.log("VerSecciones15", VerSecciones);
+
+    // console.log("******************************");
+    // console.log("******************************");
+
+    // const lala = Promise.all([
+    //   pool.query("call VerSecciones(7)"),
+    //   pool.query("call VerSecciones(15)"),
+    //   pool.query("call VerSecciones(14)"),
+    //   pool.query("call VerSecciones(13)"),
+    //   // pool.query("call VerSecciones(11)"),
+    //   // pool.query("call VerSecciones(10)"),
+    // ]).then(function (values) {
+    //   console.log(
+    //     "---------------------------------------------------values",
+    //     values
+    //   );
+    // });
+    // console.log("lala", lala);
+    // console.log("******************************");
+    // console.log("******************************");
+    // console.log("QuerySecciones", QuerySecciones);
+    // console.log("Secciones", Secciones);
+
+    const Secciones1 = await pool.query("call VerSecciones(1)");
+    console.log("Secciones1");
+    console.table(Secciones1[0]);
+    const idsecciones = Informe.filter((a) => a.Secciones != 0).map(
+      (a) => a.idseccion
+    );
+    // console.table(secciones);
+    const queryString = (idsecciones) => `
+      select 
+        S.idseccionmadre,
+        S.idseccion,
+        S.descripcion,
+        (
+          select count(I.idseccion)
+          from Secciones I
+          where I.idseccionmadre = S.idseccion
+        ) as Secciones
+      from Secciones S
+      where S.activo = 1 AND
+      S.idseccionmadre in (${idsecciones})
+      ORDER BY S.idseccionmadre;
+    `;
+    const secciones = pool
+      .query(queryString(idsecciones))
+      .then((aa) => {
+        const informeSecciones = Informe.map((i) => {
+          // if (condition) {
+          // console.log("///////////secciones///////////////", aa);
+          // }
+          const auxSecciones = aa.filter(
+            (s) => s.idseccionmadre == i.idseccion
+          );
+
+          return {
+            ...i,
+            Secciones: auxSecciones,
+          };
+        });
+        console.table(Informe);
+        return informeSecciones;
+      })
+      .then(async (informe) => {
+        console.log("*************informe**************");
+        console.log("informe", informe);
+        console.log("*************informe**************");
+        const idsecciones = [];
+        informe.map((i) => {
+          idsecciones.push(i.idseccion);
+          i.Secciones.map((ii) => {
+            idsecciones.push(ii.idseccion);
+          });
+        });
+        console.log(idsecciones);
+        console.log(
+          "porlas",
+          `
+        select 
+          I.iditem, 
+          C.descripcion, 
+          TE.idtipoeval, 
+          TE.componente, 
+          IFNULL(A.valor, '') as Valor
+        from ItemSeccion ITS 
+          INNER JOIN Items I ON ITS.iditem = I.iditem
+          INNER JOIN TipoEvaluacion TE ON I.idtipoeval = TE.idtipoeval
+          INNER JOIN Criterios C ON C.idcriterio = I.idcriterio
+          LEFT JOIN ItemsAuditoria A ON A.iditem = I.iditem and A.idauditoria=${idauditoria}
+        where 
+          ITS.activo = 1 AND 
+          I.activo=1 AND 
+          TE.activo=1 AND
+          ITS.idseccion in (${idsecciones}) 
+        ORDER BY ITS.orden
+      `
+        );
+        return {
+          informe,
+          items: await pool.query(`
+          select 
+          I.iditem, 
+          C.descripcion, 
+          TE.idtipoeval, 
+          TE.componente, 
+          IFNULL(A.valor, '') as Valor
+        from ItemSeccion ITS 
+          INNER JOIN Items I ON ITS.iditem = I.iditem
+          INNER JOIN TipoEvaluacion TE ON I.idtipoeval = TE.idtipoeval
+          INNER JOIN Criterios C ON C.idcriterio = I.idcriterio
+          LEFT JOIN ItemsAuditoria A ON A.iditem = I.iditem and A.idauditoria=${idauditoria}
+        where 
+          ITS.activo = 1 AND 
+          I.activo=1 AND 
+          TE.activo=1 AND
+          ITS.idseccion in (${idsecciones}) 
+        ORDER BY ITS.orden
+          `),
+        };
+      })
+      .then((informe) => res.json({ Auditoria, informe }));
+    console.log("*************secciones**************");
+    console.table(secciones);
+  } catch (error) {
+    // finally {
+    //   await connection.release();
+    // }
+
+    console.error(error);
+    res.json({});
+  }
+});
+
+// async function doStuff(items) {
+//   try {
+//     const connection = await pool.getConnection();
+//     try {
+//       for (const item of items) {
+//         await connection?.query(item);
+//       }
+//     } finally {
+//       await connection?.release();
+//     }
+//   } catch (error) {
+//     console.error(error);
+//   }
+// }
 
 router.get("/lala", async (req, res) => {
   const datos = extraerDatos();

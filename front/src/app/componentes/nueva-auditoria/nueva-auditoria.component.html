@@ -3,8 +3,12 @@
     <span>Nueva Auditoría</span>
     <div>
       <button mat-button color="warn" (click)="onCancel()">Cancelar</button>
-      <button mat-button type="submit" (click)="onSubmit()">
-        <!-- [disabled]="!formGroup.valid" -->
+      <button
+        mat-button
+        type="submit"
+        (click)="onSubmit()"
+        [disabled]="!form.valid"
+      >
         Guardar
       </button>
     </div>
@@ -19,7 +23,6 @@
       right: 0;
       text-align: left;
     "
-    (submit)="save()"
   >
     <mat-form-field style="width: 70%">
       <mat-label>Prestador</mat-label>
@@ -32,7 +35,6 @@
         <mat-option
           *ngFor="let state of Prestadores.slice(0, 5)"
           value="{{ state.idprestador }}"
-          (click)="guardarUGL(state)"
         >
           <div
             style="
@@ -44,8 +46,12 @@
             <div [ngStyle]="{ width: maxLenghtPrest / 2.4 + 'rem;' }">
               {{ state.Prestador }}
             </div>
-            <div *ngIf="!isMobileLayout">UGL: {{ state.UGL }}</div>
-            <div *ngIf="!isMobileLayout">CUIT: {{ state.CUIT }}</div>
+            <div *ngIf="!isMobileLayout">
+              UGL: {{ state.UGL }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </div>
+            <div *ngIf="!isMobileLayout">
+              CUIT: {{ state.CUIT }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </div>
             <div *ngIf="!isMobileLayout">Nro Sap: {{ state.SAP }}</div>
           </div>
         </mat-option>
@@ -98,7 +104,6 @@
         <mat-option
           *ngFor="let usuario of Usuarios"
           value="{{ usuario.idusuario }}"
-          (click)="guardarUGL2(usuario.C_UGL)"
         >
           <div
             style="
@@ -140,12 +145,12 @@
           <mat-grid-tile [colspan]="5" [rowspan]="1">
             <mat-form-field style="text-align: left">
               <mat-label> Area </mat-label>
-              <mat-select formControlName="secciones">
+              <mat-select formControlName="areas">
                 <mat-option
                   *ngFor="let SubOpc of Area"
-                  value="{{ SubOpc._id }}"
+                  value="{{ SubOpc.idareaauditoria }}"
                 >
-                  {{ SubOpc.mostrar }}
+                  {{ SubOpc.descripcion }}
                 </mat-option>
               </mat-select>
             </mat-form-field>
@@ -166,12 +171,11 @@
               >
                 <mat-option
                   *ngFor="let usuario of AuxUsuarios[pointIndex]"
-                  value="{{ usuario._id }}"
-                  (click)="guardarUGL2(usuario.C_UGL)"
+                  value="{{ usuario.idusuario }}"
                 >
-                  <span>{{ usuario.nombre }}</span> |
+                  <span>{{ usuario.apellido + " , " + usuario.nombre }}</span> |
                   <small>Legajo: {{ usuario.legajo }}</small> |
-                  <small>Profesion/es: {{ usuario.profesion }}</small>
+                  <small>Profesion/es: {{ usuario.Profesion }}</small>
                 </mat-option>
               </mat-autocomplete>
             </mat-form-field>

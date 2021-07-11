@@ -25,14 +25,16 @@ import { DatosDbService } from 'src/app/servicios/datos-db.service';
 export class NuevaAuditoriaComponent implements OnInit {
   form: FormGroup;
   PrestadoresRes;
-
   Prestadores = [];
-
   TipoInforme;
   Usuarios = [];
   maxLenghtPrest: number;
   maxLenghtUsuar: number;
   UsuariosRes: any;
+  AreasRes;
+  Area;
+  AuxUsuarios = [];
+
   constructor(
     private datos: DatosDbService,
     private fb: FormBuilder,
@@ -40,18 +42,6 @@ export class NuevaAuditoriaComponent implements OnInit {
     private formBuilder: FormBuilder
   ) {}
 
-  formGroup = this.fb.group({
-    prestador: ['', [Validators.required]],
-    fecha: ['', [Validators.required]],
-    tipoInforme: ['', [Validators.required]],
-    referenteEquipo: ['', [Validators.required]],
-    integrantes: this.fb.group({
-      area: [''],
-      usuario: [''],
-      referente: [''],
-    }),
-  });
-  baseEditar;
   isMobileLayout = false;
   // @HostListener('window:resize', [])
   // onResize() {
@@ -66,34 +56,43 @@ export class NuevaAuditoriaComponent implements OnInit {
     // window.onresize = () => (this.isMobileLayout = window.innerWidth <= 500);
     this.datos
       .DatosApi('planificarauditoria')
-      .subscribe((res: { Prestadores: []; TipoInforme: []; Usuarios: [] }) => {
-        console.log('res', res);
-        this.PrestadoresRes = res.Prestadores.map((a) => {
-          // delete a['idprestador'];
-          return a;
-        });
-        this.Prestadores = res.Prestadores.map((a) => {
-          // delete a['idprestador'];
-          return a;
-        });
-        const LenghtDescripPrestadores = res.Prestadores.map(
-          (a: { Prestador: string }) => a['Prestador'].length
-        );
-        this.maxLenghtPrest = this.maxNumberArray(LenghtDescripPrestadores);
+      .subscribe(
+        (res: {
+          Prestadores: [];
+          TipoInforme: [];
+          Usuarios: [];
+          Areas: [];
+        }) => {
+          console.log('res', res);
+          this.PrestadoresRes = res.Prestadores.map((a) => {
+            // delete a['idprestador'];
+            return a;
+          });
+          this.Prestadores = res.Prestadores.map((a) => {
+            // delete a['idprestador'];
+            return a;
+          });
+          const LenghtDescripPrestadores = res.Prestadores.map(
+            (a: { Prestador: string }) => a['Prestador'].length
+          );
+          this.maxLenghtPrest = this.maxNumberArray(LenghtDescripPrestadores);
 
-        this.TipoInforme = res.TipoInforme;
-        this.Usuarios = res.Usuarios;
-        this.UsuariosRes = res.Usuarios;
-        const LenghtDescripUsuarios = res.Usuarios.map(
-          (a: { Prestador: string }) =>
-            (a['apellido'] + ' , ' + a['nombre']).length
-        );
-        this.maxLenghtUsuar = this.maxNumberArray(LenghtDescripUsuarios);
-        this.iniForm();
-      });
+          this.TipoInforme = res.TipoInforme;
+          this.Usuarios = res.Usuarios;
+          this.UsuariosRes = res.Usuarios;
+          this.AuxUsuarios.push(res.Usuarios);
+          const LenghtDescripUsuarios = res.Usuarios.map(
+            (a: { Prestador: string }) =>
+              (a['apellido'] + ' , ' + a['nombre']).length
+          );
+          this.maxLenghtUsuar = this.maxNumberArray(LenghtDescripUsuarios);
+          this.iniForm();
+          this.AreasRes = res.Areas;
+        }
+      );
 
     this.iniForm();
-    console.log('this.form', this.form);
+    // console.log('this.form', this.form);
   }
 
   displayFn(state) {
@@ -104,50 +103,30 @@ export class NuevaAuditoriaComponent implements OnInit {
     const aux = this.Usuarios.filter((a) => a.idusuario == state)[0];
     return aux ? aux.apellido + ' , ' + aux.nombre : undefined;
   }
+  displayFn2(state) {
+    const aux = this.Usuarios.filter((a) => a.idusuario == state)[0];
+    return aux ? aux.apellido + ' , ' + aux.nombre : undefined;
+  }
 
   iniForm() {
     this.form = this.formBuilder.group({
-      TipoInforme: [
-        '',
-        // this.baseEditar ? this.baseEditar.TipoInforme._id : '',
-        [Validators.required],
-      ],
-      modalidad: ['', []],
-      prestadores: [
-        '',
-        // this.baseEditar ? this.baseEditar.prestadores.idprestador : '',
-        [Validators.required],
-      ],
-      fechaReal: ['', [Validators.required]],
-      referente: [
-        '',
-        // this.baseEditar ? this.baseEditar.usuarios._id : '',
-        [Validators.required],
-      ],
-      estado: ['', []],
-      GDE: ['', []],
+      prestadores: ['', [Validators.required]],
+      fechaReal: ['', []],
+      TipoInforme: ['', [Validators.required]],
+      // modalidad: ['', []],
+      referente: ['', []],
       UGL: ['', []],
       N_SAP: ['', []],
       N_CUIT_CUIL: ['', []],
       cumplimiento: ['', []],
 
-      integrantes: this.baseEditar
-        ? this.formBuilder.array(
-            this.baseEditar.integrantes.map((a) =>
-              this.formBuilder.group({
-                secciones: [a.secciones._id, ''],
-                usuarios: [a.usuarios._id, ''],
-                responsable: [a.responsable, ''],
-              })
-            )
-          )
-        : this.formBuilder.array([
-            this.formBuilder.group({
-              secciones: ['', [Validators.required]],
-              usuarios: ['', [Validators.required]],
-              responsable: [false, []],
-            }),
-          ]),
+      integrantes: this.formBuilder.array([
+        this.formBuilder.group({
+          areas: ['', [Validators.required]],
+          usuarios: ['', [Validators.required]],
+          responsable: [false, []],
+        }),
+      ]),
     });
 
     this.form.get('prestadores').valueChanges.subscribe((value) => {
@@ -160,6 +139,17 @@ export class NuevaAuditoriaComponent implements OnInit {
           a.CUIT.toLocaleLowerCase().includes(value)
       );
     });
+    this.form.get('TipoInforme').valueChanges.subscribe((value) => {
+      // console.log('value', value);
+      // value = value.toLocaleLowerCase();
+      const tipoInforme = this.TipoInforme.filter((a) => a.idguia == value)[0];
+      this.Area = this.AreasRes.filter(
+        (a) =>
+          a.idguia == tipoInforme.idguia &&
+          a.versionguia == tipoInforme.versionactual
+      );
+      // console.log(tipoInforme);
+    });
     this.form.get('referente').valueChanges.subscribe((value: string) => {
       // console.log(' this.UsuariosRes', this.UsuariosRes);
       value = value.toLocaleLowerCase();
@@ -170,7 +160,6 @@ export class NuevaAuditoriaComponent implements OnInit {
           a.legajo?.toLocaleLowerCase().includes(value) ||
           a.Profesion?.toLocaleLowerCase().includes(value)
       );
-      // log
     });
   }
 
@@ -181,30 +170,21 @@ export class NuevaAuditoriaComponent implements OnInit {
         ...this.form.value,
         VERSIONGUIA: this.TipoInforme[0].versionactual,
       })
-      .subscribe((res) => console.log(res));
+      .subscribe((res) => {
+        this.router.navigate(['/', 'principal']);
+        console.log(res);
+      });
   }
   onCancel() {
-    console.log(this.formGroup);
+    // console.log(this.formGroup);
     this.router.navigate(['/', 'principal']);
   }
 
-  save() {}
-  guardarUGL(state) {}
-
-  guardarUGL2(usuario) {}
-
-  // addSubElemento() {}
   Subelementos = '';
   get getSubelementos() {
     return this.form.get('integrantes') as FormArray;
   }
-  iniSubelementos = {
-    secciones: '',
-    usuarios: '',
-    // legajo: '',
-    // profesion: '',
-    responsable: false,
-  };
+
   Typeof(a) {
     return typeof a;
   }
@@ -217,11 +197,12 @@ export class NuevaAuditoriaComponent implements OnInit {
   }
   addSubElemento() {
     const control = <FormArray>this.form.controls['integrantes'];
-
-    control.push(this.formBuilder.group(this.iniSubelementos));
+    const iniSubelementos = {
+      areas: '',
+      usuarios: '',
+      responsable: false,
+    };
+    this.AuxUsuarios.push(this.UsuariosRes);
+    control.push(this.formBuilder.group(iniSubelementos));
   }
-  // deleteSubElemento(pointIndex) {}
-  Area;
-  displayFn2() {}
-  AuxUsuarios = [];
 }

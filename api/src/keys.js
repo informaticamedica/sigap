@@ -1,7 +1,7 @@
 module.exports = {
   /* base de datos online */
   database: {
-    connectionLimit: 5,
+    connectionLimit: 1000,
     host: "bfuuzzibcoeiegmt3w7z-mysql.services.clever-cloud.com",
     database: "bfuuzzibcoeiegmt3w7z",
     user: "uc5u1t3fto9qwixn",

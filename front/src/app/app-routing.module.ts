@@ -13,6 +13,8 @@ import { GlobalComponent } from './componentes/global/global.component';
 import { HojaPrestadorComponent } from './componentes/hoja-prestador/hoja-prestador.component';
 import { HojaUglComponent } from './componentes/hoja-ugl/hoja-ugl.component';
 
+import { InformeComponent } from './componentes/informe/informe.component';
+
 const routes: Routes = [
   { path: '', component: SigninComponent },
   { path: 'signin', component: SigninComponent },
@@ -26,6 +28,11 @@ const routes: Routes = [
   {
     path: 'planificarauditoria',
     component: NuevaAuditoriaComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'informe/:idauditoria',
+    component: InformeComponent,
     canActivate: [AuthGuard],
   },
   {

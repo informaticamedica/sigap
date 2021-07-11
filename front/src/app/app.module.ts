@@ -49,6 +49,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 // import { JwtModule } from "@auth0/angular-jwt";
 import { MatGridListModule } from '@angular/material/grid-list';
+import { InformeComponent } from './componentes/informe/informe.component';
 
 export function tokenGetter() {
   return sessionStorage.getItem('token');
@@ -77,6 +78,7 @@ export function tokenGetter() {
     TablaGenericaComponent,
     TablaPipe,
     NuevaAuditoriaComponent,
+    InformeComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,4 +1,11 @@
-import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 
 import { AfterViewInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
@@ -16,10 +23,12 @@ export class TablaGenericaComponent implements OnInit {
   ngOnInit(): void {}
 
   @Input() data;
+  @Output() onClick = new EventEmitter<{}>();
   dataSource;
   columnas;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
+
   ngAfterViewInit() {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -35,5 +44,10 @@ export class TablaGenericaComponent implements OnInit {
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  OnClick(event: Event) {
+    // console.log(event);
+    this.onClick.emit(event);
   }
 }
