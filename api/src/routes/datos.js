@@ -406,8 +406,8 @@ router.get("/informe/:idauditoria", helpers.verifyToken, async (req, res) => {
         TE.idtipoeval, 
         TE.componente, 
         ITS.idseccion,
-        IFNULL(A.valor, '') as Valor
-
+        IFNULL(A.valor, '') as Valor,
+        TE.descripcion as descripcionTipoEval
       from ItemSeccion ITS 
         INNER JOIN Items I ON ITS.iditem = I.iditem
         INNER JOIN TipoEvaluacion TE ON I.idtipoeval = TE.idtipoeval

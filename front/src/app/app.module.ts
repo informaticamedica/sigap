@@ -52,6 +52,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { InformeComponent } from './componentes/informe/informe.component';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatRadioModule } from '@angular/material/radio';
 
 export function tokenGetter() {
   return sessionStorage.getItem('token');
@@ -113,6 +114,7 @@ export function tokenGetter() {
     MatDatepickerModule,
     MatExpansionModule,
     MatProgressSpinnerModule,
+    MatRadioModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

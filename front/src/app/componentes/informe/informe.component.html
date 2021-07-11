@@ -46,18 +46,67 @@
         <div class="container">
           <!-- <h2>Items</h2> -->
           <div class="container">
-            <ul>
-              <li *ngFor="let item of inf.items">{{ item.descripcion }}</li>
-            </ul>
+            <div class="row">
+              <div class="col">
+                <ul>
+                  <li *ngFor="let item of inf.items">
+                    {{ item.descripcion }}
+                  </li>
+                </ul>
+              </div>
+              <div class="col">
+                <div *ngFor="let item of inf.items">
+                  <!-- {{ item.componente }}
+                  CSS -->
+                  <mat-radio-group
+                    *ngIf="item.componente == 'radio'"
+                    aria-label="Select an option"
+                  >
+                    <mat-radio-button value="1">
+                      {{ item.descripcionTipoEval.split("-")[0] }}
+                    </mat-radio-button>
+                    &nbsp; &nbsp; &nbsp;
+                    <mat-radio-button value="2">
+                      {{
+                        item.descripcionTipoEval.split("-")[1]
+                      }}</mat-radio-button
+                    >
+                  </mat-radio-group>
+                </div>
+              </div>
+            </div>
           </div>
           <!-- <h2>Subsecciones</h2> -->
           <div class="container" *ngFor="let subsec of inf.subSecciones">
             <h3>{{ subsec.descripcion }}</h3>
-            <ul>
-              <li *ngFor="let item of subsec.items">
-                {{ item.descripcion }}
-              </li>
-            </ul>
+            <div class="row">
+              <div class="col">
+                <ul>
+                  <li *ngFor="let item of subsec.items">
+                    {{ item.descripcion }}
+                  </li>
+                </ul>
+              </div>
+              <div class="col">
+                <div *ngFor="let item of subsec.items">
+                  <!-- {{ item.componente }} -->
+                  <mat-radio-group
+                    *ngIf="item.componente == 'radio'"
+                    aria-label="Select an option"
+                  >
+                    <mat-radio-button value="1">
+                      {{ item.descripcionTipoEval.split("-")[0] }}
+                    </mat-radio-button>
+                    &nbsp; &nbsp; &nbsp;
+                    <mat-radio-button value="2">
+                      {{
+                        item.descripcionTipoEval.split("-")[1]
+                      }}</mat-radio-button
+                    >
+                  </mat-radio-group>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <!-- subSecciones: {{ inf.subSecciones | json }} -->
