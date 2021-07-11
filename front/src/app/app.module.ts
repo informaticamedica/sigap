@@ -50,7 +50,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 // import { JwtModule } from "@auth0/angular-jwt";
 import { MatGridListModule } from '@angular/material/grid-list';
 import { InformeComponent } from './componentes/informe/informe.component';
-
+import { MatExpansionModule } from '@angular/material/expansion';
 export function tokenGetter() {
   return sessionStorage.getItem('token');
 }
@@ -109,6 +109,7 @@ export function tokenGetter() {
     MatGridListModule,
     MatSlideToggleModule,
     MatDatepickerModule,
+    MatExpansionModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

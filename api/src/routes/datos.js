@@ -183,7 +183,25 @@ router.get("/informe/:idauditoria", helpers.verifyToken, async (req, res) => {
   const { idauditoria } = req.params;
   try {
     const [Auditoria] = await pool.query(`
-    select * from Auditorias A
+    select 
+      A.fechaplan,
+      A.fechaauditoria,
+      A.idestadoauditoria,
+      A.idguia, 
+      A.versionguia,
+      A.idusuarioreferente,
+      P.descripcion as Prestador,
+      P.domicilio,
+      P.localidad,
+      P.idprovincia,
+      P.telefono,
+      P.email,
+      P.idugl,
+      P.CUIT,
+      EA.descripcion as EstadoAuditoria
+    from Auditorias A
+      INNER JOIN Prestadores P ON  P.idprestador = A.idprestador
+      INNER JOIN EstadosAuditoria EA ON  EA.idestadoauditoria = A.idestadoauditoria 
     where  A.idauditoria = ${idauditoria}
     `);
     const [Informe] = await pool.query(`
@@ -300,9 +318,9 @@ router.get("/informe/:idauditoria", helpers.verifyToken, async (req, res) => {
     // console.log("QuerySecciones", QuerySecciones);
     // console.log("Secciones", Secciones);
 
-    const Secciones1 = await pool.query("call VerSecciones(1)");
-    console.log("Secciones1");
-    console.table(Secciones1[0]);
+    // const Secciones1 = await pool.query("call VerSecciones(1)");
+    // console.log("Secciones1");
+    // console.table(Secciones1[0]);
     const idsecciones = Informe.filter((a) => a.Secciones != 0).map(
       (a) => a.idseccion
     );
@@ -335,20 +353,20 @@ router.get("/informe/:idauditoria", helpers.verifyToken, async (req, res) => {
 
           return {
             ...i,
-            Secciones: auxSecciones,
+            subSecciones: auxSecciones,
           };
         });
         console.table(Informe);
         return informeSecciones;
       })
-      .then(async (informe) => {
+      .then(async (Secciones) => {
         console.log("*************informe**************");
-        console.log("informe", informe);
+        console.log("Secciones", Secciones);
         console.log("*************informe**************");
         const idsecciones = [];
-        informe.map((i) => {
+        Secciones.map((i) => {
           idsecciones.push(i.idseccion);
-          i.Secciones.map((ii) => {
+          i.subSecciones.map((ii) => {
             idsecciones.push(ii.idseccion);
           });
         });
@@ -375,30 +393,45 @@ router.get("/informe/:idauditoria", helpers.verifyToken, async (req, res) => {
         ORDER BY ITS.orden
       `
         );
-        return {
-          informe,
-          items: await pool.query(`
-          select 
-          I.iditem, 
-          C.descripcion, 
-          TE.idtipoeval, 
-          TE.componente, 
-          IFNULL(A.valor, '') as Valor
-        from ItemSeccion ITS 
-          INNER JOIN Items I ON ITS.iditem = I.iditem
-          INNER JOIN TipoEvaluacion TE ON I.idtipoeval = TE.idtipoeval
-          INNER JOIN Criterios C ON C.idcriterio = I.idcriterio
-          LEFT JOIN ItemsAuditoria A ON A.iditem = I.iditem and A.idauditoria=${idauditoria}
-        where 
-          ITS.activo = 1 AND 
-          I.activo=1 AND 
-          TE.activo=1 AND
-          ITS.idseccion in (${idsecciones}) 
-        ORDER BY ITS.orden
-          `),
-        };
+        const items = await pool.query(`
+        select 
+        I.iditem, 
+        C.descripcion, 
+        TE.idtipoeval, 
+        TE.componente, 
+        ITS.idseccion,
+        IFNULL(A.valor, '') as Valor
+
+      from ItemSeccion ITS 
+        INNER JOIN Items I ON ITS.iditem = I.iditem
+        INNER JOIN TipoEvaluacion TE ON I.idtipoeval = TE.idtipoeval
+        INNER JOIN Criterios C ON C.idcriterio = I.idcriterio
+        LEFT JOIN ItemsAuditoria A ON A.iditem = I.iditem and A.idauditoria=${idauditoria}
+      where 
+        ITS.activo = 1 AND 
+        I.activo=1 AND 
+        TE.activo=1 AND
+        ITS.idseccion in (${idsecciones}) 
+      ORDER BY ITS.orden
+        `);
+        const informe = Secciones.map((sec) => {
+          return {
+            ...sec,
+            items: items.filter((item) => item.idseccion == sec.idseccion),
+            subSecciones: sec.subSecciones.map((subsec) => {
+              return {
+                ...subsec,
+                items: items.filter(
+                  (item) => item.idseccion == subsec.idseccion
+                ),
+              };
+            }),
+          };
+        });
+
+        return informe;
       })
-      .then((informe) => res.json({ Auditoria, informe }));
+      .then((Informe) => res.json({ Auditoria, Informe }));
     console.log("*************secciones**************");
     console.table(secciones);
   } catch (error) {

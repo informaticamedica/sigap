@@ -1,4 +1,71 @@
-<p>informe works!</p>
-<p>
-  {{ idauditoria }}
-</p>
+<div class="container">
+  <br />
+  <br />
+  idauditoria: {{ idauditoria }}
+  <br />
+  <br />
+  <mat-accordion>
+    <mat-expansion-panel [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title> Auditoria </mat-panel-title>
+        <mat-panel-description>
+          {{ Auditoria?.EstadoAuditoria }}
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <div class="container">
+        fechaauditoria: <b> {{ Auditoria?.fechaauditoria }} </b> <br />
+        fechaplan: <b> {{ Auditoria?.fechaplan }} </b> <br />
+        Prestador: <b> {{ Auditoria?.Prestador }} </b> <br />
+        CUIT: <b> {{ Auditoria?.CUIT }} </b> <br />
+        telefono: <b> {{ Auditoria?.telefono }} </b> <br />
+        email: <b> {{ Auditoria?.email }} </b> <br />
+        domicilio: <b> {{ Auditoria?.domicilio }} </b> <br />
+        localidad: <b> {{ Auditoria?.localidad }} </b> <br />
+        idprovincia: <b> {{ Auditoria?.idprovincia }} </b> <br />
+        idguia: <b> {{ Auditoria?.idguia }} </b> <br />
+        idugl: <b> {{ Auditoria?.idugl }} </b> <br />
+        idusuarioreferente: <b> {{ Auditoria?.idusuarioreferente }} </b>
+        <br />
+        versionguia: <b> {{ Auditoria?.versionguia }} </b> <br />
+      </div>
+      <!-- {{ Auditoria | json }} -->
+    </mat-expansion-panel>
+  </mat-accordion>
+
+  <p>
+    <br />
+    <br />
+    <mat-accordion>
+      <mat-expansion-panel *ngFor="let inf of Informe">
+        <mat-expansion-panel-header>
+          <mat-panel-title> {{ inf.descripcion }} </mat-panel-title>
+          <mat-panel-description>
+            Secciones: {{ inf?.Secciones }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            items: {{ inf?.items.length }}
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div class="container">
+          <!-- <h2>Items</h2> -->
+          <div class="container">
+            <ul>
+              <li *ngFor="let item of inf.items">{{ item.descripcion }}</li>
+            </ul>
+          </div>
+          <!-- <h2>Subsecciones</h2> -->
+          <div class="container" *ngFor="let subsec of inf.subSecciones">
+            <h3>{{ subsec.descripcion }}</h3>
+            <ul>
+              <li *ngFor="let item of subsec.items">
+                {{ item.descripcion }}
+              </li>
+            </ul>
+          </div>
+        </div>
+        <!-- subSecciones: {{ inf.subSecciones | json }} -->
+      </mat-expansion-panel>
+    </mat-accordion>
+    <!-- Informe:
+    {{ Informe | json }} -->
+  </p>
+</div>
