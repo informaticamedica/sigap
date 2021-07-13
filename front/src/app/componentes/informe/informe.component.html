@@ -1,125 +1,149 @@
 <div *ngIf="Auditoria" class="container">
   <br />
+  <h1>{{ Auditoria?.Prestador | uppercase }}</h1>
+  <div>
+    Fecha planificada: {{ Auditoria?.fechaplan | date: "dd/MM/yyyy" }} -
+    {{ Auditoria?.EstadoAuditoria }}
+    <br />
+  </div>
 
   <br />
   <br />
   <mat-accordion>
-    <mat-expansion-panel [expanded]="true">
+    <mat-expansion-panel>
       <mat-expansion-panel-header>
-        <mat-panel-title> Auditoria </mat-panel-title>
+        <mat-panel-title> Datos del Prestador </mat-panel-title>
+        <mat-panel-description>
+          {{ Auditoria?.ProvinciaPrestador }}
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <div class="container">
+        <div class="row">
+          <div class="col">
+            Prestador: <b> {{ Auditoria?.Prestador }} </b> <br />
+            CUIT: <b> {{ Auditoria?.CUIT }} </b> <br />
+            Telefono: <b> {{ Auditoria?.telefono }} </b> <br />
+            Email: <b> {{ Auditoria?.email }} </b> <br />
+          </div>
+          <div class="col">
+            Domicilio: <b> {{ Auditoria?.domicilio }} </b> <br />
+            Localidad: <b> {{ Auditoria?.localidad }} </b> <br />
+            Provincia: <b> {{ Auditoria?.ProvinciaPrestador }} </b> <br />
+          </div>
+        </div>
+      </div>
+    </mat-expansion-panel>
+    <br />
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Datos de la auditoria </mat-panel-title>
         <mat-panel-description>
           {{ Auditoria?.EstadoAuditoria }}
         </mat-panel-description>
       </mat-expansion-panel-header>
       <div class="container">
-        fechaauditoria: <b> {{ Auditoria?.fechaauditoria }} </b> <br />
-        fechaplan: <b> {{ Auditoria?.fechaplan }} </b> <br />
-        Prestador: <b> {{ Auditoria?.Prestador }} </b> <br />
-        CUIT: <b> {{ Auditoria?.CUIT }} </b> <br />
-        telefono: <b> {{ Auditoria?.telefono }} </b> <br />
-        email: <b> {{ Auditoria?.email }} </b> <br />
-        domicilio: <b> {{ Auditoria?.domicilio }} </b> <br />
-        localidad: <b> {{ Auditoria?.localidad }} </b> <br />
-        Provincia: <b> {{ Auditoria?.ProvinciaPrestador }} </b> <br />
+        Fecha de auditoria: <b> {{ Auditoria?.fechaauditoria }} </b> <br />
         UGL: <b> {{ Auditoria?.UGL }} </b> <br />
         Referente: <b> {{ Auditoria?.Referente }} </b><br />
         idguia: <b> {{ Auditoria?.idguia }} </b> versionguia:
         <b> {{ Auditoria?.versionguia }} </b>
       </div>
-      <!-- {{ Auditoria | json }} -->
     </mat-expansion-panel>
   </mat-accordion>
+  <br />
+  <mat-accordion>
+    <mat-expansion-panel *ngFor="let inf of Informe">
+      <mat-expansion-panel-header>
+        <mat-panel-title> {{ inf.descripcion }} </mat-panel-title>
+        <mat-panel-description> </mat-panel-description>
+      </mat-expansion-panel-header>
 
-  <p>
-    <br />
-    <br />
-    <mat-accordion>
-      <mat-expansion-panel *ngFor="let inf of Informe">
-        <mat-expansion-panel-header>
-          <mat-panel-title> {{ inf.descripcion }} </mat-panel-title>
-          <mat-panel-description>
-            Secciones: {{ inf?.Secciones }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            items: {{ inf?.items.length }}
-          </mat-panel-description>
-        </mat-expansion-panel-header>
-
+      <!-- <h2>Items</h2> -->
+      <div class="container">
         <div class="container">
-          <!-- <h2>Items</h2> -->
-          <div class="container">
+          <div *ngFor="let item of inf.items">
             <div class="row">
               <div class="col">
-                <ul>
-                  <li *ngFor="let item of inf.items">
-                    {{ item.descripcion }}
-                  </li>
-                </ul>
+                {{ item.descripcion }}
               </div>
-              <div class="col">
-                <div *ngFor="let item of inf.items">
-                  <!-- {{ item.componente }}
-                  CSS -->
-                  <mat-radio-group
-                    *ngIf="item.componente == 'radio'"
-                    aria-label="Select an option"
-                  >
-                    <mat-radio-button value="1">
-                      {{ item.descripcionTipoEval.split("-")[0] }}
-                    </mat-radio-button>
-                    &nbsp; &nbsp; &nbsp;
-                    <mat-radio-button value="2">
-                      {{
-                        item.descripcionTipoEval.split("-")[1]
-                      }}</mat-radio-button
-                    >
-                  </mat-radio-group>
+              <div class="col col-lg-2">
+                <mat-radio-group
+                  *ngIf="item.componente == 'radio'"
+                  aria-label="Select an option"
+                >
+                  <mat-radio-button value="1">
+                    {{ item.descripcionTipoEval.split("-")[0] }}
+                  </mat-radio-button>
+                  &nbsp; &nbsp; &nbsp;
+                  <mat-radio-button value="2">
+                    {{ item.descripcionTipoEval.split("-")[1] }}
+                  </mat-radio-button>
+                </mat-radio-group>
+                <div *ngIf="item.componente == 'input'">
+                  <input matInput />
+                  <br />
                 </div>
-              </div>
-            </div>
-          </div>
-          <!-- <h2>Subsecciones</h2> -->
-          <div class="container" *ngFor="let subsec of inf.subSecciones">
-            <h3>{{ subsec.descripcion }}</h3>
-            <div class="row">
-              <div class="col">
-                <ul>
-                  <li *ngFor="let item of subsec.items">
-                    {{ item.descripcion }}
-                  </li>
-                </ul>
-              </div>
-              <div class="col">
-                <div *ngFor="let item of subsec.items">
-                  <!-- {{ item.componente }} -->
-                  <mat-radio-group
-                    *ngIf="item.componente == 'radio'"
-                    aria-label="Select an option"
-                  >
-                    <mat-radio-button value="1">
-                      {{ item.descripcionTipoEval.split("-")[0] }}
-                    </mat-radio-button>
-                    &nbsp; &nbsp; &nbsp;
-                    <mat-radio-button value="2">
-                      {{
-                        item.descripcionTipoEval.split("-")[1]
-                      }}</mat-radio-button
-                    >
-                  </mat-radio-group>
-                </div>
+                <mat-icon
+                  *ngIf="item.componente == 'img'"
+                  aria-hidden="false"
+                  aria-label="Example home icon"
+                  >photo_camera</mat-icon
+                >
               </div>
             </div>
           </div>
         </div>
-        <!-- subSecciones: {{ inf.subSecciones | json }} -->
-      </mat-expansion-panel>
-    </mat-accordion>
-    <!-- Informe:
-    {{ Informe | json }} -->
-  </p>
+        <!-- Secciones -->
+        <mat-accordion>
+          <mat-expansion-panel
+            class="container"
+            *ngFor="let subsec of inf.subSecciones"
+          >
+            <mat-expansion-panel-header
+              style="font-size: 1rem; font-weight: 500"
+            >
+              {{ subsec.descripcion }}
+            </mat-expansion-panel-header>
+            <div *ngFor="let item of subsec.items">
+              <div class="row">
+                <div class="col">
+                  {{ item.descripcion }}
+                </div>
+                <div class="col col-lg-2">
+                  <mat-radio-group
+                    *ngIf="item.componente == 'radio'"
+                    aria-label="Select an option"
+                  >
+                    <mat-radio-button value="1">
+                      {{ item.descripcionTipoEval.split("-")[0] }}
+                    </mat-radio-button>
+                    &nbsp; &nbsp; &nbsp;
+                    <mat-radio-button value="2">
+                      {{
+                        item.descripcionTipoEval.split("-")[1]
+                      }}</mat-radio-button
+                    >
+                  </mat-radio-group>
+                  <div *ngIf="item.componente == 'input'">
+                    <input matInput />
+                    <br />
+                  </div>
+                  <mat-icon
+                    *ngIf="item.componente == 'img'"
+                    aria-hidden="false"
+                    aria-label="Example home icon"
+                    >photo_camera</mat-icon
+                  >
+                </div>
+              </div>
+            </div>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
 </div>
-<!--  -->
-<!-- <mat-spinner
-  style="display: flex; justify-content: center; align-items: center"
-></mat-spinner> -->
+
 <div class="padre">
   <div class="hijo"><mat-spinner *ngIf="!Auditoria"></mat-spinner></div>
 </div>

@@ -12,3 +12,12 @@
   left: 50%;
   margin: -25px 0 0 -25px; /* aplicar a top y al margen izquierdo un valor negativo para completar el centrado del elemento hijo */
 }
+
+h1 {
+  font-size: 2rem;
+}
+
+mat-panel-title {
+  font-size: 1.1rem;
+  /* font-family: Roboto, Helvetica Neue, sans-serif; */
+}

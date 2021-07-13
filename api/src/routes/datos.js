@@ -465,6 +465,36 @@ router.get("/informe/:idauditoria", helpers.verifyToken, async (req, res) => {
 //   }
 // }
 
+router.post("/informe/:idauditoria", async (req, res) => {
+  const { idauditoria } = req.params;
+  const guardarItems = `
+    INSERT INTO ItemsAuditoria
+      (idauditoria, iditem, valor)
+    VALUES 
+      (#IDAUDITORIA, #IDITEM1, #VALOR1),
+      (#IDAUDITORIA, #IDITEM2, #VALOR2),
+      ...
+      (#IDAUDITORIA, #IDITEMn, #VALORn)
+  `;
+  const preguntarEstado = `
+    SELECT idestadoauditoria 
+    from Auditorias 
+    where idauditoria = ${idauditoria}
+  `;
+  const actualizarEstadoAuditoria = `
+    UPDATE Auditorias 
+    set idestadoauditoria=2 
+    where idauditoria = ${idauditoria}
+  `;
+
+  const tipoValores = `
+    SELECT 
+      V.idvalor, 
+      V.descripcion 
+    FROM Valores V 
+      INNER JOIN TipoEvaluacionValores TEV ON V.idvalor = TEV.idvalor 
+    WHERE TEV.idtipoeval= ${4}`; // el 4 SI o NO
+});
 router.get("/lala", async (req, res) => {
   const datos = extraerDatos();
   if (datos != undefined) {
