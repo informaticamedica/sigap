@@ -3,8 +3,8 @@ const router = express.Router();
 const helpers = require("../lib/helpers");
 const XLSX = require("xlsx");
 
-const pool = require("../database");
-
+const { pool, con, mysql2 } = require("../database");
+const { database } = require("../../src/keys");
 const extraerDatos = () => {
   const nombreArchivo = "Dashboard Final.xlsx";
   const nombreHoja = "Datos (2)";
@@ -129,8 +129,14 @@ router.post("/planificarauditoria", helpers.verifyToken, async (req, res) => {
   } = req.body;
   console.log(req.body);
 
+  const connection = await mysql2.createConnection(database);
+
+  await connection.execute("SET TRANSACTION ISOLATION LEVEL READ COMMITTED");
+  console.log("Finished setting the isolation level to read committed");
+
+  await connection.beginTransaction();
   try {
-    const auditoria = await pool.query(`
+    const Qauditoria = `
       INSERT INTO Auditorias (
         idprestador, 
         fechaplan, 
@@ -152,28 +158,36 @@ router.post("/planificarauditoria", helpers.verifyToken, async (req, res) => {
           ${VERSIONGUIA}, 
           ${referente != "" ? referente : "NULL"}
         )
-    `);
-    const Integrantes = await pool.query(`
-    INSERT INTO EquipoAuditoria (idusuario, idauditoria, idareaauditoria, referente)
-    VALUES 
-    ${integrantes.map(
-      (i) =>
-        "(" +
-        i.usuarios +
-        "," +
-        auditoria.insertId +
-        "," +
-        i.areas +
-        "," +
-        (i.responsable ? 1 : 0) +
-        ")"
-    )}
-    `);
-    console.log(auditoria);
-    console.log(Integrantes);
+    `;
+    const [auditoria] = await connection.execute(Qauditoria);
+    const QIntegrantes = `
+      INSERT INTO EquipoAuditoria 
+        (idusuario, idauditoria, idareaauditoria, referente,activo)
+      VALUES
+      ${integrantes.map(
+        (i) =>
+          "(" +
+          i.usuarios +
+          "," +
+          auditoria.insertId +
+          "," +
+          i.areas +
+          "," +
+          (i.responsable ? 1 : 0) +
+          1 +
+          ")"
+      )}
+    `;
 
+    console.log("auditoria", auditoria);
+    // console.log(QIntegrantes);
+    const Integrantes = await connection.execute(QIntegrantes);
+    await connection.commit();
+
+    // res.status(200).json({});
     res.status(200).json({ auditoria, Integrantes });
   } catch (error) {
+    connection.rollback();
     console.error(error);
     res.status(400).json(error);
   }
@@ -399,7 +413,7 @@ router.get("/informe/:idauditoria", helpers.verifyToken, async (req, res) => {
         ORDER BY ITS.orden
       `
         );
-        const items = await pool.query(`
+        const Items = await pool.query(`
         select 
         I.iditem, 
         C.descripcion, 
@@ -420,7 +434,20 @@ router.get("/informe/:idauditoria", helpers.verifyToken, async (req, res) => {
         ITS.idseccion in (${idsecciones}) 
       ORDER BY ITS.orden
         `);
-        const informe = Secciones.map((sec) => {
+        const tipoEval = await pool.query(`
+          SELECT TEV.idtipoeval, V.idvalor, V.descripcion
+          FROM Valores V 
+            INNER JOIN TipoEvaluacionValores TEV ON V.idvalor = TEV.idvalor
+          WHERE V.activo=1 and TEV.activo=1
+        `);
+        console.log("tipoEval", tipoEval);
+        const items = Items.map((a) => {
+          return {
+            ...a,
+            tipoEval: tipoEval.filter((b) => b.idtipoeval == a.idtipoeval),
+          };
+        });
+        const Informe = Secciones.map((sec) => {
           return {
             ...sec,
             items: items.filter((item) => item.idseccion == sec.idseccion),
@@ -435,9 +462,9 @@ router.get("/informe/:idauditoria", helpers.verifyToken, async (req, res) => {
           };
         });
 
-        return informe;
+        return { Informe, items };
       })
-      .then((Informe) => res.json({ Auditoria, Informe }));
+      .then(({ Informe, items }) => res.json({ Auditoria, Informe, items }));
     console.log("*************secciones**************");
     console.table(secciones);
   } catch (error) {
@@ -467,20 +494,21 @@ router.get("/informe/:idauditoria", helpers.verifyToken, async (req, res) => {
 
 router.post("/informe/:idauditoria", async (req, res) => {
   const { idauditoria } = req.params;
+  const { items } = req.body;
+  // console.log(body);
+  const preguntarEstado = `
+  SELECT idestadoauditoria 
+  from Auditorias 
+  where idauditoria = ${idauditoria}
+`;
   const guardarItems = `
     INSERT INTO ItemsAuditoria
       (idauditoria, iditem, valor)
     VALUES 
-      (#IDAUDITORIA, #IDITEM1, #VALOR1),
-      (#IDAUDITORIA, #IDITEM2, #VALOR2),
-      ...
-      (#IDAUDITORIA, #IDITEMn, #VALORn)
+      ${items.map((item) => `(${idauditoria},${item.iditem},'${item.valor}')`)}
   `;
-  const preguntarEstado = `
-    SELECT idestadoauditoria 
-    from Auditorias 
-    where idauditoria = ${idauditoria}
-  `;
+  // console.log(guardarItems);
+
   const actualizarEstadoAuditoria = `
     UPDATE Auditorias 
     set idestadoauditoria=2 
@@ -494,28 +522,46 @@ router.post("/informe/:idauditoria", async (req, res) => {
     FROM Valores V 
       INNER JOIN TipoEvaluacionValores TEV ON V.idvalor = TEV.idvalor 
     WHERE TEV.idtipoeval= ${4}`; // el 4 SI o NO
+
+  const connection = await mysql2.createConnection(database);
+
+  await connection.execute("SET TRANSACTION ISOLATION LEVEL READ COMMITTED");
+  console.log("Finished setting the isolation level to read committed");
+
+  await connection.beginTransaction();
+
+  try {
+    const [estado] = await connection.execute(preguntarEstado);
+    let Items;
+    if (estado.idestadoauditoria == 1) {
+      Items = await connection.execute(guardarItems);
+    }
+    // const ActualizarEstado = await connection.execute(
+    //   actualizarEstadoAuditoria
+    // );
+    else console.log("preguntarEstado", estado, Items);
+    await connection.commit();
+    res.json({ Items, ActualizarEstado });
+  } catch (error) {
+    connection.rollback();
+  }
 });
 router.get("/lala", async (req, res) => {
-  const datos = extraerDatos();
-  if (datos != undefined) {
-    try {
-      // const result = await pool.query("INSERT INTO indicadores SET ? ", newUser);
-      // console.log(req.body, result);
-      let aux = datos.filter((a, i) => i < 3);
-      console.log(aux);
-      res.status(200).json(result);
-    } catch (error) {
-      // console.log("============error========================");
-      // console.log(error);
-      // console.log("error.code", error.code);
-      // console.log("============error========================");
+  // await mysql2.createConnection(database)
+  const connection = await mysql2.createConnection(database);
 
-      if (error.code == "ER_DUP_ENTRY") res.status(406).json(error);
-    }
-    res.json(datos);
+  await connection.execute("SET TRANSACTION ISOLATION LEVEL READ COMMITTED");
+  console.log("Finished setting the isolation level to read committed");
+
+  await connection.beginTransaction();
+
+  try {
+    const algo = await connection.execute("select * from Auditorias");
+    await connection.commit();
+    res.json({ algo });
+  } catch (error) {
+    connection.rollback();
   }
-  // console.log(req.body);
-  // res.render("index", { title: "lala", condition: false });
 });
 // router.get("/cargarTabla/:token", async (req, res) => {
 // // console.log(req.body, req.headers);

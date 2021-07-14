@@ -202,7 +202,7 @@ export class NuevaAuditoriaComponent implements OnInit {
       usuarios: '',
       responsable: false,
     };
-    this.AuxUsuarios.push(this.UsuariosRes);
     control.push(this.formBuilder.group(iniSubelementos));
+    this.AuxUsuarios.push(this.UsuariosRes);
   }
 }
