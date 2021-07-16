@@ -8,7 +8,13 @@
     <br />
   </div>
   <div align="right">
-    <button mat-raised-button color="primary" (click)="onSave()">
+    <button mat-raised-button color="primary" (click)="CompletarGuia(true)" *ngIf="!completarGuia" >
+      Completar guia
+    </button>
+    <button mat-raised-button color="primary" (click)="CompletarGuia(false)" *ngIf="completarGuia">
+      Cancelar
+    </button>
+    <button mat-raised-button color="primary" (click)="onSave()"  *ngIf="completarGuia">
       Guardar
     </button>
   </div>
@@ -21,7 +27,6 @@
       <mat-expansion-panel-header>
         <mat-panel-title> Datos del Prestador </mat-panel-title>
         <mat-panel-description>
-          {{ Auditoria?.ProvinciaPrestador }}
         </mat-panel-description>
       </mat-expansion-panel-header>
       <div class="container">
@@ -47,7 +52,6 @@
       <mat-expansion-panel-header>
         <mat-panel-title>Datos de la auditoria </mat-panel-title>
         <mat-panel-description>
-          {{ Auditoria?.EstadoAuditoria }}
         </mat-panel-description>
       </mat-expansion-panel-header>
       <div class="container">
@@ -84,6 +88,7 @@
                   *ngIf="item.componente == 'radio'"
                   aria-label="Select an option"
                   formControlName="Valor"
+                  [disabled] = "!completarGuia"
                 >
                   <mat-radio-button
                     *ngFor="let tipo of item.tipoEval"
@@ -100,8 +105,8 @@
                   </mat-radio-button>
                 </mat-radio-group>
                 <div *ngIf="item.componente == 'input'">
-                  <mat-form-field appearance="fill">
-                    <input matInput />
+                  <mat-form-field appearance="fill" >
+                    <input matInput [disabled]="!completarGuia" />
                   </mat-form-field>
                   <br />
                 </div>
@@ -110,6 +115,7 @@
                   mat-button
                   (click)="fileInput.click()"
                   *ngIf="item.componente == 'img'"
+                  [disabled]="!completarGuia"
                 >
                   <mat-icon>photo_camera</mat-icon>
                   <input
@@ -151,6 +157,7 @@
                     *ngIf="item.componente == 'radio'"
                     aria-label="Select an option"
                     formControlName="Valor"
+                    [disabled] = "!completarGuia"
                   >
                     <mat-radio-button
                       *ngFor="let tipo of item.tipoEval"
@@ -166,7 +173,7 @@
                       appearance="outline"
                       style="width: 70%; height: 50%; padding: 0"
                     >
-                      <input matInput />
+                      <input matInput [disabled]="!completarGuia"/>
                     </mat-form-field>
                     <br />
                   </div>
@@ -175,6 +182,7 @@
                     mat-button
                     (click)="fileInput.click()"
                     *ngIf="item.componente == 'img'"
+                    [disabled]="!completarGuia"
                   >
                     <mat-icon>photo_camera</mat-icon>
                     <input

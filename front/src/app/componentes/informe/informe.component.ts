@@ -31,6 +31,10 @@ export class InformeComponent implements OnInit {
   items;
   Guardando = false;
   form: FormGroup;
+  completarGuia = false;
+  CompletarGuia (arg){
+    this.completarGuia= arg
+  }
   ngOnInit(): void {
     this.datos
       .DatosParametrosApi('auditoria', this.idauditoria)
@@ -89,6 +93,7 @@ export class InformeComponent implements OnInit {
       .subscribe((res) => {
         console.log('guardarDatosParametrosApi', res);
         this.Guardando = false;
+        this.CompletarGuia(false)
         this.openSnackBar("Cambios guardados","Aceptar")
       });
 
