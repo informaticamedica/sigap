@@ -70,6 +70,7 @@ export class InformeComponent implements OnInit {
 
     // console.log('Form');
   }
+  onFileInput(e) {}
 
   agregarItems(items) {
     items.forEach(({ Valor, iditem, descripcion }) => {
