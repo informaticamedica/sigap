@@ -14,6 +14,7 @@
   </div>
   <br />
   <br />
+
   <mat-accordion>
     <mat-expansion-panel>
       <mat-expansion-panel-header>
@@ -97,15 +98,25 @@
                   </mat-radio-button>
                 </mat-radio-group>
                 <div *ngIf="item.componente == 'input'">
-                  <input matInput />
+                  <mat-form-field appearance="fill">
+                    <input matInput />
+                  </mat-form-field>
                   <br />
                 </div>
-                <mat-icon
+
+                <button
+                  mat-button
+                  (click)="fileInput.click()"
                   *ngIf="item.componente == 'img'"
-                  aria-hidden="false"
-                  aria-label="Example home icon"
-                  >photo_camera</mat-icon
                 >
+                  <mat-icon>photo_camera</mat-icon>
+                  <input
+                    #fileInput
+                    type="file"
+                    (change)="onFileInput($event)"
+                    style="display: none"
+                  />
+                </button>
               </div>
             </div>
           </div>
@@ -147,16 +158,30 @@
                       &nbsp; &nbsp; &nbsp;
                     </mat-radio-button>
                   </mat-radio-group>
+
                   <div *ngIf="item.componente == 'input'">
-                    <input matInput />
+                    <mat-form-field
+                      appearance="outline"
+                      style="width: 70%; height: 50%; padding: 0"
+                    >
+                      <input matInput />
+                    </mat-form-field>
                     <br />
                   </div>
-                  <mat-icon
+
+                  <button
+                    mat-button
+                    (click)="fileInput.click()"
                     *ngIf="item.componente == 'img'"
-                    aria-hidden="false"
-                    aria-label="Example home icon"
-                    >photo_camera</mat-icon
                   >
+                    <mat-icon>photo_camera</mat-icon>
+                    <input
+                      #fileInput
+                      type="file"
+                      (change)="onFileInput($event)"
+                      style="display: none"
+                    />
+                  </button>
                 </div>
               </div>
             </div>
