@@ -48,8 +48,7 @@ export class InformeComponent implements OnInit {
 
   openSnackBar(message: string, action: string) {
     this._snackBar.open(message, action,{
-      duration: 40000,
-      panelClass: "success-dialog"
+      duration: 4000
   });
   }
 
