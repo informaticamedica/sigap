@@ -104,7 +104,10 @@ export class NuevaAuditoriaComponent implements OnInit {
     return aux ? aux.apellido + ' , ' + aux.nombre : undefined;
   }
   displayFn2(state) {
-    const aux = this.Usuarios.filter((a) => a.idusuario == state)[0];
+    const aux = this.UsuariosRes?.filter((a) => a.idusuario == state)[0];
+    console.log('aux', aux, state);
+    console.log('this.Usuarios', this.Usuarios);
+
     return aux ? aux.apellido + ' , ' + aux.nombre : undefined;
   }
 
@@ -168,15 +171,15 @@ export class NuevaAuditoriaComponent implements OnInit {
 
   onSubmit() {
     console.log(this.form.value);
-    this.datos
-      .guardarDatosApi('planificarauditoria', {
-        ...this.form.value,
-        VERSIONGUIA: this.TipoInforme[0].versionactual,
-      })
-      .subscribe((res) => {
-        this.router.navigate(['/', 'principal']);
-        console.log(res);
-      });
+    // this.datos
+    //   .guardarDatosApi('planificarauditoria', {
+    //     ...this.form.value,
+    //     VERSIONGUIA: this.TipoInforme[0].versionactual,
+    //   })
+    //   .subscribe((res) => {
+    //     this.router.navigate(['/', 'principal']);
+    //     console.log(res);
+    //   });
   }
   onCancel() {
     // console.log(this.formGroup);
