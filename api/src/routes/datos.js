@@ -83,7 +83,7 @@ router.get("/planificarauditoria", helpers.verifyToken, async (req, res) => {
     `);
 
     const Areas = await pool.query(`
-      select GV.idguia, GV.versionguia, S.idareaauditoria, A.descripcion
+      select distinct GV.idguia, GV.versionguia, S.idareaauditoria, A.descripcion
       FROM GuiaVersion GV 
         INNER JOIN SeccionesGuia SG ON GV.idguia = SG.idguia AND GV.versionguia = SG.versionguia
         INNER JOIN Secciones S ON SG.idseccion = S.idseccion
@@ -159,29 +159,33 @@ router.post("/planificarauditoria", helpers.verifyToken, async (req, res) => {
           ${referente != "" ? referente : "NULL"}
         )
     `;
+    console.log("Qauditoria", Qauditoria);
     const [auditoria] = await connection.execute(Qauditoria);
     const QIntegrantes = `
       INSERT INTO EquipoAuditoria 
         (idusuario, idauditoria, idareaauditoria, referente,activo)
       VALUES
       ${integrantes.map(
-        (i) =>
-          "(" +
-          i.usuarios +
-          "," +
-          auditoria.insertId +
-          "," +
-          i.areas +
-          "," +
-          (i.responsable ? 1 : 0) +
-          1 +
-          ")"
+        (i) => `
+          (
+            ${i.usuarios},
+            ${auditoria.insertId},
+            ${i.areas},
+            ${i.responsable ? 1 : 0},
+            1
+          )
+        `
       )}
     `;
 
     console.log("auditoria", auditoria);
-    // console.log(QIntegrantes);
+    console.log("*********************QIntegrantes*****************");
+    console.log(QIntegrantes);
+    console.log("**************************************");
     const Integrantes = await connection.execute(QIntegrantes);
+    console.log("******************Integrantes********************");
+    console.log(Integrantes);
+    console.log("**************************************");
     await connection.commit();
 
     // res.status(200).json({});
@@ -224,9 +228,11 @@ router.get("/informe/:idauditoria", helpers.verifyToken, async (req, res) => {
       INNER JOIN Usuarios Us ON Us.idusuario = A.idusuarioreferente 
     where  A.idauditoria = ${idauditoria}
     `);
+    console.log("Auditoria", Auditoria);
     const [Informe] = await pool.query(`
     call VerInforme(${Auditoria.idguia},${Auditoria.versionguia})
     `);
+    console.log("Informe", Informe);
     // const callback = (arr, callback) => {
     //   console.log(arr, callback);
     // };
@@ -344,7 +350,15 @@ router.get("/informe/:idauditoria", helpers.verifyToken, async (req, res) => {
     const idsecciones = Informe.filter((a) => a.Secciones != 0).map(
       (a) => a.idseccion
     );
-    // console.table(secciones);
+
+    /******
+     *
+     *
+     * El informe 24 - guia 2 rompe todo
+     *
+     */
+
+    console.table("idsecciones", idsecciones);
     const queryString = (idsecciones) => `
       select 
         S.idseccionmadre,
@@ -360,6 +374,10 @@ router.get("/informe/:idauditoria", helpers.verifyToken, async (req, res) => {
       S.idseccionmadre in (${idsecciones})
       ORDER BY S.idseccionmadre;
     `;
+
+    // if (idsecciones.Secciones !==0) {
+
+    // }
     const secciones = pool
       .query(queryString(idsecciones))
       .then((aa) => {
@@ -495,7 +513,7 @@ router.get("/informe/:idauditoria", helpers.verifyToken, async (req, res) => {
 router.post("/informe/:idauditoria", async (req, res) => {
   const { idauditoria } = req.params;
   const { items } = req.body;
-  // console.log(body);
+  console.log("items", items);
   const preguntarEstado = `
   SELECT idestadoauditoria 
   from Auditorias 
@@ -505,7 +523,7 @@ router.post("/informe/:idauditoria", async (req, res) => {
     INSERT INTO ItemsAuditoria
       (idauditoria, iditem, valor)
     VALUES 
-      ${items.map((item) => `(${idauditoria},${item.iditem},'${item.valor}')`)}
+      ${items.map((item) => `(${idauditoria},${item.iditem},'${item.Valor}')`)}
   `;
   // console.log(guardarItems);
 
@@ -532,18 +550,78 @@ router.post("/informe/:idauditoria", async (req, res) => {
 
   try {
     const [estado] = await connection.execute(preguntarEstado);
+    console.log("estado", estado);
+    console.log("estado[0].idestadoauditoria", estado[0].idestadoauditoria);
     let Items;
-    if (estado.idestadoauditoria == 1) {
-      Items = await connection.execute(guardarItems);
+    console.log(estado[0].idestadoauditoria);
+    const Estado = estado[0].idestadoauditoria;
+
+    switch (Estado) {
+      case 1:
+        // console.log("guardarItems", guardarItems);
+        Items = await connection.execute(guardarItems);
+        await connection.execute(actualizarEstadoAuditoria);
+        await connection.commit();
+        res.status(200).json({ Items });
+        break;
+      case 2:
+        const itemsActuales = await connection.execute(`
+        select iditem, valor 
+        from ItemsAuditoria
+        where idauditoria = ${idauditoria}
+        `);
+        // console.log("itemsActuales", itemsActuales);
+        // console.log("items", items);
+        Items = items.map(async (item) => {
+          const itemActual = itemsActuales[0].find(
+            (a) => a.iditem == item.iditem
+          );
+          // console.log(
+          //   "itemActual.valor != item.Valor",
+          //   itemActual.valor != item.Valor
+          // );
+          if (itemActual.valor != item.Valor) {
+            console.log("itemActual", itemActual);
+            console.log("item", item);
+            console.log(
+              "itemActual.valor != item.Valor",
+              itemActual.valor != item.Valor
+            );
+            const aux = await connection.execute(`
+              UPDATE ItemsAuditoria
+              SET valor = '${item.Valor}'
+              WHERE idauditoria= ${idauditoria} AND iditem=${item.iditem};
+            `);
+            console.log(" UPDATE ItemsAuditoria", aux);
+          }
+          // console.log(`
+          //     UPDATE ItemsAuditoria
+          //     SET valor = '${item.Valor}'
+          //     WHERE idauditoria= ${idauditoria} AND iditem=${item.iditem}
+          //   `);
+        });
+        await connection.commit();
+        res.status(200).json({ Items });
+        break;
+      default:
+        res.status(400).json({ error: "Esta auditoria no puede ser editada" });
+        connection.rollback();
+        break;
     }
-    // const ActualizarEstado = await connection.execute(
-    //   actualizarEstadoAuditoria
-    // );
-    else console.log("preguntarEstado", estado, Items);
-    await connection.commit();
-    res.json({ Items, ActualizarEstado });
+
+    // if (estado[0].idestadoauditoria == 1) {
+    // } else if (estado[0].idestadoauditoria == 2) {
+    //   console.log("");
+
+    //   console.log("estado.idestadoauditoria != 1", estado);
+    // } else {
+    // }
+
+    console.log("connection.commit");
   } catch (error) {
     connection.rollback();
+    console.error(error);
+    res.json({ error });
   }
 });
 router.get("/lala", async (req, res) => {

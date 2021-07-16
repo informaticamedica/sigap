@@ -45,4 +45,9 @@ export class DatosDbService {
   guardarDatosApi(base, datos) {
     return this.http.post(this.urlApi + base, datos, { headers: this.headers });
   }
+  guardarDatosParametrosApi(base, param, datos) {
+    return this.http.post(this.urlApi + base + '/' + param, datos, {
+      headers: this.headers,
+    });
+  }
 }

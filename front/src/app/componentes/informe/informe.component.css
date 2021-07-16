@@ -21,3 +21,20 @@ mat-panel-title {
   font-size: 1.1rem;
   /* font-family: Roboto, Helvetica Neue, sans-serif; */
 }
+
+.spinner {
+  display: block;
+  position: fixed;
+  z-index: 1031; /* High z-index so it is on top of the page */
+  top: 50%;
+  right: 50%; /* or: left: 50%; */
+  margin-top: 50px; /* half of the elements height */
+  margin-right: 50px; /* half of the elements widht */
+}
+.spinner2 {
+  position: fixed;
+  z-index: 1031;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

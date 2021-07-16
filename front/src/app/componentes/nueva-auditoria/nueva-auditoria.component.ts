@@ -143,12 +143,15 @@ export class NuevaAuditoriaComponent implements OnInit {
       // console.log('value', value);
       // value = value.toLocaleLowerCase();
       const tipoInforme = this.TipoInforme.filter((a) => a.idguia == value)[0];
+      console.log('tipoInforme', tipoInforme);
+
       this.Area = this.AreasRes.filter(
         (a) =>
           a.idguia == tipoInforme.idguia &&
           a.versionguia == tipoInforme.versionactual
       );
-      // console.log(tipoInforme);
+      console.log('this.AreasRes', this.AreasRes);
+      console.log('this.Area', this.Area);
     });
     this.form.get('referente').valueChanges.subscribe((value: string) => {
       // console.log(' this.UsuariosRes', this.UsuariosRes);

@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const helpers = require("../lib/helpers");
-const pool = require("../database");
+const { pool } = require("../database");
 
 const jwt = require("jsonwebtoken");
 
