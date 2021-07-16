@@ -5,8 +5,8 @@
 export const environment = {
   production: false,
   // API_URL: "http://192.168.0.95:4000/api/",
-  // API_URL: 'http://localhost:4000/api/',
-  API_URL: 'https://4000-blush-stork-6ufr9cvr.ws-us11.gitpod.io/api/',
+  API_URL: 'http://localhost:4000/api/',
+  // API_URL: 'https://4000-blush-stork-6ufr9cvr.ws-us11.gitpod.io/api/',
   // API_URL: "https://4000-red-reindeer-16vp8dln.ws-us09.gitpod.io/api/",
 };
 

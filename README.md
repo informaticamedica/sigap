@@ -21,4 +21,5 @@
 > - `$ cd front/`
 > - `$ npm i`
 > - `$ npm install -g @angular/cli`
+> - `Acceder a front/src/environments/environment.ts y cambiar la variable API_URL y asignarle la ruta de la API que te provee el BE`
 > - `$ ng serve`
