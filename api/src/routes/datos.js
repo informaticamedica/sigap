@@ -145,8 +145,7 @@ router.post("/planificarauditoria", helpers.verifyToken, async (req, res) => {
         idinforme, 
         versioninforme, 
         idguia, 
-        versionguia, 
-        idusuarioreferente) 
+        versionguia)
         VALUES (
           ${prestadores}, 
           ${fechaReal !== "" ? "'" + formatDate(fechaReal) + "'" : "NULL"},
@@ -155,15 +154,14 @@ router.post("/planificarauditoria", helpers.verifyToken, async (req, res) => {
           NULL,
           NULL, 
           ${TipoInforme}, 
-          ${VERSIONGUIA}, 
-          ${referente != "" ? referente : "NULL"}
+          ${VERSIONGUIA}
         )
     `;
     console.log("Qauditoria", Qauditoria);
     const [auditoria] = await connection.execute(Qauditoria);
     const QIntegrantes = `
       INSERT INTO EquipoAuditoria 
-        (idusuario, idauditoria, idareaauditoria, referente,activo)
+        (idusuario, idauditoria, idareaauditoria,activo)
       VALUES
       ${integrantes.map(
         (i) => `
@@ -171,7 +169,6 @@ router.post("/planificarauditoria", helpers.verifyToken, async (req, res) => {
             ${i.usuarios},
             ${auditoria.insertId},
             ${i.areas},
-            ${i.responsable ? 1 : 0},
             1
           )
         `
@@ -197,7 +194,7 @@ router.post("/planificarauditoria", helpers.verifyToken, async (req, res) => {
   }
 });
 
-router.get("/informe/:idauditoria", helpers.verifyToken, async (req, res) => {
+router.get("/auditoria/:idauditoria", helpers.verifyToken, async (req, res) => {
   const { idauditoria } = req.params;
   try {
     const [Auditoria] = await pool.query(`
@@ -207,7 +204,6 @@ router.get("/informe/:idauditoria", helpers.verifyToken, async (req, res) => {
       A.idestadoauditoria,
       A.idguia, 
       A.versionguia,
-      A.idusuarioreferente,
       P.descripcion as Prestador,
       P.domicilio,
       P.localidad,
@@ -218,14 +214,12 @@ router.get("/informe/:idauditoria", helpers.verifyToken, async (req, res) => {
       P.CUIT,
       EA.descripcion as EstadoAuditoria,
       Prov.descripcion as ProvinciaPrestador,
-      CONCAT(RIGHT(CONCAT('00', P.idugl),2), ' - ', U.descripcion) as UGL,
-      CONCAT(Us.nombre,' ',Us.apellido) as Referente
+      CONCAT(RIGHT(CONCAT('00', P.idugl),2), ' - ', U.descripcion) as UGL
     from Auditorias A
       INNER JOIN Prestadores P ON  P.idprestador = A.idprestador
       INNER JOIN EstadosAuditoria EA ON  EA.idestadoauditoria = A.idestadoauditoria 
       INNER JOIN Provincias Prov ON  Prov.idprovincia = P.idprovincia 
       INNER JOIN UGL U ON U.idugl = P.idugl 
-      INNER JOIN Usuarios Us ON Us.idusuario = A.idusuarioreferente 
     where  A.idauditoria = ${idauditoria}
     `);
     console.log("Auditoria", Auditoria);
@@ -233,131 +227,12 @@ router.get("/informe/:idauditoria", helpers.verifyToken, async (req, res) => {
     call VerInforme(${Auditoria.idguia},${Auditoria.versionguia})
     `);
     console.log("Informe", Informe);
-    // const callback = (arr, callback) => {
-    //   console.log(arr, callback);
-    // };
-    // pool.getConnection((err, conn) => {
-    //   if (err) {
-    //     callback(err);
-    //   } else {
-    //     Informe.forEach(async (a) => {
-    //       if (a.Secciones != 0) {
-    //         conn.query(
-    //           `
-    //         call VerSecciones(${a.idseccion})
-    //         `,
-    //           (error, results, fields) => {
-    //             conn.release();
-    //             callback(error, results, fields);
-    //           }
-    //         );
-    //       }
-    //     });
-    //   }
-    // });
-
-    // let QuerySecciones = "";
-    // Informe.forEach((a) => {
-    //   if (a.Secciones != 0) {
-    //     QuerySecciones += `
-    //     call VerSecciones(${a.idseccion}) ,
-    //     `;
-    //   }
-    // });
-
-    // console.log("QuerySecciones", QuerySecciones);
-    // const secciones = await pool.query(QuerySecciones);
-    // console.log("secciones", secciones);
-
-    // let QuerySecciones = "";
-    // Informe.forEach((a) => {
-    //   if (a.Secciones != 0) {
-    //     // QuerySecciones += `
-    //     // call VerSecciones(${a.idseccion}) ,
-    //     // `;
-    //     QuerySecciones += `
-    //     select
-    //       S.idseccion,
-    //       S.descripcion,
-    //       (
-    //         select count(I.idseccion)
-    //         from Secciones I
-    //         where I.idseccionmadre = S.idseccion
-    //       ) as Secciones
-    //     from Secciones S
-    //     where S.activo = 1 AND
-    //     S.idseccionmadre= ${a.idseccion}
-    //     ORDER BY S.orden;
-    //     `;
-    //   }
-    // });
-
-    // const connection = await pool.getConnection();
-    // QuerySecciones = [];
-    // Informe.forEach((a) => {
-    //   if (a.Secciones != 0) {
-    //     QuerySecciones.push(`
-    //     call VerSecciones(${a.idseccion}) ,
-    //     `);
-    //   }
-    // });
-
-    // doStuff(QuerySecciones);
-
-    // const Secciones = await pool.query(QuerySecciones);
-
-    // QuerySecciones = [];
-    // Informe.forEach((a) => {
-    //   if (a.Secciones != 0) {
-    //     QuerySecciones.push(
-    //       pool.query(`
-    //     call VerSecciones(${a.idseccion})
-    //     `)
-    //     );
-    //   }
-    // });
-
-    // const lala = await Promise.all(QuerySecciones);
-
-    // const VerSecciones = await pool.query("call VerSecciones(15)");
-    // console.log("VerSecciones15", VerSecciones);
-
-    // console.log("******************************");
-    // console.log("******************************");
-
-    // const lala = Promise.all([
-    //   pool.query("call VerSecciones(7)"),
-    //   pool.query("call VerSecciones(15)"),
-    //   pool.query("call VerSecciones(14)"),
-    //   pool.query("call VerSecciones(13)"),
-    //   // pool.query("call VerSecciones(11)"),
-    //   // pool.query("call VerSecciones(10)"),
-    // ]).then(function (values) {
-    //   console.log(
-    //     "---------------------------------------------------values",
-    //     values
-    //   );
-    // });
-    // console.log("lala", lala);
-    // console.log("******************************");
-    // console.log("******************************");
-    // console.log("QuerySecciones", QuerySecciones);
-    // console.log("Secciones", Secciones);
-
-    // const Secciones1 = await pool.query("call VerSecciones(1)");
-    // console.log("Secciones1");
-    // console.table(Secciones1[0]);
+    
     const idsecciones = Informe.filter((a) => a.Secciones != 0).map(
       (a) => a.idseccion
     );
 
-    /******
-     *
-     *
-     * El informe 24 - guia 2 rompe todo
-     *
-     */
-
+    
     console.log("idsecciones", idsecciones);
     const queryString = (idsecciones) => `
       select 
@@ -415,21 +290,11 @@ router.get("/informe/:idauditoria", helpers.verifyToken, async (req, res) => {
         return {
           ...sec,
           items: items.filter((item) => item.idseccion == sec.idseccion),
-          // subSecciones: sec.subSecciones.map((subsec) => {
-          //   return {
-          //     ...subsec,
-          //     items: items.filter((item) => item.idseccion == subsec.idseccion),
-          //   };
-          // }),
+         
         };
       });
-      // console.log(
-      //   "*****************************************************************es por aca"
-      // );
-      // console.log({ Auditoria, Informe: informe, items });
-      // console.log(
-      //   "*****************************************************************"
-      // );
+     
+      
       res.status(200).json({ Auditoria, Informe: informe, items });
     } else
       pool
@@ -462,29 +327,8 @@ router.get("/informe/:idauditoria", helpers.verifyToken, async (req, res) => {
               idsecciones.push(ii.idseccion);
             });
           });
-          //   console.log(idsecciones);
-          //   console.log(
-          //     "porlas",
-          //     `
-          //   select
-          //     I.iditem,
-          //     C.descripcion,
-          //     TE.idtipoeval,
-          //     TE.componente,
-          //     IFNULL(A.valor, '') as Valor
-          //   from ItemSeccion ITS
-          //     INNER JOIN Items I ON ITS.iditem = I.iditem
-          //     INNER JOIN TipoEvaluacion TE ON I.idtipoeval = TE.idtipoeval
-          //     INNER JOIN Criterios C ON C.idcriterio = I.idcriterio
-          //     LEFT JOIN ItemsAuditoria A ON A.iditem = I.iditem and A.idauditoria=${idauditoria}
-          //   where
-          //     ITS.activo = 1 AND
-          //     I.activo=1 AND
-          //     TE.activo=1 AND
-          //     ITS.idseccion in (${idsecciones})
-          //   ORDER BY ITS.orden
-          // `
-          //   );
+         
+          
           const Items = await pool.query(`
             select 
               I.iditem, 
@@ -565,7 +409,7 @@ router.get("/informe/:idauditoria", helpers.verifyToken, async (req, res) => {
 //   }
 // }
 
-router.post("/informe/:idauditoria", async (req, res) => {
+router.post("/auditoria/:idauditoria", async (req, res) => {
   const { idauditoria } = req.params;
   const { items } = req.body;
   console.log("items", items);

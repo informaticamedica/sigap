@@ -38,6 +38,6 @@ export class PrincipalComponent implements OnInit {
     console.log();
 
     const { idauditoria } = this.Auditorias.filter((a) => a.SAP === $e.SAP)[0];
-    this.router.navigate(['/informe', idauditoria]);
+    this.router.navigate(['/auditoria', idauditoria]);
   }
 }

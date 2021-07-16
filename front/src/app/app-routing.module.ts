@@ -16,7 +16,7 @@ import { HojaUglComponent } from './componentes/hoja-ugl/hoja-ugl.component';
 import { InformeComponent } from './componentes/informe/informe.component';
 
 const routes: Routes = [
-  { path: '', component: SigninComponent },
+  { path: '', component: PrincipalComponent },
   { path: 'signin', component: SigninComponent },
   { path: 'signup', component: SignupComponent },
   { path: 'changepass', component: ChangepassComponent },
@@ -31,7 +31,7 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
-    path: 'informe/:idauditoria',
+    path: 'auditoria/:idauditoria',
     component: InformeComponent,
     canActivate: [AuthGuard],
   },

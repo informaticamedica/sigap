@@ -33,7 +33,7 @@ export class InformeComponent implements OnInit {
   form: FormGroup;
   ngOnInit(): void {
     this.datos
-      .DatosParametrosApi('informe', this.idauditoria)
+      .DatosParametrosApi('auditoria', this.idauditoria)
       .subscribe((res: { Auditoria; Informe; items }) => {
         console.log(res);
         const { Auditoria, Informe, items } = res;
@@ -85,7 +85,7 @@ export class InformeComponent implements OnInit {
     );
     this.Guardando = true;
     this.datos
-      .guardarDatosParametrosApi('informe', this.idauditoria, this.form.value)
+      .guardarDatosParametrosApi('auditoria', this.idauditoria, this.form.value)
       .subscribe((res) => {
         console.log('guardarDatosParametrosApi', res);
         this.Guardando = false;
