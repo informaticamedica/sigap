@@ -358,7 +358,7 @@ router.get("/informe/:idauditoria", helpers.verifyToken, async (req, res) => {
      *
      */
 
-    console.table("idsecciones", idsecciones);
+    console.log("idsecciones", idsecciones);
     const queryString = (idsecciones) => `
       select 
         S.idseccionmadre,
@@ -375,64 +375,10 @@ router.get("/informe/:idauditoria", helpers.verifyToken, async (req, res) => {
       ORDER BY S.idseccionmadre;
     `;
 
-    // if (idsecciones.Secciones !==0) {
-
-    // }
-    const secciones = pool
-      .query(queryString(idsecciones))
-      .then((aa) => {
-        const informeSecciones = Informe.map((i) => {
-          // if (condition) {
-          // console.log("///////////secciones///////////////", aa);
-          // }
-          const auxSecciones = aa.filter(
-            (s) => s.idseccionmadre == i.idseccion
-          );
-
-          return {
-            ...i,
-            subSecciones: auxSecciones,
-          };
-        });
-        console.table(Informe);
-        return informeSecciones;
-      })
-      .then(async (Secciones) => {
-        console.log("*************informe**************");
-        console.log("Secciones", Secciones);
-        console.log("*************informe**************");
-        const idsecciones = [];
-        Secciones.map((i) => {
-          idsecciones.push(i.idseccion);
-          i.subSecciones.map((ii) => {
-            idsecciones.push(ii.idseccion);
-          });
-        });
-        console.log(idsecciones);
-        console.log(
-          "porlas",
-          `
-        select 
-          I.iditem, 
-          C.descripcion, 
-          TE.idtipoeval, 
-          TE.componente, 
-          IFNULL(A.valor, '') as Valor
-        from ItemSeccion ITS 
-          INNER JOIN Items I ON ITS.iditem = I.iditem
-          INNER JOIN TipoEvaluacion TE ON I.idtipoeval = TE.idtipoeval
-          INNER JOIN Criterios C ON C.idcriterio = I.idcriterio
-          LEFT JOIN ItemsAuditoria A ON A.iditem = I.iditem and A.idauditoria=${idauditoria}
-        where 
-          ITS.activo = 1 AND 
-          I.activo=1 AND 
-          TE.activo=1 AND
-          ITS.idseccion in (${idsecciones}) 
-        ORDER BY ITS.orden
-      `
-        );
-        const Items = await pool.query(`
-        select 
+    if (idsecciones.length === 0) {
+      const idsecciones = Informe.map((a) => a.idseccion);
+      const Items = await pool.query(`
+      select 
         I.iditem, 
         C.descripcion, 
         TE.idtipoeval, 
@@ -451,40 +397,149 @@ router.get("/informe/:idauditoria", helpers.verifyToken, async (req, res) => {
         TE.activo=1 AND
         ITS.idseccion in (${idsecciones}) 
       ORDER BY ITS.orden
-        `);
-        const tipoEval = await pool.query(`
-          SELECT TEV.idtipoeval, V.idvalor, V.descripcion
-          FROM Valores V 
-            INNER JOIN TipoEvaluacionValores TEV ON V.idvalor = TEV.idvalor
-          WHERE V.activo=1 and TEV.activo=1
-        `);
-        console.log("tipoEval", tipoEval);
-        const items = Items.map((a) => {
-          return {
-            ...a,
-            tipoEval: tipoEval.filter((b) => b.idtipoeval == a.idtipoeval),
-          };
-        });
-        const Informe = Secciones.map((sec) => {
-          return {
-            ...sec,
-            items: items.filter((item) => item.idseccion == sec.idseccion),
-            subSecciones: sec.subSecciones.map((subsec) => {
-              return {
-                ...subsec,
-                items: items.filter(
-                  (item) => item.idseccion == subsec.idseccion
-                ),
-              };
-            }),
-          };
-        });
+    `);
+      const tipoEval = await pool.query(`
+      SELECT TEV.idtipoeval, V.idvalor, V.descripcion
+      FROM Valores V 
+        INNER JOIN TipoEvaluacionValores TEV ON V.idvalor = TEV.idvalor
+      WHERE V.activo=1 and TEV.activo=1
+    `);
+      // console.log("tipoEval", tipoEval);
+      const items = Items.map((a) => {
+        return {
+          ...a,
+          tipoEval: tipoEval.filter((b) => b.idtipoeval == a.idtipoeval),
+        };
+      });
+      const informe = Informe.map((sec) => {
+        return {
+          ...sec,
+          items: items.filter((item) => item.idseccion == sec.idseccion),
+          // subSecciones: sec.subSecciones.map((subsec) => {
+          //   return {
+          //     ...subsec,
+          //     items: items.filter((item) => item.idseccion == subsec.idseccion),
+          //   };
+          // }),
+        };
+      });
+      // console.log(
+      //   "*****************************************************************es por aca"
+      // );
+      // console.log({ Auditoria, Informe: informe, items });
+      // console.log(
+      //   "*****************************************************************"
+      // );
+      res.status(200).json({ Auditoria, Informe: informe, items });
+    } else
+      pool
+        .query(queryString(idsecciones))
+        .then((aa) => {
+          const informeSecciones = Informe.map((i) => {
+            // if (condition) {
+            // console.log("///////////secciones///////////////", aa);
+            // }
+            const auxSecciones = aa.filter(
+              (s) => s.idseccionmadre == i.idseccion
+            );
 
-        return { Informe, items };
-      })
-      .then(({ Informe, items }) => res.json({ Auditoria, Informe, items }));
-    console.log("*************secciones**************");
-    console.table(secciones);
+            return {
+              ...i,
+              subSecciones: auxSecciones,
+            };
+          });
+          console.table(Informe);
+          return informeSecciones;
+        })
+        .then(async (Secciones) => {
+          console.log("*************informe**************");
+          console.log("Secciones", Secciones);
+          console.log("*************informe**************");
+          const idsecciones = [];
+          Secciones.map((i) => {
+            idsecciones.push(i.idseccion);
+            i.subSecciones.map((ii) => {
+              idsecciones.push(ii.idseccion);
+            });
+          });
+          //   console.log(idsecciones);
+          //   console.log(
+          //     "porlas",
+          //     `
+          //   select
+          //     I.iditem,
+          //     C.descripcion,
+          //     TE.idtipoeval,
+          //     TE.componente,
+          //     IFNULL(A.valor, '') as Valor
+          //   from ItemSeccion ITS
+          //     INNER JOIN Items I ON ITS.iditem = I.iditem
+          //     INNER JOIN TipoEvaluacion TE ON I.idtipoeval = TE.idtipoeval
+          //     INNER JOIN Criterios C ON C.idcriterio = I.idcriterio
+          //     LEFT JOIN ItemsAuditoria A ON A.iditem = I.iditem and A.idauditoria=${idauditoria}
+          //   where
+          //     ITS.activo = 1 AND
+          //     I.activo=1 AND
+          //     TE.activo=1 AND
+          //     ITS.idseccion in (${idsecciones})
+          //   ORDER BY ITS.orden
+          // `
+          //   );
+          const Items = await pool.query(`
+            select 
+              I.iditem, 
+              C.descripcion, 
+              TE.idtipoeval, 
+              TE.componente, 
+              ITS.idseccion,
+              IFNULL(A.valor, '') as Valor,
+              TE.descripcion as descripcionTipoEval
+            from ItemSeccion ITS 
+              INNER JOIN Items I ON ITS.iditem = I.iditem
+              INNER JOIN TipoEvaluacion TE ON I.idtipoeval = TE.idtipoeval
+              INNER JOIN Criterios C ON C.idcriterio = I.idcriterio
+              LEFT JOIN ItemsAuditoria A ON A.iditem = I.iditem and A.idauditoria=${idauditoria}
+            where 
+              ITS.activo = 1 AND 
+              I.activo=1 AND 
+              TE.activo=1 AND
+              ITS.idseccion in (${idsecciones}) 
+            ORDER BY ITS.orden
+          `);
+          const tipoEval = await pool.query(`
+            SELECT TEV.idtipoeval, V.idvalor, V.descripcion
+            FROM Valores V 
+              INNER JOIN TipoEvaluacionValores TEV ON V.idvalor = TEV.idvalor
+            WHERE V.activo=1 and TEV.activo=1
+          `);
+          // console.log("tipoEval", tipoEval);
+          const items = Items.map((a) => {
+            return {
+              ...a,
+              tipoEval: tipoEval.filter((b) => b.idtipoeval == a.idtipoeval),
+            };
+          });
+          const Informe = Secciones.map((sec) => {
+            return {
+              ...sec,
+              items: items.filter((item) => item.idseccion == sec.idseccion),
+              subSecciones: sec.subSecciones.map((subsec) => {
+                return {
+                  ...subsec,
+                  items: items.filter(
+                    (item) => item.idseccion == subsec.idseccion
+                  ),
+                };
+              }),
+            };
+          });
+
+          return { Informe, items };
+        })
+        .then(({ Informe, items }) => res.json({ Auditoria, Informe, items }));
+
+    // console.log("*************secciones**************");
+    // console.table(secciones);
   } catch (error) {
     // finally {
     //   await connection.release();
