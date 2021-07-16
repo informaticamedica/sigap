@@ -16,7 +16,7 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DatosDbService } from 'src/app/servicios/datos-db.service';
-
+import {MatSnackBar} from '@angular/material/snack-bar';
 @Component({
   selector: 'nueva-auditoria',
   templateUrl: './nueva-auditoria.component.html',
@@ -39,7 +39,8 @@ export class NuevaAuditoriaComponent implements OnInit {
     private datos: DatosDbService,
     private fb: FormBuilder,
     private router: Router,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private _snackBar: MatSnackBar
   ) {}
 
   isMobileLayout = false;
@@ -93,6 +94,10 @@ export class NuevaAuditoriaComponent implements OnInit {
 
     this.iniForm();
     // console.log('this.form', this.form);
+  }
+
+  openSnackBar(message: string, action: string) {
+    this._snackBar.open(message, action);
   }
 
   displayFn(state) {
@@ -178,6 +183,7 @@ export class NuevaAuditoriaComponent implements OnInit {
       })
       .subscribe((res) => {
         this.router.navigate(['/', 'principal']);
+        this.openSnackBar("Cambios guardados","Aceptar")
         console.log(res);
       });
   }

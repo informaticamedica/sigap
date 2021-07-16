@@ -53,6 +53,7 @@ import { InformeComponent } from './componentes/informe/informe.component';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 
 export function tokenGetter() {
   return sessionStorage.getItem('token');
@@ -115,6 +116,7 @@ export function tokenGetter() {
     MatExpansionModule,
     MatProgressSpinnerModule,
     MatRadioModule,
+    MatSnackBarModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

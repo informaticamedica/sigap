@@ -8,7 +8,7 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import { DatosDbService } from 'src/app/servicios/datos-db.service';
-
+import {MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
 interface Item {
   item: { iditem: string; valor: string };
 }
@@ -21,7 +21,8 @@ export class InformeComponent implements OnInit {
   constructor(
     private rutaActiva: ActivatedRoute,
     private datos: DatosDbService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private _snackBar: MatSnackBar
   ) {}
 
   idauditoria = this.rutaActiva.snapshot.params.idauditoria;
@@ -45,6 +46,29 @@ export class InformeComponent implements OnInit {
     this.iniForm();
   }
 
+  openSnackBar(message: string, action: string) {
+    this._snackBar.open(message, action,{
+      duration: 40000,
+      panelClass: "success-dialog"
+  });
+  }
+
+  private configSuccess: MatSnackBarConfig = {
+    panelClass: ['style-success'],    
+  };
+
+  private configError: MatSnackBarConfig = {
+    panelClass: ['style-error'],
+  };
+
+  public snackbarSuccess(message) {
+    this._snackBar.open(message, 'Aceptar', this.configSuccess);
+  }
+
+  public snackbarError(message) {
+    this._snackBar.open(message, 'Aceptar', this.configError);
+  }
+
   ELPROBLEMA(asd) {
     return this.form.value.items.findIndex((x) => x.iditem === asd);
     // console.log('qwe', qwe);
@@ -66,6 +90,7 @@ export class InformeComponent implements OnInit {
       .subscribe((res) => {
         console.log('guardarDatosParametrosApi', res);
         this.Guardando = false;
+        this.openSnackBar("Cambios guardados","Aceptar")
       });
 
     // console.log('Form');

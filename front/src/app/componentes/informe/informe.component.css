@@ -43,3 +43,23 @@ mat-panel-title {
   padding: 0.7em 0 0.7em 0 !important;
   top: -0.25em;
 }
+
+
+
+
+.style-success {
+  color: #6df374;
+  background-color: #6df374;
+}
+.style-success .mat-simple-snackbar-action  {
+  color: #6df374;
+}
+.style-error {
+  color: #f3bd6d;
+}
+.style-error .mat-simple-snackbar-action {
+  color: #f3bd6d;
+}
+::ng-deep snack-bar-container simple-snack-bar .mat-simple-snackbar-action {
+  color: #69b34c;
+}
