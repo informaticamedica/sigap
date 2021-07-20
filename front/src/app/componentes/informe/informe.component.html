@@ -8,13 +8,28 @@
     <br />
   </div>
   <div align="right">
-    <button mat-raised-button color="primary" (click)="CompletarGuia(true)" *ngIf="!completarGuia" >
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="CompletarGuia(true)"
+      *ngIf="!completarGuia"
+    >
       Completar guia
     </button>
-    <button mat-raised-button color="primary" (click)="CompletarGuia(false)" *ngIf="completarGuia">
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="CompletarGuia(false)"
+      *ngIf="completarGuia"
+    >
       Cancelar
     </button>
-    <button mat-raised-button color="primary" (click)="onSave()"  *ngIf="completarGuia">
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="onSave()"
+      *ngIf="completarGuia"
+    >
       Guardar
     </button>
   </div>
@@ -26,8 +41,7 @@
     <mat-expansion-panel>
       <mat-expansion-panel-header>
         <mat-panel-title> Datos del Prestador </mat-panel-title>
-        <mat-panel-description>
-        </mat-panel-description>
+        <mat-panel-description> </mat-panel-description>
       </mat-expansion-panel-header>
       <div class="container">
         <div class="row">
@@ -51,8 +65,7 @@
     <mat-expansion-panel>
       <mat-expansion-panel-header>
         <mat-panel-title>Datos de la auditoria </mat-panel-title>
-        <mat-panel-description>
-        </mat-panel-description>
+        <mat-panel-description> </mat-panel-description>
       </mat-expansion-panel-header>
       <div class="container">
         Fecha de auditoria: <b> {{ Auditoria?.fechaauditoria }} </b> <br />
@@ -88,7 +101,7 @@
                   *ngIf="item.componente == 'radio'"
                   aria-label="Select an option"
                   formControlName="Valor"
-                  [disabled] = "!completarGuia"
+                  [disabled]="!completarGuia"
                 >
                   <mat-radio-button
                     *ngFor="let tipo of item.tipoEval"
@@ -105,7 +118,7 @@
                   </mat-radio-button>
                 </mat-radio-group>
                 <div *ngIf="item.componente == 'input'">
-                  <mat-form-field appearance="fill" >
+                  <mat-form-field appearance="fill">
                     <input matInput [disabled]="!completarGuia" />
                   </mat-form-field>
                   <br />
@@ -157,7 +170,7 @@
                     *ngIf="item.componente == 'radio'"
                     aria-label="Select an option"
                     formControlName="Valor"
-                    [disabled] = "!completarGuia"
+                    [disabled]="!completarGuia"
                   >
                     <mat-radio-button
                       *ngFor="let tipo of item.tipoEval"
@@ -173,7 +186,7 @@
                       appearance="outline"
                       style="width: 70%; height: 50%; padding: 0"
                     >
-                      <input matInput [disabled]="!completarGuia"/>
+                      <input matInput [disabled]="!completarGuia" />
                     </mat-form-field>
                     <br />
                   </div>

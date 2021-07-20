@@ -31,8 +31,24 @@ const extraerDatos = () => {
 
 router.get("/auditorias", helpers.verifyToken, async (req, res) => {
   try {
-    const Auditorias = await pool.query("call ListarAuditorias(0)");
-    res.status(200).json(Auditorias[0]);
+    const Auditorias = await pool.query(`
+      select 
+        A.idauditoria, 
+        P.descripcion as Prestador, 
+        DATE_FORMAT(A.fechainicio, "%d/%m/%Y") as 'Fecha de Auditoría', 
+        P.CUIT, 
+        P.SAP, 
+        U.descripcion as UGL, 
+        E.descripcion as Estado 
+      from Auditorias A, Prestadores P, UGL U, EstadosAuditoria E 
+      where 
+        A.idprestador = P.idprestador and 
+        U.idugl = P.idugl and 
+        E.idestadoauditoria = A.idestadoauditoria
+      order by A.fechainicio DESC
+    `);
+    // console.log(Auditorias);
+    res.status(200).json(Auditorias);
   } catch (error) {
     console.error(error);
     res.status(400).json(error);
@@ -121,10 +137,10 @@ function formatDate(date) {
 router.post("/planificarauditoria", helpers.verifyToken, async (req, res) => {
   const {
     prestadores,
-    fechaReal,
+    fechainicio,
     TipoInforme,
     VERSIONGUIA,
-    referente,
+    observaciones,
     integrantes,
   } = req.body;
   console.log(req.body);
@@ -139,31 +155,40 @@ router.post("/planificarauditoria", helpers.verifyToken, async (req, res) => {
     const Qauditoria = `
       INSERT INTO Auditorias (
         idprestador, 
-        fechaplan, 
-        fechaauditoria, 
+        fechainicio, 
+        fechafin, 
         idestadoauditoria, 
         idinforme, 
         versioninforme, 
         idguia, 
-        versionguia)
-        VALUES (
+        versionguia,
+        observaciones)
+      VALUES (
           ${prestadores}, 
-          ${fechaReal !== "" ? "'" + formatDate(fechaReal) + "'" : "NULL"},
+          ${fechainicio !== "" ? "'" + formatDate(fechainicio) + "'" : "NULL"},
           NULL, 
           1, 
           NULL,
           NULL, 
           ${TipoInforme}, 
-          ${VERSIONGUIA}
+          ${VERSIONGUIA},
+          '${observaciones}'
         )
     `;
     console.log("Qauditoria", Qauditoria);
     const [auditoria] = await connection.execute(Qauditoria);
-    const QIntegrantes = `
+
+    const Integrantes = integrantes.filter(
+      (a) => a.areas != "" && a.areas != ""
+    );
+    if (Integrantes.length === 0) {
+      res.status(200).json({ auditoria, Integrantes: [] });
+    } else {
+      const QIntegrantes = `
       INSERT INTO EquipoAuditoria 
         (idusuario, idauditoria, idareaauditoria,activo)
       VALUES
-      ${integrantes.map(
+      ${Integrantes.map(
         (i) => `
           (
             ${i.usuarios},
@@ -175,18 +200,20 @@ router.post("/planificarauditoria", helpers.verifyToken, async (req, res) => {
       )}
     `;
 
-    console.log("auditoria", auditoria);
-    console.log("*********************QIntegrantes*****************");
-    console.log(QIntegrantes);
-    console.log("**************************************");
-    const Integrantes = await connection.execute(QIntegrantes);
-    console.log("******************Integrantes********************");
-    console.log(Integrantes);
-    console.log("**************************************");
+      console.log("auditoria", auditoria);
+      console.log("*********************QIntegrantes*****************");
+      console.log(QIntegrantes);
+      console.log("**************************************");
+      const IntegrantesInsertados = await connection.execute(QIntegrantes);
+      console.log("******************Integrantes********************");
+      console.log(IntegrantesInsertados);
+      console.log("**************************************");
+      res.status(200).json({ auditoria, Integrantes: IntegrantesInsertados });
+    }
+
     await connection.commit();
 
     // res.status(200).json({});
-    res.status(200).json({ auditoria, Integrantes });
   } catch (error) {
     connection.rollback();
     console.error(error);
@@ -199,8 +226,7 @@ router.get("/auditoria/:idauditoria", helpers.verifyToken, async (req, res) => {
   try {
     const [Auditoria] = await pool.query(`
     select 
-      A.fechaplan,
-      A.fechaauditoria,
+      A.fechainicio,
       A.idestadoauditoria,
       A.idguia, 
       A.versionguia,
@@ -227,12 +253,11 @@ router.get("/auditoria/:idauditoria", helpers.verifyToken, async (req, res) => {
     call VerInforme(${Auditoria.idguia},${Auditoria.versionguia})
     `);
     console.log("Informe", Informe);
-    
+
     const idsecciones = Informe.filter((a) => a.Secciones != 0).map(
       (a) => a.idseccion
     );
 
-    
     console.log("idsecciones", idsecciones);
     const queryString = (idsecciones) => `
       select 
@@ -280,21 +305,19 @@ router.get("/auditoria/:idauditoria", helpers.verifyToken, async (req, res) => {
       WHERE V.activo=1 and TEV.activo=1
     `);
       // console.log("tipoEval", tipoEval);
-      const items = Items.map((a) => {
+      const items = Items.map((i) => {
         return {
-          ...a,
-          tipoEval: tipoEval.filter((b) => b.idtipoeval == a.idtipoeval),
+          ...i,
+          tipoEval: tipoEval.filter((t) => t.idtipoeval == i.idtipoeval),
         };
       });
       const informe = Informe.map((sec) => {
         return {
           ...sec,
           items: items.filter((item) => item.idseccion == sec.idseccion),
-         
         };
       });
-     
-      
+
       res.status(200).json({ Auditoria, Informe: informe, items });
     } else
       pool
@@ -327,8 +350,7 @@ router.get("/auditoria/:idauditoria", helpers.verifyToken, async (req, res) => {
               idsecciones.push(ii.idseccion);
             });
           });
-         
-          
+
           const Items = await pool.query(`
             select 
               I.iditem, 

@@ -8,7 +8,7 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import { DatosDbService } from 'src/app/servicios/datos-db.service';
-import {MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
+import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 interface Item {
   item: { iditem: string; valor: string };
 }
@@ -32,8 +32,8 @@ export class InformeComponent implements OnInit {
   Guardando = false;
   form: FormGroup;
   completarGuia = false;
-  CompletarGuia (arg){
-    this.completarGuia= arg
+  CompletarGuia(arg) {
+    this.completarGuia = arg;
   }
   ngOnInit(): void {
     this.datos
@@ -51,13 +51,13 @@ export class InformeComponent implements OnInit {
   }
 
   openSnackBar(message: string, action: string) {
-    this._snackBar.open(message, action,{
-      duration: 4000
-  });
+    this._snackBar.open(message, action, {
+      duration: 4000,
+    });
   }
 
   private configSuccess: MatSnackBarConfig = {
-    panelClass: ['style-success'],    
+    panelClass: ['style-success'],
   };
 
   private configError: MatSnackBarConfig = {
@@ -93,8 +93,8 @@ export class InformeComponent implements OnInit {
       .subscribe((res) => {
         console.log('guardarDatosParametrosApi', res);
         this.Guardando = false;
-        this.CompletarGuia(false)
-        this.openSnackBar("Cambios guardados","Aceptar")
+        this.CompletarGuia(false);
+        this.openSnackBar('Cambios guardados', 'Aceptar');
       });
 
     // console.log('Form');

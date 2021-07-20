@@ -53,7 +53,9 @@ import { InformeComponent } from './componentes/informe/informe.component';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
-import {MatSnackBarModule} from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDividerModule } from '@angular/material/divider';
 
 export function tokenGetter() {
   return sessionStorage.getItem('token');
@@ -117,6 +119,8 @@ export function tokenGetter() {
     MatProgressSpinnerModule,
     MatRadioModule,
     MatSnackBarModule,
+    MatNativeDateModule,
+    MatDividerModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

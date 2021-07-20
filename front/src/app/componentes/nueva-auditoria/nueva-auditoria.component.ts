@@ -16,7 +16,7 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DatosDbService } from 'src/app/servicios/datos-db.service';
-import {MatSnackBar} from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 @Component({
   selector: 'nueva-auditoria',
   templateUrl: './nueva-auditoria.component.html',
@@ -34,7 +34,7 @@ export class NuevaAuditoriaComponent implements OnInit {
   AreasRes;
   Area;
   AuxUsuarios = [];
-
+  Guardando = false;
   constructor(
     private datos: DatosDbService,
     private fb: FormBuilder,
@@ -97,9 +97,9 @@ export class NuevaAuditoriaComponent implements OnInit {
   }
 
   openSnackBar(message: string, action: string) {
-    this._snackBar.open(message, action,{
-      duration: 4000
-  });
+    this._snackBar.open(message, action, {
+      duration: 4000,
+    });
   }
 
   displayFn(state) {
@@ -121,20 +121,14 @@ export class NuevaAuditoriaComponent implements OnInit {
   iniForm() {
     this.form = this.formBuilder.group({
       prestadores: ['', [Validators.required]],
-      fechaReal: ['', []],
+      fechainicio: ['', []],
+      fechafin: ['', []],
       TipoInforme: ['', [Validators.required]],
-      // modalidad: ['', []],
-      referente: ['', []],
-      UGL: ['', []],
-      N_SAP: ['', []],
-      N_CUIT_CUIL: ['', []],
-      cumplimiento: ['', []],
-
+      observaciones: ['', []],
       integrantes: this.formBuilder.array([
         this.formBuilder.group({
-          areas: ['', [Validators.required]],
-          usuarios: ['', [Validators.required]],
-          responsable: [false, []],
+          areas: ['', []],
+          usuarios: ['', []],
         }),
       ]),
     });
@@ -163,21 +157,26 @@ export class NuevaAuditoriaComponent implements OnInit {
       console.log('this.AreasRes', this.AreasRes);
       console.log('this.Area', this.Area);
     });
-    this.form.get('referente').valueChanges.subscribe((value: string) => {
-      // console.log(' this.UsuariosRes', this.UsuariosRes);
-      value = value.toLocaleLowerCase();
-      this.Usuarios = this.UsuariosRes.filter(
-        (a) =>
-          a.apellido?.toLocaleLowerCase().includes(value) ||
-          a.nombre?.toLocaleLowerCase().includes(value) ||
-          a.legajo?.toLocaleLowerCase().includes(value) ||
-          a.Profesion?.toLocaleLowerCase().includes(value)
-      );
-    });
+    // this.form.get('referente').valueChanges.subscribe((value: string) => {
+    //   // console.log(' this.UsuariosRes', this.UsuariosRes);
+    //   value = value.toLocaleLowerCase();
+    //   this.Usuarios = this.UsuariosRes.filter(
+    //     (a) =>
+    //       a.apellido?.toLocaleLowerCase().includes(value) ||
+    //       a.nombre?.toLocaleLowerCase().includes(value) ||
+    //       a.legajo?.toLocaleLowerCase().includes(value) ||
+    //       a.Profesion?.toLocaleLowerCase().includes(value)
+    //   );
+    // });
   }
+  range = new FormGroup({
+    start: new FormControl(),
+    end: new FormControl(),
+  });
 
-  onSubmit() {
+  onSave() {
     console.log(this.form.value);
+    this.Guardando = true;
     this.datos
       .guardarDatosApi('planificarauditoria', {
         ...this.form.value,
@@ -185,8 +184,9 @@ export class NuevaAuditoriaComponent implements OnInit {
       })
       .subscribe((res) => {
         this.router.navigate(['/', 'principal']);
-        this.openSnackBar("Cambios guardados","Aceptar")
+        this.openSnackBar('Cambios guardados', 'Aceptar');
         console.log(res);
+        this.Guardando = false;
       });
   }
   onCancel() {

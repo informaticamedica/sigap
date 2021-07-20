@@ -16,7 +16,7 @@ import { HojaUglComponent } from './componentes/hoja-ugl/hoja-ugl.component';
 import { InformeComponent } from './componentes/informe/informe.component';
 
 const routes: Routes = [
-  { path: '', component: PrincipalComponent },
+  { path: '', redirectTo:'/principal' ,pathMatch: 'full'},
   { path: 'signin', component: SigninComponent },
   { path: 'signup', component: SignupComponent },
   { path: 'changepass', component: ChangepassComponent },
