@@ -66,16 +66,12 @@ export class VerAuditoriaComponent implements OnInit {
   items: any;
   Guardando = false;
   form: FormGroup = this.fb.group({
-    items: this.fb.array([
-      // this.fb.group({
-      //   iditem: ['', []],
-      //   valor: ['', []],
-      // }),
-    ]),
+    items: this.fb.array([]),
   });
-
   completarGuia = false;
   CompletarGuia(arg: boolean) {
+    if (arg) this.form.enable();
+    else this.form.disable();
     this.completarGuia = arg;
   }
 
@@ -96,9 +92,8 @@ export class VerAuditoriaComponent implements OnInit {
         this.Informe = Informe;
         this.items = items;
         this.agregarItems(items);
+        this.form.disable();
       });
-
-    this.iniForm();
   }
 
   openSnackBar(message: string, action: string) {
@@ -159,39 +154,11 @@ export class VerAuditoriaComponent implements OnInit {
       const ItemControl = this.fb.group({ Valor, iditem, descripcion });
       this.getSubelementos.push(ItemControl);
     });
-    // const control = <FormArray>this.form.controls['items'];
-    // const iniSubelementos = {
-    //   idauditoria: '',
-    //   iditem: '',
-    //   valor: '',
-    // };
-    // console.log(control);
-    // control.removeAt(0);
-
-    // items.forEach((item) =>
-    //   control.push(
-    //     this.fb.group({
-    //       iditem: item.iditem,
-    //       valor: item.Valor,
-    //     })
-    //   )
-    // );
   }
 
   agregarItemsInforme(Informe: any[]) {
     const items = Informe.map((inf) => {
       return '';
-    });
-  }
-
-  iniForm() {
-    this.form = this.fb.group({
-      items: this.fb.array([
-        // this.fb.group({
-        //   iditem: ['', []],
-        //   valor: ['', []],
-        // }),
-      ]),
     });
   }
 }

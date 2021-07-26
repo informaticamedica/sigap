@@ -59,6 +59,10 @@ export class PlanificarAuditoriaComponent implements OnInit {
     prestadores: ['', [Validators.required]],
     fechainicio: ['', []],
     fechafin: ['', []],
+    fecha: this.formBuilder.group({
+      fechainicio: ['', []],
+      fechafin: ['', []],
+    }),
     TipoInforme: ['', [Validators.required]],
     observaciones: ['', []],
     integrantes: this.formBuilder.array([
@@ -68,6 +72,7 @@ export class PlanificarAuditoriaComponent implements OnInit {
       }),
     ]),
   });
+
   PrestadoresRes: Prestadores[] = [];
   Prestadores: Prestadores[] = [];
   TipoInforme: TipoInforme[] = [];
@@ -236,24 +241,24 @@ export class PlanificarAuditoriaComponent implements OnInit {
     // });
   }
   range = new FormGroup({
-    start: new FormControl(),
-    end: new FormControl(),
+    fechainicio: new FormControl(),
+    fechafin: new FormControl(),
   });
 
   onSave() {
-    console.log(this.form.value);
+    console.log('onSave', this.form.value);
     this.Guardando = true;
-    this.datos
-      .guardarDatosApi('planificarauditoria', {
-        ...this.form.value,
-        VERSIONGUIA: this.TipoInforme[0].versionactual,
-      })
-      .subscribe((res) => {
-        this.router.navigate(['/', 'principal']);
-        this.openSnackBar('Cambios guardados', 'Aceptar');
-        console.log(res);
-        this.Guardando = false;
-      });
+    // this.datos
+    //   .guardarDatosApi('planificarauditoria', {
+    //     ...this.form.value,
+    //     VERSIONGUIA: this.TipoInforme[0].versionactual,
+    //   })
+    //   .subscribe((res) => {
+    //     this.router.navigate(['/', 'principal']);
+    //     this.openSnackBar('Cambios guardados', 'Aceptar');
+    //     console.log(res);
+    //     this.Guardando = false;
+    //   });
   }
   onCancel() {
     // console.log(this.formGroup);
