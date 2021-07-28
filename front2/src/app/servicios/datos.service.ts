@@ -17,7 +17,7 @@ export class DatosDbService {
     Authorization: 'Bearer ' + sessionStorage.getItem('token'),
   });
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // header = new HttpHeaders().set(
   //   "Authorization",
@@ -45,6 +45,9 @@ export class DatosDbService {
 
   guardarDatosApi(base: string, datos: any): Observable<any> {
     return this.http.post(this.urlApi + base, datos, { headers: this.headers });
+  }
+  cambiarEstadoAuditoria(idAuditoria: number, idEstado: number): Observable<any> {
+    return this.http.put(this.urlApi + 'auditorias/' + idAuditoria + '/estado/' + idEstado, null, { headers: this.headers });
   }
   guardarDatosParametrosApi(
     base: string,

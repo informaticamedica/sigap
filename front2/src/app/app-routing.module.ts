@@ -4,9 +4,8 @@ import { RouterModule, Routes } from '@angular/router';
 import { SigninComponent } from './componentes/signin/signin.component';
 import { SignupComponent } from './componentes/signup/signup.component';
 import { PrincipalComponent } from './paginas/principal/principal.component';
-import { PlanificarAuditoriaComponent } from './paginas/planificar-auditoria/planificar-auditoria.component';
-import { VerAuditoriaComponent } from './paginas/ver-auditoria/ver-auditoria.component';
 import { AuthGuard } from './servicios/auth.guard';
+import { WizardAuditoriaComponent } from './paginas/wizard-auditoria/wizard-auditoria.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/signin', pathMatch: 'full' },
@@ -17,16 +16,26 @@ const routes: Routes = [
     component: PrincipalComponent,
     canActivate: [AuthGuard],
   },
+  // {
+  //   path: 'planificarauditoria',
+  //   component: PlanificarAuditoriaComponent,
+  //   canActivate: [AuthGuard],
+  // },
+  // {
+  //   path: 'auditoria/:idauditoria',
+  //   component: VerAuditoriaComponent,
+  //   canActivate: [AuthGuard],
+  // },
   {
-    path: 'planificarauditoria',
-    component: PlanificarAuditoriaComponent,
+    path: 'auditoria',
+    component: WizardAuditoriaComponent,
     canActivate: [AuthGuard],
   },
   {
     path: 'auditoria/:idauditoria',
-    component: VerAuditoriaComponent,
+    component: WizardAuditoriaComponent,
     canActivate: [AuthGuard],
-  },
+  }
 ];
 
 @NgModule({

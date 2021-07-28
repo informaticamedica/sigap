@@ -10,13 +10,14 @@ import { LayoutModule } from '@angular/cdk/layout';
 
 //paginas
 import { PrincipalComponent } from './paginas/principal/principal.component';
-import { PlanificarAuditoriaComponent } from './paginas/planificar-auditoria/planificar-auditoria.component';
-import { VerAuditoriaComponent } from './paginas/ver-auditoria/ver-auditoria.component';
+import { PlanificarAuditoriaComponent } from './componentes/planificar-auditoria/planificar-auditoria.component';
+import { VerAuditoriaComponent } from './componentes/ver-auditoria/ver-auditoria.component';
 
 //componentes
 import { TablaGenericaComponent } from './componentes/tabla-generica/tabla-generica.component';
 import { SigninComponent } from './componentes/signin/signin.component';
 import { SignupComponent } from './componentes/signup/signup.component';
+import { NavbarComponent } from './componentes/navbar/navbar.component';
 
 //servicios
 
@@ -43,9 +44,14 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatDividerModule } from '@angular/material/divider';
-import { NavbarComponent } from './componentes/navbar/navbar.component';
+import { MatTabsModule } from '@angular/material/tabs';
+
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TablaPipe } from './pipe/tabla.pipe';
+import { WizardAuditoriaComponent } from './paginas/wizard-auditoria/wizard-auditoria.component';
+import { ModalCargandoComponent } from './componentes/modal-cargando/modal-cargando.component';
+import { ModalCargandoService } from './componentes/modal-cargando/modal-cargando.service';
+import { BotoneraEstadosComponent } from './componentes/botonera-estados/botonera-estados.component';
 
 export function tokenGetter() {
   return sessionStorage.getItem('token');
@@ -62,6 +68,9 @@ export function tokenGetter() {
     SignupComponent,
     NavbarComponent,
     TablaPipe,
+    WizardAuditoriaComponent,
+    ModalCargandoComponent,
+    BotoneraEstadosComponent
   ],
   imports: [
     BrowserModule,
@@ -93,8 +102,9 @@ export function tokenGetter() {
     HttpClientModule,
     LayoutModule,
     NgbModule,
+    MatTabsModule
   ],
-  providers: [{ provide: MAT_DATE_LOCALE, useValue: 'es-AR' }],
+  providers: [{ provide: MAT_DATE_LOCALE, useValue: 'es-AR' }, ModalCargandoService],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }

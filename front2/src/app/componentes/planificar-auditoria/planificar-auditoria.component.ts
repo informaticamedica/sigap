@@ -1,11 +1,7 @@
 import {
   Component,
-  OnInit,
   Input,
-  Output,
-  EventEmitter,
-  ViewEncapsulation,
-  HostListener,
+  OnInit,
 } from '@angular/core';
 import {
   FormControl,
@@ -17,44 +13,23 @@ import {
 import { Router } from '@angular/router';
 import { DatosDbService } from 'src/app/servicios/datos.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-interface Usuarios {
-  idusuario: string;
-  apellido: string;
-  nombre: string;
-  Profesion: string;
-  legajo: string;
-}
-interface Prestadores {
-  Prestador: string;
-  idprestador: string;
-  SAP: string;
-  CUIT: string;
-  UGL: string;
-}
-interface TipoInforme {
-  idguia: string;
-  versionactual: string;
-  idareaauditoria: string;
-  descripcion: string;
-}
-interface Areas {
-  idguia: string;
-  versionguia: string;
-  idareaauditoria: string;
-  descripcion: string;
-}
-interface planificarauditoria {
-  Prestadores: [Prestadores];
-  TipoInforme: [TipoInforme];
-  Usuarios: [Usuarios];
-  Areas: [Areas];
-}
+import { Prestadores } from 'src/app/dto/prestadores.dto';
+import { TipoInforme } from 'src/app/dto/tipo-informe.dto';
+import { Usuarios } from 'src/app/dto/usuarios.dto';
+import { Areas } from 'src/app/dto/areas.dto';
+import { PlanificarAuditoria } from 'src/app/dto/planificar-auditoria.dto';
+import { VerAuditoria } from 'src/app/dto/ver-auditoria.dto';
+import { Auditoria } from 'src/app/dto/auditoria.dto';
+import { ModalCargandoService } from '../modal-cargando/modal-cargando.service';
+import * as Constantes from 'src/app/utils/constantes';
+
 @Component({
   selector: 'planificar-auditoria',
   templateUrl: './planificar-auditoria.component.html',
   styleUrls: ['./planificar-auditoria.component.css'],
 })
 export class PlanificarAuditoriaComponent implements OnInit {
+  Constantes = Constantes;
   form = this.formBuilder.group({
     prestadores: ['', [Validators.required]],
     fechainicio: ['', []],
@@ -85,12 +60,18 @@ export class PlanificarAuditoriaComponent implements OnInit {
   Area: Areas[] = [];
 
   Guardando = false;
+
+  @Input("idAuditoria") idauditoria!: string;
+  auditoriaExistente!: Auditoria;
+
+  // buscandoAuditoria: boolean = true;
   constructor(
     private datos: DatosDbService,
     private router: Router,
     private formBuilder: FormBuilder,
-    private _snackBar: MatSnackBar
-  ) {}
+    private _snackBar: MatSnackBar,
+    private modalCargandoService: ModalCargandoService
+  ) { }
 
   isMobileLayout = false;
   maxNumberArray = (array: number[]) =>
@@ -98,42 +79,59 @@ export class PlanificarAuditoriaComponent implements OnInit {
       return accumulator > currentValue ? accumulator : currentValue;
     });
   ngOnInit(): void {
-    this.datos
-      .DatosApi('planificarauditoria')
-      .subscribe((res: planificarauditoria) => {
-        console.log('res', res);
-        this.PrestadoresRes = res.Prestadores.map((a) => {
-          // delete a['idprestador'];
-          return a;
+    this.modalCargandoService.startLoading();
+    if (this.idauditoria) {
+      //me llegó por input un id de auditoria así que ya fue planificada, mostramos un resumen
+      this.datos
+        .DatosParametrosApi('auditoria', this.idauditoria)
+        .subscribe((res: VerAuditoria) => {
+          console.log(res);
+          const { Auditoria, Informe, items } = res;
+          this.auditoriaExistente = Auditoria;
+          // this.buscandoAuditoria = false;
+          this.modalCargandoService.stopLoading();
         });
-        this.Prestadores = res.Prestadores.map((a) => {
-          // delete a['idprestador'];
-          return a;
+    } else {
+      //no me llegó id así que armamos la planificación
+      this.datos
+        .DatosApi('planificarauditoria')
+        .subscribe((res: PlanificarAuditoria) => {
+          console.log('res', res);
+          this.PrestadoresRes = res.Prestadores.map((a) => {
+            // delete a['idprestador'];
+            return a;
+          });
+          this.Prestadores = res.Prestadores.map((a) => {
+            // delete a['idprestador'];
+            return a;
+          });
+
+          // console.log('this.Prestadores', this.Prestadores);
+          // console.log('this.PrestadoresRes', this.PrestadoresRes);
+
+          const LenghtDescripPrestadores = res.Prestadores.map(
+            (a: { Prestador: string }) => a['Prestador'].length
+          );
+          this.maxLenghtPrest = this.maxNumberArray(LenghtDescripPrestadores);
+
+          this.TipoInforme = res.TipoInforme;
+          this.Usuarios = res.Usuarios;
+          this.UsuariosRes = res.Usuarios;
+          this.AuxUsuarios.push(res.Usuarios);
+          console.log('this.AuxUsuarios', this.AuxUsuarios);
+
+          const LenghtDescripUsuarios = res.Usuarios.map(
+            (a) => (a['apellido'] + ' , ' + a['nombre']).length
+          );
+          this.maxLenghtUsuar = this.maxNumberArray(LenghtDescripUsuarios);
+          this.iniForm();
+          this.AreasRes = res.Areas;
+          // this.buscandoAuditoria = false;
+          this.modalCargandoService.stopLoading();
         });
 
-        // console.log('this.Prestadores', this.Prestadores);
-        // console.log('this.PrestadoresRes', this.PrestadoresRes);
-
-        const LenghtDescripPrestadores = res.Prestadores.map(
-          (a: { Prestador: string }) => a['Prestador'].length
-        );
-        this.maxLenghtPrest = this.maxNumberArray(LenghtDescripPrestadores);
-
-        this.TipoInforme = res.TipoInforme;
-        this.Usuarios = res.Usuarios;
-        this.UsuariosRes = res.Usuarios;
-        this.AuxUsuarios.push(res.Usuarios);
-        console.log('this.AuxUsuarios', this.AuxUsuarios);
-
-        const LenghtDescripUsuarios = res.Usuarios.map(
-          (a) => (a['apellido'] + ' , ' + a['nombre']).length
-        );
-        this.maxLenghtUsuar = this.maxNumberArray(LenghtDescripUsuarios);
-        this.iniForm();
-        this.AreasRes = res.Areas;
-      });
-
-    this.iniForm();
+      this.iniForm();
+    }
   }
 
   openSnackBar(message: string, action: string) {
@@ -248,17 +246,20 @@ export class PlanificarAuditoriaComponent implements OnInit {
   onSave() {
     console.log('onSave', this.form.value);
     this.Guardando = true;
-    // this.datos
-    //   .guardarDatosApi('planificarauditoria', {
-    //     ...this.form.value,
-    //     VERSIONGUIA: this.TipoInforme[0].versionactual,
-    //   })
-    //   .subscribe((res) => {
-    //     this.router.navigate(['/', 'principal']);
-    //     this.openSnackBar('Cambios guardados', 'Aceptar');
-    //     console.log(res);
-    //     this.Guardando = false;
-    //   });
+    this.modalCargandoService.startLoading();
+    this.datos
+      .guardarDatosApi('planificarauditoria', {
+        ...this.form.value,
+        VERSIONGUIA: this.TipoInforme[0].versionactual,
+      })
+      .subscribe((res) => {
+        this.modalCargandoService.stopLoading();
+        this.router.navigate(['/', 'auditoria', res.auditoria.insertId]);
+        // this.openSnackBar('Cambios guardados', 'Aceptar');
+        console.log(res);
+        this.Guardando = false;
+
+      });
   }
   onCancel() {
     // console.log(this.formGroup);
@@ -289,4 +290,5 @@ export class PlanificarAuditoriaComponent implements OnInit {
     control.push(this.formBuilder.group(iniSubelementos));
     this.AuxUsuarios.push(this.UsuariosRes);
   }
+
 }

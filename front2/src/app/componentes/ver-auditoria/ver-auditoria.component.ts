@@ -1,66 +1,24 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import {
-  AbstractControl,
   FormArray,
   FormBuilder,
   FormGroup,
-  Validators,
 } from '@angular/forms';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { DatosDbService } from 'src/app/servicios/datos.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
-interface tipoEval {
-  descripcion: string;
-  idtipoeval: string;
-  idvalor: string;
-}
-interface Item {
-  Valor: string;
-  componente: string;
-  descripcion: string;
-  descripcionTipoEval: string;
-  iditem: string;
-  idseccion: string;
-  idtipoeval: string;
-  tipoEval: tipoEval[];
-}
-interface Informe {
-  Secciones: string;
-  descripcion: string;
-  idseccion: string;
-  items: [];
-  subSecciones?: Informe[];
-}
-interface Auditoria {
-  CUIT: string;
-  EstadoAuditoria: string;
-  Prestador: string;
-  ProvinciaPrestador: string;
-  UGL: string;
-  domicilio: string;
-  email: string;
-  fechainicio: string;
-  idestadoauditoria: string;
-  idguia: string;
-  idprovincia: string;
-  idugl: string;
-  localidad: string;
-  telefono: string;
-  versionguia: string;
-}
-
-interface VerAuditoria {
-  Auditoria: Auditoria[];
-  Informe: Informe[];
-  items: Item[];
-}
+import { VerAuditoria } from 'src/app/dto/ver-auditoria.dto';
+import { Item } from 'src/app/dto/item.dto';
+import { ModalCargandoService } from '../modal-cargando/modal-cargando.service';
+import * as Constantes from 'src/app/utils/constantes';
 @Component({
   selector: 'ver-auditoria',
   templateUrl: './ver-auditoria.component.html',
   styleUrls: ['./ver-auditoria.component.css'],
 })
 export class VerAuditoriaComponent implements OnInit {
-  idauditoria = this.rutaActiva.snapshot.params.idauditoria;
+  Constantes = Constantes;
+  @Input("idAuditoria") idauditoria!: string;
   Auditoria: any;
   Informe: any;
   items: any;
@@ -79,10 +37,12 @@ export class VerAuditoriaComponent implements OnInit {
     private rutaActiva: ActivatedRoute,
     private datos: DatosDbService,
     private fb: FormBuilder,
-    private _snackBar: MatSnackBar
-  ) {}
+    private _snackBar: MatSnackBar,
+    private modalCargandoService: ModalCargandoService
+  ) { }
 
   ngOnInit(): void {
+    this.modalCargandoService.startLoading();
     this.datos
       .DatosParametrosApi('auditoria', this.idauditoria)
       .subscribe((res: VerAuditoria) => {
@@ -93,6 +53,7 @@ export class VerAuditoriaComponent implements OnInit {
         this.items = items;
         this.agregarItems(items);
         this.form.disable();
+        this.modalCargandoService.stopLoading();
       });
   }
 
@@ -147,7 +108,7 @@ export class VerAuditoriaComponent implements OnInit {
 
     // console.log('Form');
   }
-  onFileInput(e: any) {}
+  onFileInput(e: any) { }
 
   agregarItems(items: Item[]) {
     items.forEach(({ Valor, iditem, descripcion }) => {

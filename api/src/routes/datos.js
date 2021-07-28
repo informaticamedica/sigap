@@ -54,6 +54,22 @@ router.get("/auditorias", helpers.verifyToken, async (req, res) => {
     res.status(400).json(error);
   }
 });
+
+router.get("/auditorias/flujo-estados", helpers.verifyToken, async (req, res) => {
+  try {
+    const flujoDeEstados = await pool.query(`
+      select 
+        FE.* 
+      from FlujoEstadosAuditoria FE 
+      order by FE.idestadoauditoriadesde, FE.idestadoauditoriahasta ASC
+    `);
+    res.status(200).json(flujoDeEstados);
+  } catch (error) {
+    console.error(error);
+    res.status(400).json(error);
+  }
+});
+
 router.get("/prestadores", helpers.verifyToken, async (req, res) => {
   try {
     const Prestadores = await pool.query("select * from Prestadores");
@@ -63,6 +79,35 @@ router.get("/prestadores", helpers.verifyToken, async (req, res) => {
     res.json({});
   }
 });
+
+router.put("/auditorias/:idAuditoria/estado/:idEstado", helpers.verifyToken, async (req, res) => {
+  const connection = await mysql2.createConnection(database);
+  const idAuditoria = req.params.idAuditoria;
+  const idEstado = req.params.idEstado;
+  try {
+    const actualizarEstadoAuditoria = `
+    UPDATE Auditorias 
+    set idestadoauditoria=${idEstado} 
+    where idauditoria = ${idAuditoria}
+  `;
+
+    await connection.execute("SET TRANSACTION ISOLATION LEVEL READ COMMITTED");
+    console.log("Finished setting the isolation level to read committed");
+
+    await connection.beginTransaction();
+
+    await connection.execute(actualizarEstadoAuditoria);
+    await connection.commit();
+    res.status(200).json({});
+  } catch (error) {
+    await connection.rollback();
+    console.error(error);
+    res.json({});
+  } finally {
+    await connection.destroy();
+  }
+});
+
 router.get("/planificarauditoria", helpers.verifyToken, async (req, res) => {
   try {
     const Prestadores = await pool.query(`
@@ -226,7 +271,8 @@ router.get("/auditoria/:idauditoria", helpers.verifyToken, async (req, res) => {
   try {
     const [Auditoria] = await pool.query(`
     select 
-      A.fechainicio,
+    A.idauditoria,
+    A.fechainicio,
       A.idestadoauditoria,
       A.idguia, 
       A.versionguia,
