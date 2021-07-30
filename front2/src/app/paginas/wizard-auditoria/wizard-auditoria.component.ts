@@ -1,7 +1,8 @@
-import { Component, OnInit, ViewChild, } from '@angular/core';
+import { Component, OnChanges, OnInit, SimpleChanges, ViewChild, } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ModalCargandoService } from 'src/app/componentes/modal-cargando/modal-cargando.service';
 import { Auditoria } from 'src/app/dto/auditoria.dto';
+import { EstadoAuditoria } from 'src/app/dto/estado-auditoria.dto';
 import { FlujoDeEstadosAuditoria } from 'src/app/dto/flujo-de-estados-auditoria.dto';
 import { Informe } from 'src/app/dto/informe.dto';
 import { Item } from 'src/app/dto/item.dto';
@@ -32,6 +33,7 @@ export class WizardAuditoriaComponent implements OnInit {
   items!: Item[];
 
   flujoDeEstados!: FlujoDeEstadosAuditoria[];
+  estados!: EstadoAuditoria[];
   // @ViewChild('wizard') wizard!: MatStepper;
   constructor(private datosService: DatosDbService, private activatedRoute: ActivatedRoute,
     private modalCargandoService: ModalCargandoService) {
@@ -42,9 +44,14 @@ export class WizardAuditoriaComponent implements OnInit {
     this.datosService.DatosApi('auditorias/flujo-estados').subscribe(
       (data: FlujoDeEstadosAuditoria[]) => {
         this.flujoDeEstados = data;
-        console.log(data)
       }
     );
+    this.datosService.DatosApi('auditorias/estados').subscribe(
+      (data: EstadoAuditoria[]) => {
+        this.estados = data;
+      }
+    );
+
     this.idAuditoria = this.activatedRoute.snapshot.params.idauditoria;
     if (this.idAuditoria) {
       //si llegó una auditoria por param es que entré a ver una ya creada
@@ -52,86 +59,97 @@ export class WizardAuditoriaComponent implements OnInit {
         .DatosParametrosApi('auditoria', this.idAuditoria)
         .subscribe((res: VerAuditoria) => {
           this.auditoria = res.Auditoria;
-          console.log(this.auditoria);
+          let estadoSeleccionado = this.estados.filter(estado => estado.idestadoauditoria === this.auditoria.idestadoauditoria)[0];
+          this.auditoria.colorEstado = estadoSeleccionado.color;
           this.setearPasoDelWizardSegunEstadoDeLaAuditoria(this.auditoria);
         });
 
     } else {
-      // this.wizard.selectedIndex = this.INDEX_TAB_PLANIFICACION;
+      this.setearPasoDelWizardSegunEstadoDeLaAuditoria();
       this.modalCargandoService.stopLoading();
-      //si no llegó ID estoy entrando a crear una auditoría
     }
   }
-
-  setearPasoDelWizardSegunEstadoDeLaAuditoria(auditoria: Auditoria) {
-    // this.wizard.linear = false;
-    switch (auditoria.idestadoauditoria) {
-      case Constantes.ESTADO_AUDITORIA_PLANIFICADA:
-        this.pasoSeleccionado = Constantes.INDEX_TAB_PLANIFICACION;
-        this.pasoPlanificacionDeshabilitado = false;
-        this.pasoGuiaDeshabilitado = true;
-        this.pasoInformeDeshabilitado = true;
-        this.pasoPrimeraRevisionDeshabilitado = true;
-        this.pasoSegundaRevisionDeshabilitado = true;
-        this.pasoGDEDeshabilitado = true;
-        break;
-      case Constantes.ESTADO_AUDITORIA_PUBLICADA:
-      case Constantes.ESTADO_GUIA_INICIDADA:
-        this.pasoSeleccionado = Constantes.INDEX_TAB_GUIA;
-        this.pasoPlanificacionDeshabilitado = false;
-        this.pasoGuiaDeshabilitado = false;
-        this.pasoInformeDeshabilitado = true;
-        this.pasoPrimeraRevisionDeshabilitado = true;
-        this.pasoSegundaRevisionDeshabilitado = true;
-        this.pasoGDEDeshabilitado = true;
-        break;
-      case Constantes.ESTADO_GUIA_COMPLETADA:
-      case Constantes.ESTADO_INFORME_INICIADO:
-        this.pasoSeleccionado = Constantes.INDEX_TAB_INFORME;
-        this.pasoPlanificacionDeshabilitado = false;
-        this.pasoGuiaDeshabilitado = false;
-        this.pasoInformeDeshabilitado = false;
-        this.pasoPrimeraRevisionDeshabilitado = true;
-        this.pasoSegundaRevisionDeshabilitado = true;
-        this.pasoGDEDeshabilitado = true;
-        break;
-      case Constantes.ESTADO_INFORME_CONFORMADO:
-        this.pasoSeleccionado = Constantes.INDEX_TAB_PRIMERA_REVISION;
-        this.pasoPlanificacionDeshabilitado = false;
-        this.pasoGuiaDeshabilitado = false;
-        this.pasoInformeDeshabilitado = false;
-        this.pasoPrimeraRevisionDeshabilitado = false;
-        this.pasoSegundaRevisionDeshabilitado = true;
-        this.pasoGDEDeshabilitado = true;
-        break;
-      case Constantes.ESTADO_PRIMERA_REVISION_APROBADA:
-        this.pasoSeleccionado = Constantes.INDEX_TAB_SEGUNDA_REVISION;
-        this.pasoPlanificacionDeshabilitado = false;
-        this.pasoGuiaDeshabilitado = false;
-        this.pasoInformeDeshabilitado = false;
-        this.pasoPrimeraRevisionDeshabilitado = false;
-        this.pasoSegundaRevisionDeshabilitado = false;
-        this.pasoGDEDeshabilitado = true;
-        break;
-      case Constantes.ESTADO_SEGUNDA_REVISION_APROBADA:
-      case Constantes.ESTADO_SEGUNDA_REVISION_OBSERVADA:
-        this.pasoSeleccionado = Constantes.INDEX_TAB_GDE;
-        this.pasoPlanificacionDeshabilitado = false;
-        this.pasoGuiaDeshabilitado = false;
-        this.pasoInformeDeshabilitado = false;
-        this.pasoPrimeraRevisionDeshabilitado = false;
-        this.pasoSegundaRevisionDeshabilitado = false;
-        this.pasoGDEDeshabilitado = false;
-        break;
-      case Constantes.ESTADO_INFORME_SUBIDO_A_GDE:
-        this.pasoPlanificacionDeshabilitado = false;
-        this.pasoGuiaDeshabilitado = false;
-        this.pasoInformeDeshabilitado = false;
-        this.pasoPrimeraRevisionDeshabilitado = false;
-        this.pasoSegundaRevisionDeshabilitado = false;
-        this.pasoGDEDeshabilitado = false;
-        this.pasoSeleccionado = Constantes.INDEX_TAB_GDE;
-        break;
+  actualizarWizard(auditoria?: Auditoria) {
+    this.setearPasoDelWizardSegunEstadoDeLaAuditoria(auditoria);
+  }
+  setearPasoDelWizardSegunEstadoDeLaAuditoria(auditoria?: Auditoria) {
+    if (auditoria) {
+      switch (auditoria.idestadoauditoria) {
+        case Constantes.ESTADO_AUDITORIA_PLANIFICADA:
+          this.pasoSeleccionado = Constantes.INDEX_TAB_PLANIFICACION;
+          this.pasoPlanificacionDeshabilitado = false;
+          this.pasoGuiaDeshabilitado = true;
+          this.pasoInformeDeshabilitado = true;
+          this.pasoPrimeraRevisionDeshabilitado = true;
+          this.pasoSegundaRevisionDeshabilitado = true;
+          this.pasoGDEDeshabilitado = true;
+          break;
+        case Constantes.ESTADO_AUDITORIA_PUBLICADA:
+        case Constantes.ESTADO_GUIA_INICIDADA:
+          this.pasoSeleccionado = Constantes.INDEX_TAB_GUIA;
+          this.pasoPlanificacionDeshabilitado = false;
+          this.pasoGuiaDeshabilitado = false;
+          this.pasoInformeDeshabilitado = true;
+          this.pasoPrimeraRevisionDeshabilitado = true;
+          this.pasoSegundaRevisionDeshabilitado = true;
+          this.pasoGDEDeshabilitado = true;
+          break;
+        case Constantes.ESTADO_GUIA_COMPLETADA:
+        case Constantes.ESTADO_INFORME_INICIADO:
+          this.pasoSeleccionado = Constantes.INDEX_TAB_INFORME;
+          this.pasoPlanificacionDeshabilitado = false;
+          this.pasoGuiaDeshabilitado = false;
+          this.pasoInformeDeshabilitado = false;
+          this.pasoPrimeraRevisionDeshabilitado = true;
+          this.pasoSegundaRevisionDeshabilitado = true;
+          this.pasoGDEDeshabilitado = true;
+          break;
+        case Constantes.ESTADO_INFORME_CONFORMADO:
+          this.pasoSeleccionado = Constantes.INDEX_TAB_PRIMERA_REVISION;
+          this.pasoPlanificacionDeshabilitado = false;
+          this.pasoGuiaDeshabilitado = false;
+          this.pasoInformeDeshabilitado = false;
+          this.pasoPrimeraRevisionDeshabilitado = false;
+          this.pasoSegundaRevisionDeshabilitado = true;
+          this.pasoGDEDeshabilitado = true;
+          break;
+        case Constantes.ESTADO_PRIMERA_REVISION_APROBADA:
+          this.pasoSeleccionado = Constantes.INDEX_TAB_SEGUNDA_REVISION;
+          this.pasoPlanificacionDeshabilitado = false;
+          this.pasoGuiaDeshabilitado = false;
+          this.pasoInformeDeshabilitado = false;
+          this.pasoPrimeraRevisionDeshabilitado = false;
+          this.pasoSegundaRevisionDeshabilitado = false;
+          this.pasoGDEDeshabilitado = true;
+          break;
+        case Constantes.ESTADO_SEGUNDA_REVISION_APROBADA:
+        case Constantes.ESTADO_SEGUNDA_REVISION_OBSERVADA:
+          this.pasoSeleccionado = Constantes.INDEX_TAB_GDE;
+          this.pasoPlanificacionDeshabilitado = false;
+          this.pasoGuiaDeshabilitado = false;
+          this.pasoInformeDeshabilitado = false;
+          this.pasoPrimeraRevisionDeshabilitado = false;
+          this.pasoSegundaRevisionDeshabilitado = false;
+          this.pasoGDEDeshabilitado = false;
+          break;
+        case Constantes.ESTADO_INFORME_SUBIDO_A_GDE:
+          this.pasoPlanificacionDeshabilitado = false;
+          this.pasoGuiaDeshabilitado = false;
+          this.pasoInformeDeshabilitado = false;
+          this.pasoPrimeraRevisionDeshabilitado = false;
+          this.pasoSegundaRevisionDeshabilitado = false;
+          this.pasoGDEDeshabilitado = false;
+          this.pasoSeleccionado = Constantes.INDEX_TAB_GDE;
+          break;
+      }
+    } else {
+      this.pasoSeleccionado = Constantes.INDEX_TAB_PLANIFICACION;
+      this.pasoPlanificacionDeshabilitado = false;
+      this.pasoGuiaDeshabilitado = true;
+      this.pasoInformeDeshabilitado = true;
+      this.pasoPrimeraRevisionDeshabilitado = true;
+      this.pasoSegundaRevisionDeshabilitado = true;
+      this.pasoGDEDeshabilitado = true;
     }
     this.modalCargandoService.stopLoading();
   }
@@ -139,22 +157,41 @@ export class WizardAuditoriaComponent implements OnInit {
   obtenerColorDelBadge(pasoDelWizard: number): string {
     let color = "badge-secondary";
     if (this.auditoria) {
-      switch (pasoDelWizard) {
-        case Constantes.INDEX_TAB_PLANIFICACION:
-          if (this.auditoria.idestadoauditoria !== Constantes.ESTADO_AUDITORIA_PLANIFICADA) {
-            color = "badge-success";
-          }
-          break;
-        case Constantes.INDEX_TAB_GUIA:
-          break;
-        case Constantes.INDEX_TAB_INFORME:
-          break;
-        case Constantes.INDEX_TAB_PRIMERA_REVISION:
-          break;
-        case Constantes.INDEX_TAB_SEGUNDA_REVISION:
-          break;
-        case Constantes.INDEX_TAB_GDE:
-          break;
+      if (this.auditoria.idestadoauditoria === Constantes.ESTADO_AUDITORIA_CANCELADA) {
+        color = "badge-danger";
+      } else {
+        switch (pasoDelWizard) {
+          case Constantes.INDEX_TAB_PLANIFICACION:
+            if (this.auditoria.idestadoauditoria >= Constantes.ESTADO_AUDITORIA_PUBLICADA) {
+              color = "badge-success";
+            }
+            break;
+          case Constantes.INDEX_TAB_GUIA:
+            if (this.auditoria.idestadoauditoria >= Constantes.ESTADO_GUIA_COMPLETADA) {
+              color = "badge-success";
+            }
+            break;
+          case Constantes.INDEX_TAB_INFORME:
+            if (this.auditoria.idestadoauditoria >= Constantes.ESTADO_INFORME_CONFORMADO) {
+              color = "badge-success";
+            }
+            break;
+          case Constantes.INDEX_TAB_PRIMERA_REVISION:
+            if (this.auditoria.idestadoauditoria >= Constantes.ESTADO_PRIMERA_REVISION_APROBADA) {
+              color = "badge-success";
+            }
+            break;
+          case Constantes.INDEX_TAB_SEGUNDA_REVISION:
+            if (this.auditoria.idestadoauditoria >= Constantes.ESTADO_SEGUNDA_REVISION_APROBADA) {
+              color = "badge-success";
+            }
+            break;
+          case Constantes.INDEX_TAB_GDE:
+            if (this.auditoria.idestadoauditoria >= Constantes.ESTADO_INFORME_SUBIDO_A_GDE) {
+              color = "badge-success";
+            }
+            break;
+        }
       }
     }
     return color;

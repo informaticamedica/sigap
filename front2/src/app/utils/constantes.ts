@@ -2,7 +2,7 @@ export const INDEX_TAB_PLANIFICACION = 0;
 export const INDEX_TAB_GUIA = 1;
 export const INDEX_TAB_INFORME = 2;
 export const INDEX_TAB_PRIMERA_REVISION = 3;
-export const INDEX_TAB_SEGUNDA_REVISION = 5;
+export const INDEX_TAB_SEGUNDA_REVISION = 4;
 export const INDEX_TAB_GDE = 5;
 
 export const ESTADO_AUDITORIA_PLANIFICADA = 1;

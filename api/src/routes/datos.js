@@ -69,6 +69,20 @@ router.get("/auditorias/flujo-estados", helpers.verifyToken, async (req, res) =>
     res.status(400).json(error);
   }
 });
+router.get("/auditorias/estados", helpers.verifyToken, async (req, res) => {
+  try {
+    const estados = await pool.query(`
+      select 
+        E.* 
+      from EstadosAuditoria E 
+      order by E.idestadoauditoria ASC
+    `);
+    res.status(200).json(estados);
+  } catch (error) {
+    console.error(error);
+    res.status(400).json(error);
+  }
+});
 
 router.get("/prestadores", helpers.verifyToken, async (req, res) => {
   try {
@@ -263,6 +277,8 @@ router.post("/planificarauditoria", helpers.verifyToken, async (req, res) => {
     connection.rollback();
     console.error(error);
     res.status(400).json(error);
+  } finally {
+    await connection.destroy();
   }
 });
 
@@ -589,6 +605,8 @@ router.post("/auditoria/:idauditoria", async (req, res) => {
     connection.rollback();
     console.error(error);
     res.json({ error });
+  } finally {
+    await connection.destroy();
   }
 });
 router.get("/lala", async (req, res) => {
@@ -606,6 +624,8 @@ router.get("/lala", async (req, res) => {
     res.json({ algo });
   } catch (error) {
     connection.rollback();
+  } finally {
+    await connection.destroy();
   }
 });
 // router.get("/cargarTabla/:token", async (req, res) => {

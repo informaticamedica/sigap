@@ -3,6 +3,7 @@ export interface Auditoria {
     idauditoria:number;
     CUIT: string;
     EstadoAuditoria: string;
+    colorEstado: string;
     Prestador: string;
     ProvinciaPrestador: string;
     UGL: string;
