@@ -55,20 +55,24 @@ router.get("/auditorias", helpers.verifyToken, async (req, res) => {
   }
 });
 
-router.get("/auditorias/flujo-estados", helpers.verifyToken, async (req, res) => {
-  try {
-    const flujoDeEstados = await pool.query(`
+router.get(
+  "/auditorias/flujo-estados",
+  helpers.verifyToken,
+  async (req, res) => {
+    try {
+      const flujoDeEstados = await pool.query(`
       select 
         FE.* 
       from FlujoEstadosAuditoria FE 
       order by FE.idestadoauditoriadesde, FE.idestadoauditoriahasta ASC
     `);
-    res.status(200).json(flujoDeEstados);
-  } catch (error) {
-    console.error(error);
-    res.status(400).json(error);
+      res.status(200).json(flujoDeEstados);
+    } catch (error) {
+      console.error(error);
+      res.status(400).json(error);
+    }
   }
-});
+);
 router.get("/auditorias/estados", helpers.verifyToken, async (req, res) => {
   try {
     const estados = await pool.query(`
@@ -94,33 +98,39 @@ router.get("/prestadores", helpers.verifyToken, async (req, res) => {
   }
 });
 
-router.put("/auditorias/:idAuditoria/estado/:idEstado", helpers.verifyToken, async (req, res) => {
-  const connection = await mysql2.createConnection(database);
-  const idAuditoria = req.params.idAuditoria;
-  const idEstado = req.params.idEstado;
-  try {
-    const actualizarEstadoAuditoria = `
+router.put(
+  "/auditorias/:idAuditoria/estado/:idEstado",
+  helpers.verifyToken,
+  async (req, res) => {
+    const connection = await mysql2.createConnection(database);
+    const idAuditoria = req.params.idAuditoria;
+    const idEstado = req.params.idEstado;
+    try {
+      const actualizarEstadoAuditoria = `
     UPDATE Auditorias 
     set idestadoauditoria=${idEstado} 
     where idauditoria = ${idAuditoria}
   `;
 
-    await connection.execute("SET TRANSACTION ISOLATION LEVEL READ COMMITTED");
-    console.log("Finished setting the isolation level to read committed");
+      await connection.execute(
+        "SET TRANSACTION ISOLATION LEVEL READ COMMITTED"
+      );
+      console.log("Finished setting the isolation level to read committed");
 
-    await connection.beginTransaction();
+      await connection.beginTransaction();
 
-    await connection.execute(actualizarEstadoAuditoria);
-    await connection.commit();
-    res.status(200).json({});
-  } catch (error) {
-    await connection.rollback();
-    console.error(error);
-    res.json({});
-  } finally {
-    await connection.destroy();
+      await connection.execute(actualizarEstadoAuditoria);
+      await connection.commit();
+      res.status(200).json({});
+    } catch (error) {
+      await connection.rollback();
+      console.error(error);
+      res.json({});
+    } finally {
+      await connection.destroy();
+    }
   }
-});
+);
 
 router.get("/planificarauditoria", helpers.verifyToken, async (req, res) => {
   try {
@@ -136,10 +146,10 @@ router.get("/planificarauditoria", helpers.verifyToken, async (req, res) => {
 
     const TipoInforme = await pool.query(`
       Select 
-        idguia, 
+        idinforme, 
         descripcion, 
         versionactual 
-      from Guias 
+      from Informes 
       where activo=1
     `);
 
@@ -158,14 +168,22 @@ router.get("/planificarauditoria", helpers.verifyToken, async (req, res) => {
     `);
 
     const Areas = await pool.query(`
-      select distinct GV.idguia, GV.versionguia, S.idareaauditoria, A.descripcion
-      FROM GuiaVersion GV 
-        INNER JOIN SeccionesGuia SG ON GV.idguia = SG.idguia AND GV.versionguia = SG.versionguia
-        INNER JOIN Secciones S ON SG.idseccion = S.idseccion
-        INNER JOIN AreasAuditoria A ON S.idareaauditoria = A.idareaauditoria
-      WHERE GV.activo =1 and SG.activo = 1 and S.activo = 1 and A.activo = 1
-      ORDER BY GV.idguia, GV.versionguia, A.descripcion
+      select SI.idinforme, SI.versioninforme, S.idseccion, S.descripcion
+      from SeccionInforme SI 
+        INNER JOIN Secciones S ON SI.idseccion = S.idseccion
+      where SI.activo = 1 and S.activo=1
+      order by SI.idinforme, SI.versioninforme, S.descripcion
     `);
+
+    // const Areas = await pool.query(`
+    //   select distinct GV.idguia, GV.versionguia, S.idareaauditoria, A.descripcion
+    //   FROM GuiaVersion GV
+    //     INNER JOIN SeccionesGuia SG ON GV.idguia = SG.idguia AND GV.versionguia = SG.versionguia
+    //     INNER JOIN Secciones S ON SG.idseccion = S.idseccion
+    //     INNER JOIN AreasAuditoria A ON S.idareaauditoria = A.idareaauditoria
+    //   WHERE GV.activo =1 and SG.activo = 1 and S.activo = 1 and A.activo = 1
+    //   ORDER BY GV.idguia, GV.versionguia, A.descripcion
+    // `);
 
     // const Areas = await pool.query(`
     //   select
@@ -218,20 +236,19 @@ router.post("/planificarauditoria", helpers.verifyToken, async (req, res) => {
         fechafin, 
         idestadoauditoria, 
         idinforme, 
-        versioninforme, 
-        idguia, 
-        versionguia,
-        observaciones)
+        versioninforme,
+        observaciones,
+        activo
+        )
       VALUES (
           ${prestadores}, 
           ${fechainicio !== "" ? "'" + formatDate(fechainicio) + "'" : "NULL"},
           NULL, 
           1, 
-          NULL,
-          NULL, 
           ${TipoInforme}, 
           ${VERSIONGUIA},
-          '${observaciones}'
+          '${observaciones}',
+          1
         )
     `;
     console.log("Qauditoria", Qauditoria);
@@ -286,41 +303,63 @@ router.get("/auditoria/:idauditoria", helpers.verifyToken, async (req, res) => {
   const { idauditoria } = req.params;
   try {
     const [Auditoria] = await pool.query(`
-    select 
-    A.idauditoria,
-    A.fechainicio,
-      A.idestadoauditoria,
-      A.idguia, 
-      A.versionguia,
-      P.descripcion as Prestador,
-      P.domicilio,
-      P.localidad,
-      P.idprovincia,
-      P.telefono,
-      P.email,
-      P.idugl,
-      P.CUIT,
-      EA.descripcion as EstadoAuditoria,
-      Prov.descripcion as ProvinciaPrestador,
-      CONCAT(RIGHT(CONCAT('00', P.idugl),2), ' - ', U.descripcion) as UGL
-    from Auditorias A
-      INNER JOIN Prestadores P ON  P.idprestador = A.idprestador
-      INNER JOIN EstadosAuditoria EA ON  EA.idestadoauditoria = A.idestadoauditoria 
-      INNER JOIN Provincias Prov ON  Prov.idprovincia = P.idprovincia 
-      INNER JOIN UGL U ON U.idugl = P.idugl 
-    where  A.idauditoria = ${idauditoria}
+      select 
+        A.idauditoria,
+        A.fechainicio,
+        A.idestadoauditoria,
+        A.idinforme, 
+        A.versioninforme,
+        P.descripcion as Prestador,
+        P.domicilio,
+        P.localidad,
+        P.idprovincia,
+        P.telefono,
+        P.email,
+        P.idugl,
+        P.CUIT,
+        EA.descripcion as EstadoAuditoria,
+        Prov.descripcion as ProvinciaPrestador,
+        CONCAT(RIGHT(CONCAT('00', P.idugl),2), ' - ', U.descripcion) as UGL
+      from Auditorias A
+        INNER JOIN Prestadores P ON P.idprestador = A.idprestador
+        INNER JOIN EstadosAuditoria EA ON EA.idestadoauditoria = A.idestadoauditoria
+        INNER JOIN Provincias Prov ON Prov.idprovincia = P.idprovincia
+        INNER JOIN UGL U ON U.idugl = P.idugl
+      where A.idauditoria = ${idauditoria}
     `);
-    console.log("Auditoria", Auditoria);
-    const [Informe] = await pool.query(`
-    call VerInforme(${Auditoria.idguia},${Auditoria.versionguia})
+    // console.log("Auditoria", Auditoria);
+
+    const Informe = await pool.query(`
+      select S.idseccion, S.descripcion, 
+      (select count(I.idseccion) from Secciones I where I.idseccionmadre = S.idseccion) as Secciones,
+      (select O.orden from Secciones O where O.idseccion=S.idseccion) as Orden from Secciones S
+      where S.activo = 1 AND
+      S.idseccionmadre in (select SI.idseccion from SeccionInforme SI where SI.idinforme=${Auditoria.idinforme} and SI.versioninforme=${Auditoria.versioninforme} and SI.guia=1 and SI.activo=1)
+      order by 4
     `);
+
+    console.log("*************************");
     console.log("Informe", Informe);
+    console.log("*************************");
+
+    const lalalla = await pool.query(`
+    select C.idcomponente, I.iditem, CR.descripcion, TE.idtipoeval, TE.componente, IFNULL(CA.valor, '') as Valor
+    from ComponenteSeccion CS 
+      INNER JOIN Componentes C ON CS.idcomponente = C.idcomponente
+      INNER JOIN Items2 I ON I.iditem = C.iditem
+      INNER JOIN TipoEvaluacion TE ON TE.idtipoeval = I.idtipoeval
+      INNER JOIN Criterios2 CR ON CR.idcriterio = I.idcriterio
+      LEFT JOIN ComponenteAuditoria CA ON CA.idauditoria=${Auditoria.idauditoria} and CA.idcomponente=C.idcomponente
+    WHERE CS.activo=1 and I.activo=1 and CR.activo=1 and CS.idseccion = 10
+    order by CS.orden`);
+
+    // console.log("lalalla", lalalla);
 
     const idsecciones = Informe.filter((a) => a.Secciones != 0).map(
       (a) => a.idseccion
     );
 
-    console.log("idsecciones", idsecciones);
+    // console.log("idsecciones", idsecciones);
     const queryString = (idsecciones) => `
       select 
         S.idseccionmadre,
