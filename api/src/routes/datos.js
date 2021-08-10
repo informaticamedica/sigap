@@ -342,17 +342,6 @@ router.get("/auditoria/:idauditoria", helpers.verifyToken, async (req, res) => {
     console.log("Informe", Informe);
     console.log("*************************");
 
-    const lalalla = await pool.query(`
-    select C.idcomponente, I.iditem, CR.descripcion, TE.idtipoeval, TE.componente, IFNULL(CA.valor, '') as Valor
-    from ComponenteSeccion CS 
-      INNER JOIN Componentes C ON CS.idcomponente = C.idcomponente
-      INNER JOIN Items2 I ON I.iditem = C.iditem
-      INNER JOIN TipoEvaluacion TE ON TE.idtipoeval = I.idtipoeval
-      INNER JOIN Criterios2 CR ON CR.idcriterio = I.idcriterio
-      LEFT JOIN ComponenteAuditoria CA ON CA.idauditoria=${Auditoria.idauditoria} and CA.idcomponente=C.idcomponente
-    WHERE CS.activo=1 and I.activo=1 and CR.activo=1 and CS.idseccion = 10
-    order by CS.orden`);
-
     // console.log("lalalla", lalalla);
 
     const idsecciones = Informe.filter((a) => a.Secciones != 0).map(
@@ -451,28 +440,38 @@ router.get("/auditoria/:idauditoria", helpers.verifyToken, async (req, res) => {
               idsecciones.push(ii.idseccion);
             });
           });
-
           const Items = await pool.query(`
-            select 
-              I.iditem, 
-              C.descripcion, 
-              TE.idtipoeval, 
-              TE.componente, 
-              ITS.idseccion,
-              IFNULL(A.valor, '') as Valor,
-              TE.descripcion as descripcionTipoEval
-            from ItemSeccion ITS 
-              INNER JOIN Items I ON ITS.iditem = I.iditem
-              INNER JOIN TipoEvaluacion TE ON I.idtipoeval = TE.idtipoeval
-              INNER JOIN Criterios C ON C.idcriterio = I.idcriterio
-              LEFT JOIN ItemsAuditoria A ON A.iditem = I.iditem and A.idauditoria=${idauditoria}
-            where 
-              ITS.activo = 1 AND 
-              I.activo=1 AND 
-              TE.activo=1 AND
-              ITS.idseccion in (${idsecciones}) 
-            ORDER BY ITS.orden
-          `);
+          select CS.idseccion, C.idcomponente, I.iditem, CR.descripcion, TE.idtipoeval, TE.componente, IFNULL(CA.valor, '') as Valor
+          from ComponenteSeccion CS
+            INNER JOIN Componentes C ON CS.idcomponente = C.idcomponente
+            INNER JOIN Items I ON I.iditem = C.iditem
+            INNER JOIN TipoEvaluacion TE ON TE.idtipoeval = I.idtipoeval
+            INNER JOIN Criterios CR ON CR.idcriterio = I.idcriterio
+            LEFT JOIN ComponenteAuditoria CA ON CA.idauditoria=${Auditoria.idauditoria} and CA.idcomponente=C.idcomponente
+          WHERE CS.activo=1 and I.activo=1 and CR.activo=1 and CS.idseccion in (${idsecciones}) 
+          order by CS.idseccion,CS.orden`);
+          // console.log("******************************************Items", Items);
+          // const Items = await pool.query(`
+          //   select
+          //     I.iditem,
+          //     C.descripcion,
+          //     TE.idtipoeval,
+          //     TE.componente,
+          //     ITS.idseccion,
+          //     IFNULL(A.valor, '') as Valor,
+          //     TE.descripcion as descripcionTipoEval
+          //   from ItemSeccion ITS
+          //     INNER JOIN Items I ON ITS.iditem = I.iditem
+          //     INNER JOIN TipoEvaluacion TE ON I.idtipoeval = TE.idtipoeval
+          //     INNER JOIN Criterios C ON C.idcriterio = I.idcriterio
+          //     LEFT JOIN ItemsAuditoria A ON A.iditem = I.iditem and A.idauditoria=${idauditoria}
+          //   where
+          //     ITS.activo = 1 AND
+          //     I.activo=1 AND
+          //     TE.activo=1 AND
+          //     ITS.idseccion in (${idsecciones})
+          //   ORDER BY ITS.orden
+          // `);
           const tipoEval = await pool.query(`
             SELECT TEV.idtipoeval, V.idvalor, V.descripcion
             FROM Valores V 
@@ -486,6 +485,8 @@ router.get("/auditoria/:idauditoria", helpers.verifyToken, async (req, res) => {
               tipoEval: tipoEval.filter((b) => b.idtipoeval == a.idtipoeval),
             };
           });
+
+          console.log("-------------------------->items", items);
           const Informe = Secciones.map((sec) => {
             return {
               ...sec,
